@@ -1,0 +1,118 @@
+using System;
+using System.Collections.Generic;
+using System.Text;
+using System.Threading;
+
+using GlobSaldo.AVL.Entities;
+using GlobSaldo.AVL.Data;
+using JP.Data.Utils;
+
+using log4net;
+using System.Reflection;
+using Taxi.Communication.Server.Containers;
+
+namespace Taxi.Communication.Server.Utils
+{
+    public class PendingPhoneCallsProcessingThread
+    {
+        private bool m_work;
+        private int m_sleepTime;
+        private int m_numberOfRetries;
+
+        private ILog log;
+        private PendingPhoneCallsProcessing pendingPhoneCallsHeandler;
+
+        ICallbacksPendingPhoneCallsProcessing _callBack;
+
+        public void setCallBack(ICallbacksPendingPhoneCallsProcessing callBack)
+        {
+            _callBack = callBack;
+        }
+
+        public PendingPhoneCallsProcessingThread(int sleepTime, int numberOfRetries)
+        {
+            m_work = true;
+            m_numberOfRetries = numberOfRetries;
+            m_sleepTime = sleepTime;
+            log = LogManager.GetLogger("MyService");
+            log.Info("Starting Configuration Send Thread with Sleep time=" + m_sleepTime.ToString());
+
+        }
+
+        public void stop()
+        {
+            this.m_work = false;
+        }
+
+        private TList<PendingPhoneCalls> getPendingPhoneCallsReservations()
+        {
+            TList<PendingPhoneCalls> retVal = new TList<PendingPhoneCalls>();
+
+            try
+            {
+                bool idleVech = false;
+
+                TList<PendingPhoneCalls> pendCalls = DataRepository.PendingPhoneCallsProvider.GetByIDMessageStatus((int)MessageStatusList.Inserted);
+
+                if (pendCalls != null)
+                {
+                    Type[] tl = new Type[4];
+                    tl[0] = typeof(PhoneCalls);
+                    tl[1] = typeof(GisObjects);
+                    tl[2] = typeof(GisAddressModel);
+                    tl[3] = typeof(GisRegions);
+
+                    DataRepository.PendingPhoneCallsProvider.DeepLoad(pendCalls, true, DeepLoadType.IncludeChildren, tl);
+
+
+                    foreach (PendingPhoneCalls item in pendCalls)
+                    {
+                        if (VehiclesContainer.Instance.checkForIdelVehicles(item.IDRegionFrom))
+                        {
+                            retVal.Add(item);
+                            break;
+                        }
+
+                    }
+                }
+                
+                
+            }
+            catch (Exception e)
+            {
+                log.Error("Comm Error", e);
+            }
+
+            return retVal;
+        }
+
+        public void start()
+        {
+            pendingPhoneCallsHeandler = _callBack.CallBackPendingPhoneCallsProcessing;
+
+            while (m_work)
+            {
+                try
+                {
+                    try
+                    {
+                        pendingPhoneCallsHeandler(1, this.getPendingPhoneCallsReservations());
+                    }
+                    catch (Exception e)
+                    {
+                        log.Error("Exception in Reservation processing", e);
+                    }
+
+                    
+                    Thread.Sleep(m_sleepTime);
+                }
+                catch (Exception e)
+                {
+                    log.Fatal("Error in Reservation Processing thread thread", e);
+                    m_work = false;
+                }
+            }
+            log.Info("Communication thread EXCITING");
+        }
+    }
+}

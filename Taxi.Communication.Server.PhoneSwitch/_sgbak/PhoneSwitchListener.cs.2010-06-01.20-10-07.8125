@@ -1,0 +1,20 @@
+using System;
+using System.Collections.Generic;
+using System.Text;
+using Taxi.Communication.Server.Utils;
+
+namespace Taxi.Communication.Server.PhoneSwitch
+{
+    public abstract class PhoneSwitchListener
+    {
+        protected ICallbacksForPhoneSwitch _callBack = null;
+
+        public abstract void GeneratePhoneCall(string strPhoneNumber, string strPhoneExtension);
+        public abstract void Start();
+        public abstract void Stop();
+        public void setCallBack(ICallbacksForPhoneSwitch callBack)
+        {
+            _callBack = callBack;
+        }
+    }
+}

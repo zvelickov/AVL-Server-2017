@@ -1,0 +1,122 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{F0218B84-D4E2-4F52-BC30-2AFE0BE0E263}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Taxi.Communication.Server.MessageParsers</RootNamespace>
+    <AssemblyName>Taxi.Communication.Server.MessageParsers</AssemblyName>
+    <SccProjectName>
+    </SccProjectName>
+    <SccLocalPath>
+    </SccLocalPath>
+    <SccAuxPath>
+    </SccAuxPath>
+    <SccProvider>
+    </SccProvider>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+    <OldToolsVersion>2.0</OldToolsVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="GlobSaldo.AVL.Data, Version=1.0.21.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Libs\GlobSaldo.AVL.Data.dll</HintPath>
+    </Reference>
+    <Reference Include="GlobSaldo.AVL.Data.SqlClient, Version=1.0.21.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Libs\GlobSaldo.AVL.Data.SqlClient.dll</HintPath>
+    </Reference>
+    <Reference Include="GlobSaldo.AVL.Entities, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\libs\GlobSaldo.AVL.Entities.dll</HintPath>
+    </Reference>
+    <Reference Include="GlobSaldo.GISDB.Entities, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\libs\GlobSaldo.GISDB.Entities.dll</HintPath>
+    </Reference>
+    <Reference Include="JP.Data.Utils, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\libs\JP.Data.Utils.dll</HintPath>
+    </Reference>
+    <Reference Include="log4net, Version=1.2.10.0, Culture=neutral, PublicKeyToken=1b44e1d426115821, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Libs\log4net.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="ControlElectronics\CEParser.cs" />
+    <Compile Include="ControlElectronics\CEPGeneralLocationHandler.cs" />
+    <Compile Include="ControlElectronics\CEDeviceMessageParser.cs" />
+    <Compile Include="ControlElectronics\ExtraData\FiscalReceiptTeasExtraData.cs" />
+    <Compile Include="ControlElectronics\ExtraData\FiscalReceiptAccentExtraData.cs" />
+    <Compile Include="ControlElectronics\MessageParsers\AA08.cs" />
+    <Compile Include="ControlElectronics\MessageParsers\AA09.cs" />
+    <Compile Include="ControlElectronics\MessageParsers\BB04.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ControlElectronics\MessageParsers\BB87.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ControlElectronics\MessageParsers\PP57.cs" />
+    <Compile Include="ControlElectronics\MessageParsers\FF08.cs" />
+    <Compile Include="ControlElectronics\MessageParsers\FF10.cs" />
+    <Compile Include="ControlElectronics\MessageParsers\FF11.cs" />
+    <Compile Include="ControlElectronics\MessageParsers\FF12.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ControlElectronics\MessageParsers\FF13.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ControlElectronics\MessageParsers\PP55.cs" />
+    <Compile Include="ControlElectronics\MessageParsers\PP56.cs" />
+    <Compile Include="ControlElectronics\MessageParsers\PP58.cs" />
+    <Compile Include="ControlElectronics\MessageParsers\PP71.cs" />
+    <Compile Include="ControlElectronics\MessageParsers\PP72.cs" />
+    <Compile Include="ControlElectronics\MessageParsers\PP73.cs" />
+    <Compile Include="ControlElectronics\MessageParsers\PP74.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Service Include="{94E38DFF-614B-4cbd-B67C-F211BB35CE8B}" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Taxi.Communication.Server.Utils\Taxi.Communication.Server.Utils.csproj">
+      <Project>{00ECD04E-0704-4FA2-BF4F-8EFB932CC783}</Project>
+      <Name>Taxi.Communication.Server.Utils</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

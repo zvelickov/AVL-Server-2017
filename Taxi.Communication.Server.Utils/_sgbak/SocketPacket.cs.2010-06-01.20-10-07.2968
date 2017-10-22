@@ -1,0 +1,31 @@
+using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace Taxi.Communication.Server.Utils
+{
+    public class SocketPacket
+    {
+        // Constructor which takes a Socket and a client number
+        public SocketPacket(System.Net.Sockets.Socket socket)
+        {
+            m_currentSocket = socket;
+        }
+        public System.Net.Sockets.Socket m_currentSocket;
+
+        public const int BufferSize = 200;
+
+        // Buffer to store the data sent by the client
+        public byte[] dataBuffer = new byte[BufferSize];
+
+
+        public StringBuilder messageQeue = new StringBuilder();
+
+
+        public int indexInZoranMessage = 0;
+
+        public byte[] ZoranMessage = new byte[0];
+    }
+
+
+}

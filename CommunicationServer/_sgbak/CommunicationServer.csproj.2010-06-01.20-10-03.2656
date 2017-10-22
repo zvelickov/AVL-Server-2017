@@ -1,0 +1,222 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.50727</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{9E1A31DE-1C71-4515-8ADD-D4F67250359C}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Taxi.Communication.Server</RootNamespace>
+    <AssemblyName>CommunicationServer</AssemblyName>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="GlobSaldo.AVL.Data, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Libs\GlobSaldo.AVL.Data.dll</HintPath>
+    </Reference>
+    <Reference Include="GlobSaldo.AVL.Data.SqlClient, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Libs\GlobSaldo.AVL.Data.SqlClient.dll</HintPath>
+    </Reference>
+    <Reference Include="GlobSaldo.AVL.Entities, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Libs\GlobSaldo.AVL.Entities.dll</HintPath>
+    </Reference>
+    <Reference Include="GlobSaldo.GISDB.Data, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Libs\GlobSaldo.GISDB.Data.dll</HintPath>
+    </Reference>
+    <Reference Include="GlobSaldo.GISDB.Data.SqlClient, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Libs\GlobSaldo.GISDB.Data.SqlClient.dll</HintPath>
+    </Reference>
+    <Reference Include="GlobSaldo.GISDB.Entities, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Libs\GlobSaldo.GISDB.Entities.dll</HintPath>
+    </Reference>
+    <Reference Include="Interop.MapXLib, Version=5.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>obj\Debug\Interop.MapXLib.dll</HintPath>
+    </Reference>
+    <Reference Include="JP.Data.Utils, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Libs\JP.Data.Utils.dll</HintPath>
+    </Reference>
+    <Reference Include="log4net, Version=1.2.10.0, Culture=neutral, PublicKeyToken=1b44e1d426115821, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Libs\log4net.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.SqlServer.Types, Version=10.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\Program Files\Microsoft SQL Server\100\SDK\Assemblies\Microsoft.SqlServer.Types.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.configuration" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Runtime.Serialization, Version=3.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\WINDOWS\Microsoft.NET\Framework\v3.0\Windows Communication Foundation\System.Runtime.Serialization.dll</HintPath>
+    </Reference>
+    <Reference Include="System.ServiceModel, Version=3.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\WINDOWS\Microsoft.NET\Framework\v3.0\Windows Communication Foundation\System.ServiceModel.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AdministrationService.cs" />
+    <Compile Include="Classes\clsGeoLocation.cs" />
+    <Compile Include="Classes\clsGisRegion.cs" />
+    <Compile Include="Classes\VehicleRoute.cs" />
+    <Compile Include="ConnectionListeners\CurrentServerData.cs" />
+    <Compile Include="ConnectionListeners\FillVehicleData.cs" />
+    <Compile Include="ConnectionListeners\GPSListener.cs" />
+    <Compile Include="Containers\LocationSynchQueue.cs" />
+    <Compile Include="Containers\VehiclesContainer.cs" />
+    <Compile Include="Global.asax.cs" />
+    <Compile Include="IAdministration.cs" />
+    <Compile Include="MessageParsers\AA08.cs" />
+    <Compile Include="MessageParsers\AA09.cs" />
+    <Compile Include="MessageParsers\BB87.cs" />
+    <Compile Include="MessageParsers\FF08.cs" />
+    <Compile Include="MessageParsers\BB04.cs" />
+    <Compile Include="MessageParsers\BB44.cs" />
+    <Compile Include="MessageParsers\FF10.cs" />
+    <Compile Include="MessageParsers\FF11.cs" />
+    <Compile Include="MessageParsers\FF12.cs" />
+    <Compile Include="MessageParsers\FF13.cs" />
+    <Compile Include="MessageParsers\PP55.cs" />
+    <Compile Include="MessageParsers\PP56.cs" />
+    <Compile Include="MessageParsers\PP71.cs" />
+    <Compile Include="MessageParsers\PP72.cs" />
+    <Compile Include="Parsers\DeviceMessage.cs" />
+    <Compile Include="Parsers\DeviceMessageParser.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ServiceCallBack.cs" />
+    <Compile Include="StateMachine\clsMessageCreator.cs" />
+    <Compile Include="StateMachine\clsPenaltyCreator.cs" />
+    <Compile Include="StateMachine\clsRfIdCardProcessor.cs" />
+    <Compile Include="StateMachine\errStateMachine.cs" />
+    <Compile Include="StateMachine\frmMapX.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="StateMachine\frmMapX.Designer.cs">
+      <DependentUpon>frmMapX.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Classes\GeneralStateMachineClass.cs" />
+    <Compile Include="StateMachine\IdleState.cs" />
+    <Compile Include="StateMachine\StateAlarm.cs" />
+    <Compile Include="StateMachine\StateAlarmConfirmed.cs" />
+    <Compile Include="StateMachine\StateBusy.cs" />
+    <Compile Include="StateMachine\StateIdle.cs" />
+    <Compile Include="StateMachine\StateKeySurrendered.cs" />
+    <Compile Include="StateMachine\StateMoveToClient.cs" />
+    <Compile Include="StateMachine\StatePause.cs" />
+    <Compile Include="StateMachine\StateShiftEnded.cs" />
+    <Compile Include="StateMachine\StateUndefined.cs" />
+    <Compile Include="StateMachine\StateVoice.cs" />
+    <Compile Include="StateMachine\StateWaitClient.cs" />
+    <Compile Include="StateMachine\StateWaitRequest.cs" />
+    <Compile Include="StateMachine\StateWaitResponse.cs" />
+    <Compile Include="TaxiAdministrationService.cs" />
+    <Compile Include="Utils\ConfigurationSendThread.cs" />
+    <Compile Include="Utils\GeoFence\INotificationMethod.cs" />
+    <Compile Include="Utils\GeoFence\INotifyStrategy.cs" />
+    <Compile Include="Utils\GeoFence\MailNotification.cs" />
+    <Compile Include="Utils\GeoFence\NotifyEnter.cs" />
+    <Compile Include="Utils\GeoFence\NotifyExit.cs" />
+    <Compile Include="Utils\GeoFence\NotifyIn.cs" />
+    <Compile Include="Utils\GeoFence\NotifyOut.cs" />
+    <Compile Include="Utils\GeoFence\NotifyStrategyFactory.cs" />
+    <Compile Include="Utils\KeepAliveThread.cs" />
+    <Compile Include="Utils\MapUtils.cs" />
+    <Compile Include="Utils\ReferencePreservingDataContractFormatAttribute.cs" />
+    <Compile Include="Utils\ReservationProcessingThread.cs" />
+    <Compile Include="Utils\ThreadsConfiguration.cs" />
+    <Compile Include="Utils\UnicodeStrings.cs" />
+    <Compile Include="Utils\UpdateMapLocations.cs" />
+    <Compile Include="WebConnectService.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="mycontract.svc" />
+    <None Include="web.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Global.asax" />
+  </ItemGroup>
+  <ItemGroup>
+    <COMReference Include="AxMapXLib">
+      <Guid>{E760686B-BC9E-4802-9ECF-175FDF4062CE}</Guid>
+      <VersionMajor>5</VersionMajor>
+      <VersionMinor>0</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>aximp</WrapperTool>
+      <Isolated>False</Isolated>
+    </COMReference>
+    <COMReference Include="MapXLib">
+      <Guid>{E760686B-BC9E-4802-9ECF-175FDF4062CE}</Guid>
+      <VersionMajor>5</VersionMajor>
+      <VersionMinor>0</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>tlbimp</WrapperTool>
+      <Isolated>False</Isolated>
+    </COMReference>
+    <COMReference Include="stdole">
+      <Guid>{00020430-0000-0000-C000-000000000046}</Guid>
+      <VersionMajor>2</VersionMajor>
+      <VersionMinor>0</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>primary</WrapperTool>
+      <Isolated>False</Isolated>
+    </COMReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="StateMachine\frmMapX.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>frmMapX.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Taxi.Communication.Server.PhoneSwitch\Taxi.Communication.Server.PhoneSwitch.csproj">
+      <Project>{E6712345-2955-42CD-94BB-F8B6DD48E120}</Project>
+      <Name>Taxi.Communication.Server.PhoneSwitch</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Taxi.Communication.Server.Utils\Taxi.Communication.Server.Utils.csproj">
+      <Project>{00ECD04E-0704-4FA2-BF4F-8EFB932CC783}</Project>
+      <Name>Taxi.Communication.Server.Utils</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

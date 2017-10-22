@@ -1,0 +1,209 @@
+using System;
+using System.Collections.Generic;
+using System.Text;
+using System.Threading;
+
+using GlobSaldo.AVL.Entities;
+using GlobSaldo.AVL.Data;
+using GlobSaldo.AVL.Data.Bases;
+using JP.Data.Utils;
+
+using Taxi.Communication.Server.ConnectionListeners;
+using Taxi.Communication.Server.StateMachine;
+
+using log4net;
+using System.Reflection;
+
+namespace Taxi.Communication.Server.Utils
+{
+    public class ConfigurationSendThread
+    {
+        private bool m_work;
+        private int m_sleepTime;
+
+        private clsMessageCreator _msgCreator;
+
+        private GPSListener _gpsListener;
+
+        private ILog log;
+
+        private int m_numberOfRetries;
+
+        public ConfigurationSendThread(int sleepTime, GPSListener gpsListener,int numberOfRetries)
+        {
+            m_numberOfRetries = numberOfRetries;
+            m_work = true;
+            m_sleepTime = sleepTime;
+            _gpsListener = gpsListener;
+            _msgCreator = new clsMessageCreator();
+            log = LogManager.GetLogger("MyService");
+            log.Info("Starting Configuration Send Thread with Sleep time=" + m_sleepTime.ToString());
+
+        }
+
+        public void stop()
+        {
+            this.m_work = false;
+        }
+
+        private TList<CommParameters> getPendingCommParameters()
+        {
+            TList<CommParameters> retVal = null;
+            try
+            {
+                Type[] tl = new Type[2];
+                tl[0] = typeof(Vehicle);
+                tl[1] = typeof(Unit);
+
+                retVal = DataRepository.CommParametersProvider.GetPedningCommParameter(m_numberOfRetries);
+                DataRepository.CommParametersProvider.DeepLoad(retVal, true, DeepLoadType.IncludeChildren, tl);
+            }
+            catch (Exception e)
+            {
+                log.Error("Comm Error", e);
+            }
+
+            return retVal;
+        }
+
+        private TList<IpParameters> getPendingIpParameters()
+        {
+            TList<IpParameters> retVal = null;
+            try
+            {
+                Type[] tl = new Type[2];
+                tl[0] = typeof(Vehicle);
+                tl[1] = typeof(Unit);
+                retVal = DataRepository.IpParametersProvider.GetPending(m_numberOfRetries);
+                DataRepository.IpParametersProvider.DeepLoad(retVal, true, DeepLoadType.IncludeChildren, tl);
+            }
+            catch (Exception e)
+            {
+                log.Error("Comm Error", e);
+            }
+
+            return retVal;
+
+        }
+
+        private TList<ForceUpdateUnit> getPendingForceUpdateUnit()
+        {
+            TList<ForceUpdateUnit> retVal = null;
+            try
+            {
+                Type[] tl = new Type[2];
+                tl[0] = typeof(Vehicle);
+                tl[1] = typeof(Unit);
+
+
+                // ZORAN:   Ova treba kako sto e komentiranovo, no bidejki treba CodeSmith za procedurata...
+
+                //retVal = DataRepository .CommParametersProvider.GetPedningCommParameter(m_numberOfRetries);
+                //DataRepository.CommParametersProvider.DeepLoad(retVal, true, DeepLoadType.IncludeChildren, tl);
+
+
+                ForceUpdateUnitParameterBuilder searchForceUpdateUnit = new ForceUpdateUnitParameterBuilder();
+
+                searchForceUpdateUnit.AppendIsNull(ForceUpdateUnitColumn.DateTimeConfirmed);
+                //searchForceUpdateUnit.AppendIsNotNull(ForceUpdateUnitColumn.DateTimeSendToGPS);
+
+                retVal = DataRepository.ForceUpdateUnitProvider.Find(searchForceUpdateUnit.GetParameters());
+
+                DataRepository.ForceUpdateUnitProvider.DeepLoad(retVal, true, DeepLoadType.IncludeChildren, tl);
+
+            }
+            catch (Exception e)
+            {
+                log.Error("Comm Error", e);
+            }
+
+            return retVal;
+        }
+
+        public void start()
+        {
+            byte[] bytesToSend;
+            byte[] checkSum = new byte [2];
+            while (m_work)
+            {
+                try
+                {
+                    try
+                    {
+                        foreach (CommParameters var in this.getPendingCommParameters())
+                        {
+                            bytesToSend = _msgCreator.CreateSetSettingsOneForVehicle(var);
+                            _gpsListener.SendMsgToVehicle(var.IDVehicle, bytesToSend);
+
+                            checkSum[0] = bytesToSend[bytesToSend.Length - 2];
+                            checkSum[1] = bytesToSend[bytesToSend.Length - 1];
+
+
+                            var.Chksum = System.BitConverter.ToInt16(checkSum, 0);
+                            var.DateTimeSendToGPS = DateTime.Now;
+                            DataRepository.CommParametersProvider.Update(var);
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        log.Error("Exception in configuration commparameters", e);
+                    }
+
+                    try
+                    {
+                        foreach (IpParameters var in this.getPendingIpParameters())
+                        {
+                            bytesToSend = _msgCreator.CreateSetSettingsTwoForVehicle(var);
+                            _gpsListener.SendMsgToVehicle(var.IDVehicle, bytesToSend);
+
+                            checkSum[0] = bytesToSend[bytesToSend.Length - 2];
+                            checkSum[1] = bytesToSend[bytesToSend.Length - 1];
+
+
+                            var.Chksum = System.BitConverter.ToInt16(checkSum, 0);
+                            var.DateTimeSendToGPS = DateTime.Now;
+
+                            DataRepository.IpParametersProvider.Update(var);
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        log.Error("Exception in configuration ip_parameters", e);
+                    }
+
+
+                    try
+                    {
+                        foreach (ForceUpdateUnit var in this.getPendingForceUpdateUnit())
+                        {
+                            bytesToSend = _msgCreator.CreateForceUpdateUnit (var);
+                            _gpsListener.SendMsgToVehicle(var.IDVehicle, bytesToSend);
+
+                            checkSum[0] = bytesToSend[bytesToSend.Length - 2];
+                            checkSum[1] = bytesToSend[bytesToSend.Length - 1];
+
+
+                            var.Chksum = System.BitConverter.ToInt16(checkSum, 0);
+                            var.DateTimeSendToGPS = DateTime.Now;
+
+                            DataRepository.ForceUpdateUnitProvider.Update(var);
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        log.Error("Exception in configuration ForceUpdateUnit", e);
+                    }
+
+
+                    Thread.Sleep(m_sleepTime);
+                }
+                catch (Exception e)
+                {
+                    log.Fatal("Error in Configuration thread", e);
+                    m_work = false;
+                }
+            }
+            log.Info("Communication thread EXCITING");
+        }
+    }
+}

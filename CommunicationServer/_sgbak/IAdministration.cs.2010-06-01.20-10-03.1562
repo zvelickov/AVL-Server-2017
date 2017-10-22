@@ -1,0 +1,329 @@
+using System;
+using System.Collections.Generic;
+using System.Text;
+
+using System.Reflection;
+using System.ServiceModel;
+using JP.Data.Utils;
+using log4net;
+using Taxi.Communication.Server.ConnectionListeners;
+using GlobSaldo.AVL.Data;
+using GlobSaldo.AVL.Data.Bases;
+using GlobSaldo.AVL.Entities;
+using GlobSaldo.AVL.Entities.PartialClasses;
+
+namespace Taxi.Communication.Server
+{
+    [ServiceContract()]
+    public interface IAdministration
+    {
+        #region LayersPerCompany
+        [OperationContract]
+        TList<LayersPerCompany> getDataByIDCompany(long ID_Company);
+
+        [OperationContract]
+        TList<LayersPerCompany> getAllLayersPerCompany(int startPage, int pageSize, out int maxPages);
+
+        [OperationContract]
+        long DeleteLayerForCompany(GlobSaldo.AVL.Entities.LayersPerCompany _LayerPerCompany);
+
+        [OperationContract]
+        long InsertLayerForCompany(GlobSaldo.AVL.Entities.LayersPerCompany _LayerPerCompany);
+
+        #endregion
+
+
+        #region Locations
+        [OperationContract]
+        TList<Locations> getLocationsByVehicleAndPeriod(long pIDVehicle, DateTime pDateFrom, DateTime pDateTo);
+
+       
+        #endregion
+
+
+        #region Users
+        [OperationContract]
+        TList<Users> getAllUsers(int startPage, int pageSize, out int maxPages);
+
+        [OperationContract]
+        TList<Users> getAllUsersByCompany(Company pIdCompany);
+
+        [OperationContract]
+        TList<Users> getDataByUserNamePassword(string username, string password);
+
+        [OperationContract]
+        long InsertUser(Users pUser);
+
+        [OperationContract]
+        long UpdateUser(Users pUser);
+
+        [OperationContract]
+        long DeleteUser(Users pUser);
+
+        #endregion
+
+
+        #region Clients
+        
+        [OperationContract]
+        TList<Clients> getAllClientsByCompany(Company pIdCompany);
+
+        [OperationContract]
+        long InsertClient(Clients pClient);
+
+        [OperationContract]
+        long UpdateClient(Clients pClient);
+
+        [OperationContract]
+        long DeleteClient(Clients pClient);
+
+        #endregion
+
+        #region Drivers
+        
+        [OperationContract]
+        TList<Driver> getAllDriversByCompany(Company pCompany);
+
+        [OperationContract]
+        TList<Driver> getAllDriversByCompanyWithoutRfIdCard(Company pCompany);
+
+        [OperationContract]
+        TList<Driver> getAllDriversByCompanyWithRfIdCard(Company pCompany);
+
+        [OperationContract]
+        long InsertDriver(Driver pDriver);
+
+        [OperationContract]
+        long UpdateDriver(Driver pDriver);
+
+        [OperationContract]
+        long DeleteDriver(Driver pDriver);
+
+
+        #endregion
+
+        #region Companies
+
+        [OperationContract]
+        TList<Company> getAllCompanies();
+
+
+        [OperationContract]
+        Company GetCompanyByID(long pCompany);
+
+        [OperationContract]
+        long InsertCompany (Company pCompany);
+
+        [OperationContract]
+        long UpdateCompany(Company pCompany);
+
+        [OperationContract]
+        long DeleteCompany(Company pCompany);
+
+        #endregion
+
+        #region Vehicles
+
+        [OperationContract]
+        TList<Vehicle> getAllVehiclesByCompany(Company pIdCompany);
+
+        [OperationContract]
+        long InsertVehicle(Vehicle pVehicle);
+
+        [OperationContract]
+        long UpdateVehicle(Vehicle pVehicle);
+
+        [OperationContract]
+        long DeleteVehicle(Vehicle pVehicle);
+
+        [OperationContract]
+        long AttachUnitOnVehicle(Unit pUnit, Vehicle pVehicle, string pComment);
+
+        [OperationContract]
+        long DetachUnitFromVehicle(Unit pUnit, Vehicle pVehicle, string pComment);
+
+        #endregion
+
+
+        #region Units
+
+        [OperationContract]
+        TList<Unit> getAllUnitsByCompany(Company pCompany);
+
+        [OperationContract]
+        long InsertUnit(Unit pUnit);
+
+        [OperationContract]
+        long UpdateUnit(Unit pUnit);
+
+        [OperationContract]
+        long DeleteUnit(Unit pUnit);
+
+        [OperationContract]
+        TList<UnitHistory> GetUnitHistory(Unit pUnit);
+
+        #endregion
+
+
+        #region RfIdCards
+
+        [OperationContract]
+        long saveRfIdCardPerClients(RfIdCardPerClients pRfIdCardPerClients);
+
+        [OperationContract]
+        long deleteRfIdCardPerClients(RfIdCardPerClients pRfIdCardPerClients);
+
+        [OperationContract]
+        long updateRfIdCardPerClients(RfIdCardPerClients pRfIdCardPerClients);
+
+        [OperationContract]
+        TList<RfIdCardPerClients> getAllRfIdCardPerClient(Clients pClient);
+
+        [OperationContract]
+        TList<RfIdCards> getAllRfIdCardPerCompany(Company pCompany);
+
+        [OperationContract]
+        TList<RfIdCards> getAllFreeRfIdCardPerCompany(Company pCompany);
+
+        [OperationContract]
+        TList<RfIdCards> getAllBusyRfIdCardPerCompany(Company pCompany);
+
+        [OperationContract]
+        RfIdCardPerClients getRfIdCardPerClients(long Id_RfIdCardPerClients);
+
+        [OperationContract]
+        RfIdCards getRfIdCardByDriver(Driver pDriver);
+
+        [OperationContract]
+        long InsertRfIdCardHistory(RfIdCards pRfIdCard, string pComment);
+
+        [OperationContract]
+        long InsertRfIdCard(RfIdCards pRfIdCard);
+
+        [OperationContract]
+        long UpdateRfIdCard(RfIdCards pRfIdCard);
+
+        [OperationContract]
+        long DeleteRfIdCard(RfIdCards pRfIdCard);
+
+
+#endregion
+
+
+        #region UserInOut
+        [OperationContract]
+        TList<UserInOut> getAllUserInOut(int startPage, int pageSize, out int maxPages);
+
+        [OperationContract]
+        long UpdateQueryLogOutUser(DateTime dateOut, long ID_User);
+
+        [OperationContract]
+        long insertUserInOut(UserInOut newUserInOut);
+        #endregion
+
+
+        #region GisPhoneNumber
+        [OperationContract]
+        TList<GisPhoneNumbers> getAllGisPhoneNumbers(int startPage, int pageSize, out int maxPages);
+
+        [OperationContract]
+        GisPhoneNumbers getGisPhoneNumbersByNumber(string phoneNumber);
+
+        [OperationContract]
+        long deleteGisPhoneNumbersForPhoneNumber(GisPhoneNumbers gisPhoneNumber);
+
+        [OperationContract]
+        long insertGisPhoneNumbers(GisPhoneNumbers newPhoneNumber);
+
+        [OperationContract]
+        long updateGisPhoneNumbers(GisPhoneNumbers newPhoneNumber);
+
+        [OperationContract]
+        TList<GisPhoneNumbers> getGisPhoneNumbersByIDObject(long IDObject);
+        #endregion
+
+
+        #region GisAddressModel
+        [OperationContract]
+        TList<GisAddressModel> getAllGisAddressModel(int startPage, int pageSize, out int maxPages);
+
+        [OperationContract]
+        TList<GisAddressModel> getGisAddressModelForIDStreet(string ID_Street);
+
+        [OperationContract]
+        TList<GisAddressModel> getGisAddressModelForIDStreetHouseNumber(string ID_Street, int houseNumber);
+        #endregion
+
+
+        #region PhoneNumbersSurovi
+        /*
+        [OperationContract]
+        long savePhoneNumbersSurovi(PhoneNumbersSurovi phoneNumbersSurovi);
+
+        [OperationContract]
+        long deletePhoneNumbersSurovi(PhoneNumbersSurovi phoneNumbersSurovi);
+
+        [OperationContract]
+        long updatePhoneNumbersSurovi(PhoneNumbersSurovi phoneNumbersSurovi);
+
+        [OperationContract]
+        TList<PhoneNumbersSurovi> getAllPhoneNumbersSurovi(int pageStart, int pageLength, out int maxPages);
+
+        [OperationContract]
+        TList<PhoneNumbersSurovi> getPhoneNumbersSuroviByPhoneNumber(string phoneNumber);
+
+        [OperationContract]
+        TList<PhoneNumbersSurovi> getPhoneNumbersSuroviByAddress(string address);
+         */ 
+        #endregion
+
+
+        #region GisStreets
+
+        [OperationContract]
+        TList<GisStreets> getAllGisStreets(int startPage, int pageSize, out int maxPages);
+
+        [OperationContract]
+        TList<GisStreets> getGisStreetsByName(string name);
+
+        [OperationContract]
+        GisStreets GetGisStreetForIdStreet(string IDStreet);
+
+        #endregion
+
+
+        #region GisObjects
+        [OperationContract]
+        TList<GisObjects> getAllGisObjects(int startPage, int pageSize, out int maxPages);
+
+        [OperationContract]
+        GisObjects getGisObjectForIdObject(long ID_Objects);
+
+        [OperationContract]
+        TList<GisObjects> getAllGisObjectsByName(string name);
+        #endregion
+
+
+        #region  ClientPhoneNumbers
+
+        [OperationContract]
+        long saveClientPhoneNumbers(ClientPhoneNumbers pClientPhoneNumbers);
+
+        [OperationContract]
+        long deleteClientPhoneNumbers(ClientPhoneNumbers pClientPhoneNumbers);
+
+        [OperationContract]
+        long updateClientPhoneNumbers(ClientPhoneNumbers pClientPhoneNumbers);
+
+        [OperationContract]
+        TList<ClientPhoneNumbers> getAllClientPhoneNumbers(Clients pClient);
+
+        [OperationContract]
+        Clients searchVipClients(ClientPhoneNumbers clientPhoneNumber);
+
+
+
+
+        #endregion
+    }
+}

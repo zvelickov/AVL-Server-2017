@@ -1,0 +1,22 @@
+using System;
+using System.Collections.Generic;
+using System.Text;
+using Taxi.Communication.Server.PhoneSwitch.NaseTaxiSwitch;
+using Taxi.Communication.Server.Utils;
+
+namespace Taxi.Communication.Server.PhoneSwitch
+{
+    public class PhoneSwitchFacotry
+    {
+        public static PhoneSwitchListener CreateSwitchListener(string type,string port, int baud)
+        {
+            switch (type)
+            {
+                case "NaseTaxi": 
+                    return new NaseTaxiSwitchExchangeListener(port,baud);               
+                default:
+                    throw new NotImplementedException();
+            }
+        }
+    }
+}

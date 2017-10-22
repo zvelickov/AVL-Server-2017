@@ -1,0 +1,1741 @@
+using System;
+using System.Collections.Generic;
+using System.Reflection;
+using System.ServiceModel;
+using System.Configuration;
+using JP.Data.Utils;
+using log4net;
+using Taxi.Communication.Server.ConnectionListeners;
+using GlobSaldo.AVL.Data;
+using GlobSaldo.AVL.Entities;
+using GlobSaldo.AVL.Entities.PartialClasses;
+using Taxi.Communication.Server.Utils;
+using Taxi.Communication.Server.Containers;
+using Taxi.Communication.Server.PhoneSwitch;
+
+namespace Taxi.Communication.Server
+{
+
+    interface IMyContractCallback
+    {
+        [OperationContract(IsOneWay = true)]
+        void OnCallback(Vehicle vehicle);
+
+        [OperationContract(IsOneWay = true)]
+        void ClientKeepAlive();
+
+        [OperationContract(IsOneWay = true)]
+        void OnCallbackPhoneExchange(PhoneCalls phoneMessage);
+
+        [OperationContract(IsOneWay = true)]
+        void OnNewReservations(TList<Reservations> reservationLists);
+    }
+    [ServiceContract(CallbackContract = typeof(IMyContractCallback))]
+    interface IServiceCallBack
+    {
+        [OperationContract]
+        void DoSomething();
+
+        [OperationContract]
+        long Connect(Users user);
+
+        [OperationContract]
+        void Disconnect(Users user);
+
+        #region Vehicle
+        [OperationContract]
+        [ReferencePreservingDataContractFormat]
+        TList<Vehicle> getAllVehiclesForCompany(int company);
+
+        [OperationContract]
+        [ReferencePreservingDataContractFormat]
+        TList<Vehicle> getAllChangedVehiclesForCompany(int company);
+
+        [OperationContract]
+        [ReferencePreservingDataContractFormat]
+        TList<Vehicle> getAllVehiclesForCompanyForState(int company, int state);
+        #endregion
+
+        [OperationContract]
+        TList<Driver> getAllAvailableDriversForCompany(long IDCompany);
+
+        #region DispecherFunctions
+        [OperationContract]
+        long ReserveVehicle(long ID_Vehicle, long ID_User);
+        [OperationContract]
+        long ReleaseVehicle(long ID_Vehicle, long ID_User);
+        [OperationContract]
+        long VoiceInitiate(long ID_Vehicle, long ID_User);
+        [OperationContract]
+        long VoiceConfirm(long ID_Vehicle, long ID_User);
+        [OperationContract]
+        long VoiceReject(long ID_Vehicle, long ID_User);
+        [OperationContract]
+        long AlarmConfirmed(long ID_Vehicle, long ID_User);
+        [OperationContract]
+        long AlarmRejected(long ID_Vehicle, long ID_User);
+        [OperationContract]
+        long AlarmRejectedForCompany(long ID_Vehicle, long ID_Company);
+        [OperationContract]
+        long KeysReturned(long ID_Vehicle, long ID_User);
+        [OperationContract]
+        long KeysAssigned(long ID_Vehicle, long ID_User, long ID_Driver);
+        [OperationContract]
+        long SendAddress1(long ID_Vehicle, long ID_User, PhoneCalls phoneCall);
+        [OperationContract]
+        long SendPopUp(long ID_Vehicle, long ID_User, string strPopUp);
+        [OperationContract]
+        long CancellOrderFromClient(long ID_Vehicle, long ID_User);
+        [OperationContract]
+        long ExtendWaitClientTime(long ID_Vehicle, long ID_User);
+        [OperationContract]
+        long ResetAlarm(long ID_Vehicle, long ID_User);
+
+        [OperationContract]
+        long VehicleForceState(long ID_Vehicle, long ID_User, long ID_State);
+
+        [OperationContract]
+        GisGeoLocation GetGeoLocation(float Longitude_X, float Latitude_Y);
+
+        [OperationContract]
+        GisGeoFences GetGeoFence(long ID_Company, float Longitude_X, float Latitude_Y);
+
+        [OperationContract]
+        long generatePhoneCall(string Ext, string PhoneNumber);
+
+        //RfIdCardPerClients
+        #region RfIdCardPerClients
+
+        [OperationContract]
+        long saveRfIdCardPerClients(RfIdCardPerClients itemObj);
+
+        [OperationContract]
+        long deleteRfIdCardPerClients(RfIdCardPerClients itemObj);
+
+        [OperationContract]
+        long updateRfIdCardPerClients(RfIdCardPerClients itemObj);
+
+        [OperationContract]
+        TList<RfIdCardPerClients> getAllRfIdCardPerClients();
+
+        [OperationContract]
+        RfIdCardPerClients getRfIdCardPerClients(long Id_RfIdCardPerClients);
+
+        [OperationContract]
+        TList<RfIdCardPerClients> getAllRfIdCardPerClientssForIdRfIdCard(long IdRfIdCard, bool permanentlyDiscarded,
+                                                                         bool takenBack);
+
+        #endregion
+
+        #endregion
+
+        #region Reservation
+        [OperationContract]
+        long startProcessReservation(Reservations reservation, long ID_User);
+
+        [OperationContract]
+        long cancelReservation(Reservations reservation, long ID_User);
+
+        [OperationContract]
+        long makeReservation(long ID_User, DateTime dateFrom, DateTime dateTo, TimeSpan timeEarlyAlarm, List<DayOfWeek> daysOfTheWeek, Reservations res);
+        #endregion
+
+        #region ShortMessage
+        [OperationContract]
+        long confirmShortMessage(ReceivedShortMessage shortMessage, long ID_User);
+
+        [OperationContract]
+        long cancelShortMessage(ReceivedShortMessage shortMessage, long ID_User);
+        #endregion
+
+
+    }
+
+    
+
+    [ServiceBehavior(ConcurrencyMode = ConcurrencyMode.Reentrant, InstanceContextMode = InstanceContextMode.Single)]
+    public class ServiceCallBack : IServiceCallBack, ICallbacksForPhoneSwitch, ICallbacksForGPSmessageRecived, ICallbacksReservationProcessing, ICallbacksKeepAlive
+    {
+        public static readonly ILog log = log4net.LogManager.GetLogger("MyService"); 
+
+        private static Dictionary<long, List<IMyContractCallback>> m_Callbacks = new Dictionary<long, List<IMyContractCallback>>();
+
+        private static bool disconnectFlag = false;
+
+        private static bool connectFlag = false;
+
+        private GPSListener _gpsListener = null;
+        private PhoneSwitchListener _phoneListener = null;
+
+        private static object locker = new object();
+
+        private static bool _debugMode = false;
+
+        public event PhoneCallRecived OnPhoneCallRecived;
+
+        private ReservationProcessing reservationHeandler;
+        
+        public ServiceCallBack(GPSListener gpsListener, PhoneSwitchListener phoneListener)
+        {
+            this._gpsListener = gpsListener;
+            this._gpsListener.setCallBack(this);
+            this._phoneListener = phoneListener;
+            this._phoneListener.setCallBack(this);
+
+            try
+            {
+
+                if (!bool.Parse(ConfigurationManager.AppSettings["DebugMode"]))
+                    _debugMode = false;
+                else
+                    _debugMode = true;
+            }
+            catch (FormatException ex)
+            {
+                _debugMode = false;
+                LogManager.GetLogger("MyService").Error("_debugMode", ex);
+            }
+
+            OnPhoneCallRecived += new PhoneCallRecived(ServiceCallBack_OnPhoneCallRecived);
+
+            reservationHeandler = CallBackReservationProcessing;
+
+        }
+
+        public void ServiceCallBack_OnPhoneCallRecived(object sender, PhoneCalls e)
+        {
+            CallClientsForPhoneExchangeMessage(e);
+        }
+
+        public void CallForPhoneCallRecived(object sender, PhoneCalls e)
+        {
+            CallClientsForPhoneExchangeMessage(e);
+        }
+
+        public void CallBackGPSMessageRecived(long ID_Company, Vehicle vehicle)
+        {
+            CallClientsForVehicle(ID_Company, vehicle);
+        }
+
+        public void CallBackReservationProcessing(long ID_Company, TList<Reservations> reservations)
+        {
+            CallClientForReservations(ID_Company, reservations);
+        }
+
+        public void CallBackKeepAlive()
+        {
+            CallClientKeepAlive();
+        }
+
+        #region RegisterAndCallBack
+        public long Connect(Users user)
+        {
+            connectFlag = true;
+            DateTime tmpCalculateSaveTimeStart = System.DateTime.Now;
+            ////LogManager.GetLogger("TimeLog").Info("STARTING - Connect " + tmpCalculateSaveTimeStart);
+            long retVal = -1;
+            try
+            {
+
+                TList<Users> lstUsers = null;
+
+                lstUsers = DataRepository.UsersProvider.CheckUser(user.Username, user.Password);
+
+                if (lstUsers.Count > 1 || lstUsers.Count == 0)
+                {
+                    connectFlag = false;
+                    retVal = -1;
+                }
+                else
+                {
+
+                    IMyContractCallback callback = OperationContext.Current.
+                                                       GetCallbackChannel<IMyContractCallback>();
+
+                    lock (locker)
+                    {
+                        if (!m_Callbacks.ContainsKey(lstUsers[0].IDCompany))
+                        {
+                            m_Callbacks.Add(lstUsers[0].IDCompany, new List<IMyContractCallback>());
+                        }
+
+
+                        if (m_Callbacks[lstUsers[0].IDCompany].Contains(callback) == false)
+                        {
+                            m_Callbacks[lstUsers[0].IDCompany].Add(callback);
+                            Console.WriteLine("Најавен корисник " + lstUsers[0].Lastname + " " + lstUsers[0].Name);
+                        }
+                    }
+                    retVal = 0;
+                }
+
+            }
+            catch (Exception e)
+            {
+                log.Error("ERROR ", e);
+                retVal = -2;
+            }
+
+            DateTime tmpCalculateSaveTimeEnd = System.DateTime.Now;
+            TimeSpan tmpCalculatedTime = tmpCalculateSaveTimeEnd.Subtract(tmpCalculateSaveTimeStart);
+
+            if(_debugMode)
+                LogManager.GetLogger("TimeLog").Info(tmpCalculatedTime.TotalMilliseconds.ToString() + (char)9 + (char)9 + "END - Connect ");
+
+            connectFlag = false;
+            return retVal;
+        }
+
+        public void Disconnect(Users user)
+        {
+            DateTime tmpCalculateSaveTimeStart = System.DateTime.Now;
+            //LogManager.GetLogger("TimeLog").Info("STARTING - Disconnect " + tmpCalculateSaveTimeStart);
+
+            disconnectFlag = true;
+            try
+            {
+
+                TList<Users> lstUsers = null;
+
+                lstUsers = DataRepository.UsersProvider.CheckUser(user.Username, user.Password);
+
+                if (lstUsers.Count != 1)
+                {
+                    disconnectFlag = false;
+                }
+
+                IMyContractCallback callback = OperationContext.Current.
+                                                       GetCallbackChannel<IMyContractCallback>();
+                if (disconnectFlag)
+                {
+                    lock (locker)
+                    {
+                        if (!m_Callbacks.ContainsKey(lstUsers[0].IDCompany))
+                        {
+                            disconnectFlag = false;
+                        }
+                        else if (m_Callbacks[lstUsers[0].IDCompany].Contains(callback) == true)
+                        {
+                            m_Callbacks[lstUsers[0].IDCompany].Remove(callback);
+                            disconnectFlag = false;
+                        }
+                        else
+                        {
+                            disconnectFlag = false;
+                            //throw new InvalidOperationException("Cannot find callback");
+                        }
+                    }
+                }
+
+            }
+            catch (Exception e)
+            {
+                log.Error("ERROR ", e);
+            }
+            DateTime tmpCalculateSaveTimeEnd = System.DateTime.Now;
+            TimeSpan tmpCalculatedTime = tmpCalculateSaveTimeEnd.Subtract(tmpCalculateSaveTimeStart);
+
+            if (_debugMode)
+                LogManager.GetLogger("TimeLog").Info(tmpCalculatedTime.TotalMilliseconds.ToString() + (char)9 + (char)9 + "END - Disconnect ");
+
+            return;
+        }
+
+        public void CallClientsForPhoneExchangeMessage(PhoneCalls phoneMessage)
+        {
+            if (disconnectFlag || connectFlag)
+                return;
+
+            DateTime tmpCalculateSaveTimeStart = System.DateTime.Now;
+            //LogManager.GetLogger("TimeLog").Info("STARTING - CallClientsForPhoneExchangeMessage " + tmpCalculateSaveTimeStart);
+
+            //if (!m_Callbacks.ContainsKey(ID_Company))
+            //    return;
+
+
+            //m_Callbacks.ForEach(invoke);
+
+            List<IMyContractCallback> remove_CallBacks = new List<IMyContractCallback>();
+
+            try
+            {
+                lock (locker){
+                    foreach (KeyValuePair<long, List<IMyContractCallback>> varPair in m_Callbacks)
+                    {
+                        // Tuka da se implemetira do koja kompanija ke se prakja PhoneCallBack
+                        //if (varPair.Key == 1){
+                        foreach (IMyContractCallback var in varPair.Value)
+                        {
+                            try
+                            {
+                                var.OnCallbackPhoneExchange(phoneMessage);
+                            }
+                            catch (ObjectDisposedException e)
+                            {
+                                log.Error("ERROR ", e);
+                                //m_Callbacks.Remove(var);
+                                remove_CallBacks.Add(var);
+                            }
+                            catch (Exception e)
+                            {
+                                log.Error("ERROR ", e);
+                                //m_Callbacks.Remove(var);
+                                remove_CallBacks.Add(var);
+                            }
+                        }
+
+                        foreach (IMyContractCallback var in remove_CallBacks)
+                        {
+                            if (varPair.Value.IndexOf(var) > 0)
+                                varPair.Value.Remove(var);
+                        }
+
+                        remove_CallBacks.Clear();
+                    }
+                }
+
+            }
+            catch (Exception e)
+            {
+                log.Error("ERROR ", e);
+            }
+            DateTime tmpCalculateSaveTimeEnd = System.DateTime.Now;
+            TimeSpan tmpCalculatedTime = tmpCalculateSaveTimeEnd.Subtract(tmpCalculateSaveTimeStart);
+
+            if (_debugMode)
+                LogManager.GetLogger("TimeLog").Info(tmpCalculatedTime.TotalMilliseconds.ToString() + (char)9 + (char)9 + "END - CallClientsForPhoneExchangeMessage ");
+        }
+
+        public void CallClientsForVehicle(long ID_Company, Vehicle vehicle)
+        {
+
+            DateTime tmpCalculateSaveTimeStart = System.DateTime.Now;
+            //LogManager.GetLogger("TimeLog").Info("STARTING - CallClientsForVehicle " + tmpCalculateSaveTimeStart);
+
+            if (disconnectFlag || connectFlag)
+                return;
+
+            if (!m_Callbacks.ContainsKey(ID_Company))
+                return;
+
+
+            //m_Callbacks.ForEach(invoke);
+
+            List<IMyContractCallback> remove_CallBacks = new List<IMyContractCallback>();
+
+
+            try
+            {
+                lock (locker)
+                {
+                    foreach (IMyContractCallback var in m_Callbacks[ID_Company])
+                    {
+                        try
+                        {
+                            var.OnCallback(vehicle);
+                            //log.Debug("CALL BACK");
+                        }
+                        catch (ObjectDisposedException e)
+                        {
+                            log.Error("ERROR ", e);
+                            //m_Callbacks.Remove(var);
+                            remove_CallBacks.Add(var);
+                        }
+                        catch (Exception e)
+                        {
+                            log.Error("ERROR ", e);
+                            //m_Callbacks.Remove(var);
+                            remove_CallBacks.Add(var);
+                        }
+                    }
+
+                    foreach (IMyContractCallback var in remove_CallBacks)
+                    {
+                        m_Callbacks[ID_Company].Remove(var);
+                    }
+                }
+
+            }
+            catch (Exception e)
+            {
+                log.Error("ERROR ", e);
+            }
+            DateTime tmpCalculateSaveTimeEnd = System.DateTime.Now;
+            TimeSpan tmpCalculatedTime = tmpCalculateSaveTimeEnd.Subtract(tmpCalculateSaveTimeStart);
+
+            if (_debugMode)
+                LogManager.GetLogger("TimeLog").Info(tmpCalculatedTime.TotalMilliseconds.ToString() + (char)9 + (char)9 + "END - CallClientsForVehicle ");
+        }
+
+        public void CallClientForReservations(long ID_Company, TList<Reservations> reservations)
+        {
+
+            DateTime tmpCalculateSaveTimeStart = System.DateTime.Now;
+            //LogManager.GetLogger("TimeLog").Info("STARTING - CallClientForReservations " + tmpCalculateSaveTimeStart);
+
+            if (disconnectFlag || connectFlag)
+                return;
+
+            if (!m_Callbacks.ContainsKey(ID_Company))
+                return;
+
+
+            //m_Callbacks.ForEach(invoke);
+
+            List<IMyContractCallback> remove_CallBacks = new List<IMyContractCallback>();
+
+
+            try
+            {
+                lock (locker)
+                {
+                    foreach (IMyContractCallback var in m_Callbacks[ID_Company])
+                    {
+                        try
+                        {
+                            var.OnNewReservations(reservations);
+                            //log.Debug("CALL BACK");
+                        }
+                        catch (ObjectDisposedException e)
+                        {
+                            log.Error("ERROR ", e);
+                            //m_Callbacks.Remove(var);
+                            remove_CallBacks.Add(var);
+                        }
+                        catch (Exception e)
+                        {
+                            log.Error("ERROR ", e);
+                            //m_Callbacks.Remove(var);
+                            remove_CallBacks.Add(var);
+                        }
+                    }
+
+                    foreach (IMyContractCallback var in remove_CallBacks)
+                    {
+                        m_Callbacks[ID_Company].Remove(var);
+                    }
+                }
+
+            }
+            catch (Exception e)
+            {
+                log.Error("ERROR ", e);
+            }
+            DateTime tmpCalculateSaveTimeEnd = System.DateTime.Now;
+            TimeSpan tmpCalculatedTime = tmpCalculateSaveTimeEnd.Subtract(tmpCalculateSaveTimeStart);
+
+            if (_debugMode)
+                LogManager.GetLogger("TimeLog").Info(tmpCalculatedTime.TotalMilliseconds.ToString() + (char)9 + (char)9 + "END - CallClientForReservations ");
+        }
+
+        public void CallClientKeepAlive()
+        {
+
+            DateTime tmpCalculateSaveTimeStart = System.DateTime.Now;
+            //LogManager.GetLogger("TimeLog").Info("STARTING - CallClientForReservations " + tmpCalculateSaveTimeStart);
+
+            if (disconnectFlag || connectFlag)
+                return;
+
+
+            //m_Callbacks.ForEach(invoke);
+
+            List<IMyContractCallback> remove_CallBacks = new List<IMyContractCallback>();
+
+
+            try
+            {
+                foreach (long key in m_Callbacks.Keys)
+                {
+                    foreach (IMyContractCallback var in m_Callbacks[key])
+                    {
+                        try
+                        {
+                            var.ClientKeepAlive();
+                        }
+                        catch (ObjectDisposedException e)
+                        {
+                            log.Error("ERROR ", e);
+                        }
+                        catch (Exception e)
+                        {
+                            log.Error("ERROR ", e);
+                        }
+                    }
+                }
+
+            }
+            catch (Exception e)
+            {
+                log.Error("ERROR ", e);
+            }
+            DateTime tmpCalculateSaveTimeEnd = System.DateTime.Now;
+            TimeSpan tmpCalculatedTime = tmpCalculateSaveTimeEnd.Subtract(tmpCalculateSaveTimeStart);
+
+            if (_debugMode)
+                LogManager.GetLogger("TimeLog").Info(tmpCalculatedTime.TotalMilliseconds.ToString() + (char)9 + (char)9 + "END - CallClientForReservations ");
+        }
+
+        public void DoSomething()
+        {
+        }
+
+        #endregion
+
+
+        #region Vehicle
+        public TList<Vehicle> getAllVehiclesForCompanyForState(int company, int state)
+        {
+            DateTime tmpCalculateSaveTimeStart = System.DateTime.Now;
+            //LogManager.GetLogger("TimeLog").Info("STARTING - getAllVehiclesForCompanyForState " + tmpCalculateSaveTimeStart);
+
+            TList<Vehicle> retVal = new TList<Vehicle>(); //Samo tie koi se vo konkreten state
+
+            try
+            {
+                TList<Vehicle> retValAllVehicles = VehiclesContainer.Instance.getAllForCompany(company); //Site vozila za taa komapnija
+
+                foreach (Vehicle tVeh in retValAllVehicles)
+                {
+                    if (tVeh.currentState.IDCurrentState() == state) retVal.Add(tVeh);
+                }
+            }
+            catch (Exception e)
+            {
+                retVal = null;
+                log.Error("ERROR ", e);
+            }
+            DateTime tmpCalculateSaveTimeEnd = System.DateTime.Now;
+            TimeSpan tmpCalculatedTime = tmpCalculateSaveTimeEnd.Subtract(tmpCalculateSaveTimeStart);
+
+            if (_debugMode)
+                LogManager.GetLogger("TimeLog").Info(tmpCalculatedTime.TotalMilliseconds.ToString() + (char)9 + (char)9 + "END - getAllVehiclesForCompanyForState ");
+
+            return retVal;
+        }
+
+
+        public TList<Vehicle> getAllChangedVehiclesForCompany(int company)
+        {
+            DateTime tmpCalculateSaveTimeStart = System.DateTime.Now;
+            //LogManager.GetLogger("TimeLog").Info("STARTING - getAllChangedVehiclesForCompany " + tmpCalculateSaveTimeStart);
+            TList<Vehicle> retVal = null;
+            try
+            {
+                retVal = VehiclesContainer.Instance.getAllForCompany(company);
+            }
+            catch (Exception e)
+            {
+                retVal = null;
+                log.Error("ERROR ", e);
+            }
+            DateTime tmpCalculateSaveTimeEnd = System.DateTime.Now;
+            TimeSpan tmpCalculatedTime = tmpCalculateSaveTimeEnd.Subtract(tmpCalculateSaveTimeStart);
+
+            if (_debugMode)
+                LogManager.GetLogger("TimeLog").Info(tmpCalculatedTime.TotalMilliseconds.ToString() + (char)9 + (char)9 + "END - getAllChangedVehiclesForCompany ");
+
+            return retVal;
+        }
+
+        public TList<Vehicle> getAllVehiclesForCompany(int company)
+        {
+            DateTime tmpCalculateSaveTimeStart = System.DateTime.Now;
+            //LogManager.GetLogger("TimeLog").Info("STARTING - getAllVehiclesForCompany " + tmpCalculateSaveTimeStart);
+            TList<Vehicle> retVal = null;
+            try
+            {
+                retVal = VehiclesContainer.Instance.getAllForCompany(company);
+            }
+            catch (Exception e)
+            {
+                retVal = null;
+                log.Error("ERROR ", e);
+            }
+            DateTime tmpCalculateSaveTimeEnd = System.DateTime.Now;
+            TimeSpan tmpCalculatedTime = tmpCalculateSaveTimeEnd.Subtract(tmpCalculateSaveTimeStart);
+
+            if (_debugMode)
+                LogManager.GetLogger("TimeLog").Info(tmpCalculatedTime.TotalMilliseconds.ToString() + (char)9 + (char)9 + "END - getAllVehiclesForCompany ");
+
+            return retVal;
+        }
+
+        private Vehicle getSingleVehicle(long ID_Vehicle, long ID_User)
+        {
+            DateTime tmpCalculateSaveTimeStart = System.DateTime.Now;
+            //LogManager.GetLogger("TimeLog").Info("STARTING - getSingleVehicle " + tmpCalculateSaveTimeStart);
+
+            Vehicle retVal = null;
+
+            try
+            {
+                Users usr = DataRepository.UsersProvider.GetByIDUser(ID_User);
+
+                retVal = VehiclesContainer.Instance.getSingleVehicle(ID_Vehicle, usr.IDCompany);
+            }
+            catch (Exception e)
+            {
+                retVal = null;
+                log.Error("ERROR ", e);
+            }
+            DateTime tmpCalculateSaveTimeEnd = System.DateTime.Now;
+            TimeSpan tmpCalculatedTime = tmpCalculateSaveTimeEnd.Subtract(tmpCalculateSaveTimeStart);
+
+            if (_debugMode)
+                LogManager.GetLogger("TimeLog").Info(tmpCalculatedTime.TotalMilliseconds.ToString() + (char)9 + (char)9 + "END - getSingleVehicle ");
+
+            return retVal;
+        }
+
+        #endregion
+
+
+        public TList<Driver> getAllAvailableDriversForCompany(long IDCompany)
+        {
+            DateTime tmpCalculateSaveTimeStart = System.DateTime.Now;
+            //LogManager.GetLogger("TimeLog").Info("STARTING - getAllAvailableDriversForCompany " + tmpCalculateSaveTimeStart);
+            TList<Driver> retVal = null;
+            try
+            {
+                retVal = DataRepository.DriverProvider.GetAvaliableDrivers(IDCompany);
+            }
+            catch (Exception e)
+            {
+                retVal = null;
+                log.Error("ERROR ", e);
+            }
+            DateTime tmpCalculateSaveTimeEnd = System.DateTime.Now;
+            TimeSpan tmpCalculatedTime = tmpCalculateSaveTimeEnd.Subtract(tmpCalculateSaveTimeStart);
+
+            if (_debugMode)
+                LogManager.GetLogger("TimeLog").Info(tmpCalculatedTime.TotalMilliseconds.ToString() + (char)9 + (char)9 + "END - getAllAvailableDriversForCompany ");
+
+            return retVal;
+        }
+
+        #region Reservation
+
+        public long startProcessReservation(Reservations reservation, long ID_User)
+        {
+            long retVal = -1;
+
+            //DateTime tmpCalculateSaveTimeStart = System.DateTime.Now;
+            //LogManager.GetLogger("TimeLog").Info("STARTING - startProcessReservation " + tmpCalculateSaveTimeStart);
+
+            try
+            {
+                reservation.IDUser = ID_User;
+                reservation.DateTimeUserTake = DateTime.Now;
+                reservation.IDMessageStatus = 5;    // ZORAN:   Potvrdena e 
+
+                TList<Reservations> retList = new TList<Reservations>();
+                retList.Add(reservation);
+
+                if (DataRepository.ReservationsProvider.Update(reservation))
+                {
+                    Users user = DataRepository.UsersProvider.GetByIDUser(ID_User);
+
+                    reservationHeandler(user.IDCompany, retList);
+                    retVal = 0;
+                }
+                else
+                    retVal = -1;
+            }
+            catch (Exception e)
+            {
+                log.Error("Error", e);
+                retVal = -2;
+            }
+
+
+            if (_debugMode)
+            {
+                //DateTime tmpCalculateSaveTimeEnd = System.DateTime.Now;
+                //TimeSpan tmpCalculatedTime = tmpCalculateSaveTimeEnd.Subtract(tmpCalculateSaveTimeStart);
+
+                //LogManager.GetLogger("TimeLog").Info(tmpCalculatedTime.TotalMilliseconds.ToString() + (char)9 + (char)9 + "END - startProcessReservation ");
+            }
+            return retVal;
+        }
+
+        public long cancelReservation(Reservations reservation, long ID_User)
+        {
+
+            DateTime tmpCalculateSaveTimeStart = System.DateTime.Now;
+            //LogManager.GetLogger("TimeLog").Info("STARTING - cancelReservation " + tmpCalculateSaveTimeStart);
+
+            long retVal = -1;
+
+            try
+            {
+                reservation.IDUser = ID_User;
+                reservation.DateTimeUserTake = DateTime.Now;
+                reservation.IDMessageStatus = (long)MessageStatusList.Dropped;
+
+                if (DataRepository.ReservationsProvider.Update(reservation))
+                    retVal = 0;
+                else
+                    retVal = -1;
+            }
+            catch (Exception e)
+            {
+                log.Error("Error", e);
+                retVal = -2;
+            }
+            DateTime tmpCalculateSaveTimeEnd = System.DateTime.Now;
+            TimeSpan tmpCalculatedTime = tmpCalculateSaveTimeEnd.Subtract(tmpCalculateSaveTimeStart);
+
+            if (_debugMode)
+                LogManager.GetLogger("TimeLog").Info(tmpCalculatedTime.TotalMilliseconds.ToString() + (char)9 + (char)9 + "END - cancelReservation ");
+
+            return retVal;
+        }
+
+        public long makeReservation(long ID_User, DateTime dateFrom, DateTime dateTo, TimeSpan timeEarlyAlarm, List<DayOfWeek> daysOfTheWeek, Reservations res)
+        {
+
+            DateTime tmpCalculateSaveTimeStart = System.DateTime.Now;
+            //LogManager.GetLogger("TimeLog").Info("STARTING - makeReservation " + tmpCalculateSaveTimeStart);
+            long retVal = -1;
+            try
+            {
+                DateTime currDate = dateFrom;
+                Reservations newRes = null;
+                log.Debug(currDate.ToLongDateString());
+                while (currDate <= dateTo)
+                {
+                    log.Debug(currDate.ToLongDateString());
+                    if (daysOfTheWeek.Contains(currDate.DayOfWeek))
+                    {
+                        newRes = res.Copy();
+                        newRes.IDMessageStatus = (long)MessageStatusList.Inserted;
+                        newRes.DateReservation = currDate;
+                        newRes.DAteTimeLastAlarm = currDate.Add(-timeEarlyAlarm);
+                        newRes.TimeReservation = DateTime.Now;
+                        log.Debug("Insert Reservation");
+                        if (!DataRepository.ReservationsProvider.Insert(newRes))
+                        {
+                            retVal = -2;
+                        }
+
+                    }
+                    currDate = currDate.AddHours(24);
+                }
+                retVal = 0;
+            }
+            catch (Exception e)
+            {
+                log.Error("Error", e);
+                retVal = -1;
+            }
+            DateTime tmpCalculateSaveTimeEnd = System.DateTime.Now;
+            TimeSpan tmpCalculatedTime = tmpCalculateSaveTimeEnd.Subtract(tmpCalculateSaveTimeStart);
+
+            if (_debugMode)
+                LogManager.GetLogger("TimeLog").Info(tmpCalculatedTime.TotalMilliseconds.ToString() + (char)9 + (char)9 + "END - makeReservation ");
+
+            return retVal;
+        }
+        #endregion
+
+        #region ShortMessage
+        public long confirmShortMessage(ReceivedShortMessage shortMessage, long ID_User)
+        {
+
+            DateTime tmpCalculateSaveTimeStart = System.DateTime.Now;
+            //LogManager.GetLogger("TimeLog").Info("STARTING - confirmShortMessage " + tmpCalculateSaveTimeStart);
+            long retVal = -1;
+            try
+            {
+                shortMessage.IDUser = ID_User;
+                shortMessage.ConfirmedByUser = DateTime.Now;
+                if (!DataRepository.ReceivedShortMessageProvider.Update(shortMessage))
+                    retVal = -1;
+                VehiclesContainer.Instance.setLastMessage(shortMessage.IDVehicle, shortMessage);
+
+                // ********
+                // Tuka,    po baranje na NaseTaksi, se prepraka i poraka deka ke se razgleda porakata
+                //          Nisto ne se zapisuva vo baza, zatoa i ne se koristi originalnata metoda SendPopUp()
+
+                Taxi.Communication.Server.StateMachine.clsMessageCreator tMessageCreator = new Taxi.Communication.Server.StateMachine.clsMessageCreator();
+
+                byte[] retValByte;
+
+                retValByte = tMessageCreator.CreatePopUpMessageForLCD(VehiclesContainer.Instance.getSingleVehicle(shortMessage.IDVehicle), "Dispecer: OK");
+
+                // Samo ako ne e pratena porakata zapisuvam vo log, da ima traga..
+                if (_gpsListener.SendMsgToVehicle(shortMessage.IDVehicle, retValByte) != -1)
+                    log.Error("Neuspesno prakanje na poraka do Vozilo ID: " + shortMessage.IDVehicle.ToString() + "confirmShortMessage");
+
+                // ********
+
+
+                retVal = 0;
+
+            }
+            catch (Exception e)
+            {
+                log.Error("Error", e);
+                retVal = -1;
+            }
+            DateTime tmpCalculateSaveTimeEnd = System.DateTime.Now;
+            TimeSpan tmpCalculatedTime = tmpCalculateSaveTimeEnd.Subtract(tmpCalculateSaveTimeStart);
+
+            if (_debugMode)
+                LogManager.GetLogger("TimeLog").Info(tmpCalculatedTime.TotalMilliseconds.ToString() + (char)9 + (char)9 + "END - confirmShortMessage ");
+
+            return retVal;
+
+        }
+
+        public long cancelShortMessage(ReceivedShortMessage shortMessage, long ID_User)
+        {
+            DateTime tmpCalculateSaveTimeStart = System.DateTime.Now;
+            //LogManager.GetLogger("TimeLog").Info("STARTING - cancelShortMessage " + tmpCalculateSaveTimeStart);
+            long retVal = -1;
+            try
+            {
+                shortMessage.IDUser = ID_User;
+                shortMessage.CanceledByUser = DateTime.Now;
+                if (!DataRepository.ReceivedShortMessageProvider.Update(shortMessage))
+                    retVal = -1;
+                VehiclesContainer.Instance.setLastMessage(shortMessage.IDVehicle, shortMessage);
+                retVal = 0;
+            }
+            catch (Exception e)
+            {
+                log.Error("Error", e);
+                retVal = -1;
+            }
+            DateTime tmpCalculateSaveTimeEnd = System.DateTime.Now;
+            TimeSpan tmpCalculatedTime = tmpCalculateSaveTimeEnd.Subtract(tmpCalculateSaveTimeStart);
+
+            if (_debugMode)
+                LogManager.GetLogger("TimeLog").Info(tmpCalculatedTime.TotalMilliseconds.ToString() + (char)9 + (char)9 + "END - cancelShortMessage ");
+
+            return retVal;
+        }
+
+        #endregion
+
+        #region DispecherFunctions
+
+
+        public long ReserveVehicle(long ID_Vehicle, long ID_User)
+        {
+            DateTime tmpCalculateSaveTimeStart = System.DateTime.Now;
+            //LogManager.GetLogger("TimeLog").Info("STARTING - ReserveVehicle " + tmpCalculateSaveTimeStart);
+            long retVal = -1;
+
+            try
+            {
+                retVal = VehiclesContainer.Instance.reserveVehicle(ID_Vehicle);
+                retVal = 0;
+            }
+            catch (Exception ex)
+            {
+                log.Error(ex);
+                retVal = -2;
+            }
+            DateTime tmpCalculateSaveTimeEnd = System.DateTime.Now;
+            TimeSpan tmpCalculatedTime = tmpCalculateSaveTimeEnd.Subtract(tmpCalculateSaveTimeStart);
+
+            if (_debugMode)
+                LogManager.GetLogger("TimeLog").Info(tmpCalculatedTime.TotalMilliseconds.ToString() + (char)9 + (char)9 + "END - ReserveVehicle ");
+
+            return retVal;
+        }
+
+        public long ReleaseVehicle(long ID_Vehicle, long ID_User)
+        {
+            DateTime tmpCalculateSaveTimeStart = System.DateTime.Now;
+            //LogManager.GetLogger("TimeLog").Info("STARTING - ReleaseVehicle " + tmpCalculateSaveTimeStart);
+            long retVal = -1;
+
+            try
+            {
+                retVal = VehiclesContainer.Instance.releaseVehicle(ID_Vehicle);
+                retVal = 0;
+
+            }
+            catch (Exception ex)
+            {
+                log.Info("This exeption happen in ReleaseVehicle funtion because of ID_Vehicle = " + ID_Vehicle + " send by ID_User = " + ID_User);
+                log.Error("Error", ex);
+                retVal = -2;
+            }
+            DateTime tmpCalculateSaveTimeEnd = System.DateTime.Now;
+            TimeSpan tmpCalculatedTime = tmpCalculateSaveTimeEnd.Subtract(tmpCalculateSaveTimeStart);
+
+            if (_debugMode)
+                LogManager.GetLogger("TimeLog").Info(tmpCalculatedTime.TotalMilliseconds.ToString() + (char)9 + (char)9 + "END - ReleaseVehicle ");
+
+            return retVal;
+        }
+
+        public long VoiceInitiate(long ID_Vehicle, long ID_User)
+        {
+            DateTime tmpCalculateSaveTimeStart = System.DateTime.Now;
+            //LogManager.GetLogger("TimeLog").Info("STARTING - VoiceInitiate " + tmpCalculateSaveTimeStart);
+            long retVal = -1;
+
+            try
+            {
+                retVal = VehiclesContainer.Instance.voiceInitiate(ID_Vehicle);
+                retVal = 0;
+
+            }
+            catch (Exception ex)
+            {
+                log.Error("Error", ex);
+                retVal = -2;
+            }
+            DateTime tmpCalculateSaveTimeEnd = System.DateTime.Now;
+            TimeSpan tmpCalculatedTime = tmpCalculateSaveTimeEnd.Subtract(tmpCalculateSaveTimeStart);
+
+            if (_debugMode)
+                LogManager.GetLogger("TimeLog").Info(tmpCalculatedTime.TotalMilliseconds.ToString() + (char)9 + (char)9 + "END - VoiceInitiate ");
+
+            return retVal;
+        }
+
+        public long VoiceConfirm(long ID_Vehicle, long ID_User)
+        {
+            DateTime tmpCalculateSaveTimeStart = System.DateTime.Now;
+            //LogManager.GetLogger("TimeLog").Info("STARTING - VoiceConfirm " + tmpCalculateSaveTimeStart);
+            long retVal = -1;
+
+            try
+            {
+
+                retVal = VehiclesContainer.Instance.voiceConfirm(ID_Vehicle);
+                retVal = 0;
+
+            }
+            catch (Exception ex)
+            {
+                log.Error("Error", ex);
+                retVal = -2;
+            }
+            DateTime tmpCalculateSaveTimeEnd = System.DateTime.Now;
+            TimeSpan tmpCalculatedTime = tmpCalculateSaveTimeEnd.Subtract(tmpCalculateSaveTimeStart);
+
+            if (_debugMode)
+                LogManager.GetLogger("TimeLog").Info(tmpCalculatedTime.TotalMilliseconds.ToString() + (char)9 + (char)9 + "END - VoiceConfirm ");
+
+            return retVal;
+        }
+
+        public long VoiceReject(long ID_Vehicle, long ID_User)
+        {
+            DateTime tmpCalculateSaveTimeStart = System.DateTime.Now;
+            //LogManager.GetLogger("TimeLog").Info("STARTING - VoiceReject " + tmpCalculateSaveTimeStart);
+            long retVal = -1;
+
+            try
+            {
+                retVal = VehiclesContainer.Instance.voiceReject(ID_Vehicle);
+                retVal = 0;
+            }
+            catch (Exception ex)
+            {
+                log.Error("Error", ex);
+                retVal = -2;
+            }
+            DateTime tmpCalculateSaveTimeEnd = System.DateTime.Now;
+            TimeSpan tmpCalculatedTime = tmpCalculateSaveTimeEnd.Subtract(tmpCalculateSaveTimeStart);
+
+            if (_debugMode)
+                LogManager.GetLogger("TimeLog").Info(tmpCalculatedTime.TotalMilliseconds.ToString() + (char)9 + (char)9 + "END - VoiceReject ");
+
+            return retVal;
+        }
+
+        public long AlarmConfirmed(long ID_Vehicle, long ID_User)
+        {
+            DateTime tmpCalculateSaveTimeStart = System.DateTime.Now;
+            //LogManager.GetLogger("TimeLog").Info("STARTING - AlarmConfirmed " + tmpCalculateSaveTimeStart);
+            long retVal = -1;
+
+            try
+            {
+
+                retVal = VehiclesContainer.Instance.alarmConfirmed(ID_Vehicle);
+                retVal = 0;
+            }
+            catch (Exception ex)
+            {
+                log.Error("Error", ex);
+                retVal = -2;
+            }
+            DateTime tmpCalculateSaveTimeEnd = System.DateTime.Now;
+            TimeSpan tmpCalculatedTime = tmpCalculateSaveTimeEnd.Subtract(tmpCalculateSaveTimeStart);
+
+            if (_debugMode)
+                LogManager.GetLogger("TimeLog").Info(tmpCalculatedTime.TotalMilliseconds.ToString() + (char)9 + (char)9 + "END - AlarmConfirmed ");
+
+            return retVal;
+        }
+
+        public long AlarmRejected(long ID_Vehicle, long ID_User)
+        {
+            DateTime tmpCalculateSaveTimeStart = System.DateTime.Now;
+            //LogManager.GetLogger("TimeLog").Info("STARTING - AlarmRejected " + tmpCalculateSaveTimeStart);
+            long retVal = -1;
+
+            try
+            {
+                retVal = VehiclesContainer.Instance.alarmRejected(ID_Vehicle);
+                retVal = 0;
+            }
+            catch (Exception ex)
+            {
+                log.Error("Error", ex);
+                retVal = -2;
+            }
+            DateTime tmpCalculateSaveTimeEnd = System.DateTime.Now;
+            TimeSpan tmpCalculatedTime = tmpCalculateSaveTimeEnd.Subtract(tmpCalculateSaveTimeStart);
+
+            if (_debugMode)
+                LogManager.GetLogger("TimeLog").Info(tmpCalculatedTime.TotalMilliseconds.ToString() + (char)9 + (char)9 + "END - AlarmRejected ");
+
+            return retVal;
+        }
+
+        public long AlarmRejectedForCompany(long ID_Vehicle, long ID_Company)
+        {
+            DateTime tmpCalculateSaveTimeStart = System.DateTime.Now;
+            //LogManager.GetLogger("TimeLog").Info("STARTING - AlarmRejectedForCompany " + tmpCalculateSaveTimeStart);
+            long retVal = -1;
+
+            try
+            {
+                retVal = VehiclesContainer.Instance.alarmReject(ID_Vehicle, ID_Company);
+                retVal = 0;
+            }
+            catch (Exception ex)
+            {
+                log.Error("Error", ex);
+                retVal = -2;
+            }
+            DateTime tmpCalculateSaveTimeEnd = System.DateTime.Now;
+            TimeSpan tmpCalculatedTime = tmpCalculateSaveTimeEnd.Subtract(tmpCalculateSaveTimeStart);
+
+            if (_debugMode)
+                LogManager.GetLogger("TimeLog").Info(tmpCalculatedTime.TotalMilliseconds.ToString() + (char)9 + (char)9 + "END - AlarmRejectedForCompany ");
+
+            return retVal;
+        }
+
+        public long KeysReturned(long ID_Vehicle, long ID_User)
+        {
+            DateTime tmpCalculateSaveTimeStart = System.DateTime.Now;
+            //LogManager.GetLogger("TimeLog").Info("STARTING - KeysReturned " + tmpCalculateSaveTimeStart);
+            long retVal = -1;
+
+            try
+            {
+
+                //PAZI Tuka zapisuvam deka klucevite se vrateni
+                //Samo DateOut i IDUserOu
+                JP.Data.Utils.TList<GlobSaldo.AVL.Entities.InOutDriver> tInOutDriverList = GlobSaldo.AVL.Data.DataRepository.InOutDriverProvider.GetByIDVehicle(ID_Vehicle);
+
+                foreach (GlobSaldo.AVL.Entities.InOutDriver tInOutDriver in tInOutDriverList)
+                {
+                    if (tInOutDriver.DateOut == null)
+                    {//PAZI, OVA E GLUPO, ama mi treba lista od site InOut koi nemaat DateOut, a sega go nemam
+                        tInOutDriver.DateOut = DateTime.Now;
+                        tInOutDriver.DateOutUser = ID_User;
+                        GlobSaldo.AVL.Data.DataRepository.InOutDriverProvider.Update(tInOutDriver);
+                    }
+                }
+
+                retVal = VehiclesContainer.Instance.keysReturned(ID_Vehicle);
+                retVal = 0;
+            }
+            catch (Exception ex)
+            {
+                log.Error("Error", ex);
+                retVal = -2;
+            }
+            DateTime tmpCalculateSaveTimeEnd = System.DateTime.Now;
+            TimeSpan tmpCalculatedTime = tmpCalculateSaveTimeEnd.Subtract(tmpCalculateSaveTimeStart);
+
+            if (_debugMode)
+                LogManager.GetLogger("TimeLog").Info(tmpCalculatedTime.TotalMilliseconds.ToString() + (char)9 + (char)9 + "END - KeysReturned ");
+
+            return retVal;
+        }
+
+        public long KeysAssigned(long ID_Vehicle, long ID_User, long ID_Driver)
+        {
+            DateTime tmpCalculateSaveTimeStart = System.DateTime.Now;
+            //LogManager.GetLogger("TimeLog").Info("STARTING - KeysAssigned " + tmpCalculateSaveTimeStart);
+            long retVal = -1;
+
+            try
+            {
+
+                //PAZI, Tuka zapisuvam Dodeluvanje na Klucevi
+                GlobSaldo.AVL.Entities.InOutDriver tInOut = new InOutDriver();
+                tInOut.IDDriver = ID_Driver;
+                tInOut.IDVehicle = ID_Vehicle;
+                tInOut.DateIn = DateTime.Now;
+                tInOut.DateInUser = ID_User;
+                GlobSaldo.AVL.Data.DataRepository.InOutDriverProvider.Insert(tInOut);
+
+                retVal = VehiclesContainer.Instance.keysAssigned(ID_Vehicle, ID_Driver);
+                retVal = 0;
+            }
+            catch (Exception ex)
+            {
+                log.Error("Error", ex);
+                retVal = -2;
+            }
+            DateTime tmpCalculateSaveTimeEnd = System.DateTime.Now;
+            TimeSpan tmpCalculatedTime = tmpCalculateSaveTimeEnd.Subtract(tmpCalculateSaveTimeStart);
+
+            if (_debugMode)
+                LogManager.GetLogger("TimeLog").Info(tmpCalculatedTime.TotalMilliseconds.ToString() + (char)9 + (char)9 + "END - KeysAssigned ");
+
+            return retVal;
+        }
+
+        public long SendAddress1(long ID_Vehicle, long ID_User, PhoneCalls phoneCall)
+        {
+            DateTime tmpCalculateSaveTimeStart = System.DateTime.Now;
+            //LogManager.GetLogger("TimeLog").Info("STARTING - SendAddress1 " + tmpCalculateSaveTimeStart);
+            long retVal = -1;
+
+            try
+            {
+                byte[] retValByte;
+
+                retValByte = VehiclesContainer.Instance.sendAddress(ID_Vehicle, ID_User, phoneCall);
+
+                if (_gpsListener.SendMsgToVehicle(ID_Vehicle, retValByte) == -1)
+                {
+
+                }
+                retVal = 0;
+            }
+            catch (Exception ex)
+            {
+                log.Error("Error", ex);
+                retVal = -2;
+            }
+            DateTime tmpCalculateSaveTimeEnd = System.DateTime.Now;
+            TimeSpan tmpCalculatedTime = tmpCalculateSaveTimeEnd.Subtract(tmpCalculateSaveTimeStart);
+
+            if (_debugMode)
+                LogManager.GetLogger("TimeLog").Info(tmpCalculatedTime.TotalMilliseconds.ToString() + (char)9 + (char)9 + "END - SendAddress1 ");
+
+            return retVal;
+        }
+
+        public long SendPopUp(long ID_Vehicle, long ID_User, string strPopUp)
+        {
+            DateTime tmpCalculateSaveTimeStart = System.DateTime.Now;
+            //LogManager.GetLogger("TimeLog").Info("STARTING - SendPopUp " + tmpCalculateSaveTimeStart);
+            long retVal = -1;
+
+            try
+            {
+                StateMachine.clsMessageCreator tMessageCreator = new Taxi.Communication.Server.StateMachine.clsMessageCreator();
+
+                byte[] retValByte;
+
+                // TODO: Ovde treba da se prati taa poraka so " CreatePopUpMessageForLCD(GlobSaldo.AVL.Entities.Vehicle myVehicle, string strPopUp)"
+
+                retValByte = tMessageCreator.CreatePopUpMessageForLCD(VehiclesContainer.Instance.getSingleVehicle(ID_Vehicle), strPopUp);
+
+
+
+                //retValByte = 0x0;//currentVehicle.currentState.SendAddress(ID_User, phoneCall);
+
+                if (_gpsListener.SendMsgToVehicle(ID_Vehicle, retValByte) == -1)
+                {
+                    retVal = -1;
+                }
+                else
+                    retVal = 0;
+
+                SentPopUpMessage popUp = new SentPopUpMessage();
+                popUp.IDVehicle = ID_Vehicle;
+                popUp.MessageText = strPopUp;
+                popUp.MessageDateTime = DateTime.Now;
+                popUp.DateTimeSubmettedByUser = DateTime.Now;
+                popUp.DateTimeSentToGPS = DateTime.Now;
+                popUp.IDUser = ID_User;
+
+                DataRepository.SentPopUpMessageProvider.Insert(popUp);
+            }
+            catch (Exception e)
+            {
+                log.Error("Error", e);
+                retVal = -2;
+            }
+            DateTime tmpCalculateSaveTimeEnd = System.DateTime.Now;
+            TimeSpan tmpCalculatedTime = tmpCalculateSaveTimeEnd.Subtract(tmpCalculateSaveTimeStart);
+
+            if (_debugMode)
+                LogManager.GetLogger("TimeLog").Info(tmpCalculatedTime.TotalMilliseconds.ToString() + (char)9 + (char)9 + "END - SendPopUp ");
+
+            return retVal;
+        }
+
+        public long CancellOrderFromClient(long ID_Vehicle, long ID_User)
+        {
+            DateTime tmpCalculateSaveTimeStart = System.DateTime.Now;
+            //LogManager.GetLogger("TimeLog").Info("STARTING - CancellOrderFromClient " + tmpCalculateSaveTimeStart);
+            long retVal = -1;
+
+            try
+            {
+                retVal = VehiclesContainer.Instance.cancelRequestFromClient(ID_Vehicle);
+                retVal = 0;
+            }
+            catch (Exception e)
+            {
+                log.Error("Error", e);
+                retVal = -2;
+            }
+            DateTime tmpCalculateSaveTimeEnd = System.DateTime.Now;
+            TimeSpan tmpCalculatedTime = tmpCalculateSaveTimeEnd.Subtract(tmpCalculateSaveTimeStart);
+
+            if (_debugMode)
+                LogManager.GetLogger("TimeLog").Info(tmpCalculatedTime.TotalMilliseconds.ToString() + (char)9 + (char)9 + "END - CancellOrderFromClient ");
+
+            return retVal;
+        }
+
+        public long ExtendWaitClientTime(long ID_Vehicle, long ID_User)
+        {
+            DateTime tmpCalculateSaveTimeStart = System.DateTime.Now;
+            //LogManager.GetLogger("TimeLog").Info("STARTING - ExtendWaitClientTime " + tmpCalculateSaveTimeStart);
+            long retVal = -1;
+
+            try
+            {
+                retVal = VehiclesContainer.Instance.extendClientWatiTime(ID_Vehicle);
+                retVal = 0;
+            }
+            catch (Exception e)
+            {
+                log.Error("Error", e);
+                retVal = -2;
+            }
+            DateTime tmpCalculateSaveTimeEnd = System.DateTime.Now;
+            TimeSpan tmpCalculatedTime = tmpCalculateSaveTimeEnd.Subtract(tmpCalculateSaveTimeStart);
+
+            if (_debugMode)
+                LogManager.GetLogger("TimeLog").Info(tmpCalculatedTime.TotalMilliseconds.ToString() + (char)9 + (char)9 + "END - ExtendWaitClientTime ");
+
+            return retVal;
+        }
+
+        public long ResetAlarm(long ID_Vehicle, long ID_User)
+        {
+            long retVal = -1;
+            try
+            {
+                log.Error("Error call empty function for ResetAlaram ID_Vehicle = " + ID_Vehicle + " ; ID_User = " + ID_User);
+            }
+            catch (Exception e)
+            {
+                log.Error("Error", e);
+                retVal = -2;
+            }
+            return retVal;
+        }
+
+        public GisGeoLocation GetGeoLocation(float Longitude_X, float Latitude_Y)
+        {
+            GisGeoLocation retVal = null;
+            try
+            {
+                retVal = null;
+            }
+            catch (Exception e)
+            {
+                log.Error("Error", e);
+                retVal = null;
+            }
+            return retVal;
+        }
+
+        public GisGeoFences GetGeoFence(long ID_Company, float Longitude_X, float Latitude_Y)
+        {
+            GisGeoFences retVal = null;
+            try
+            {
+                retVal = null;
+            }
+            catch (Exception e)
+            {
+                log.Error("Error", e);
+                retVal = null;
+            }
+            return retVal;
+        }
+
+        public long generatePhoneCall(string Ext, string PhoneNumber)
+        {
+            DateTime tmpCalculateSaveTimeStart = System.DateTime.Now;
+            //LogManager.GetLogger("TimeLog").Info("STARTING - generatePhoneCall " + tmpCalculateSaveTimeStart);
+            long retVal = -1;
+
+            try
+            {
+                _phoneListener.GeneratePhoneCall(PhoneNumber, Ext);
+                retVal = 0;
+            }
+            catch (Exception e)
+            {
+                log.Error("Error", e);
+                retVal = -2;
+            }
+            DateTime tmpCalculateSaveTimeEnd = System.DateTime.Now;
+            TimeSpan tmpCalculatedTime = tmpCalculateSaveTimeEnd.Subtract(tmpCalculateSaveTimeStart);
+
+            if (_debugMode)
+                LogManager.GetLogger("TimeLog").Info(tmpCalculatedTime.TotalMilliseconds.ToString() + (char)9 + (char)9 + "END - generatePhoneCall ");
+
+            return retVal;
+        }
+
+
+        //RfIdCardPerClients
+        #region RfIdCardPerClients
+
+        public long saveRfIdCardPerClients(RfIdCardPerClients itemObj)
+        {
+            DateTime tmpCalculateSaveTimeStart = System.DateTime.Now;
+            //LogManager.GetLogger("TimeLog").Info("STARTING - saveRfIdCardPerClients " + tmpCalculateSaveTimeStart);
+            long retVal = -1;
+
+            try
+            {
+                if (DataRepository.RfIdCardPerClientsProvider.Insert(itemObj))
+                    retVal = itemObj.IDRfIdCardPerClients;
+                else
+                    retVal = -1;
+            }
+            catch (Exception e)
+            {
+                log.Error("Error", e);
+                retVal = -2;
+            }
+            DateTime tmpCalculateSaveTimeEnd = System.DateTime.Now;
+            TimeSpan tmpCalculatedTime = tmpCalculateSaveTimeEnd.Subtract(tmpCalculateSaveTimeStart);
+
+            if (_debugMode)
+                LogManager.GetLogger("TimeLog").Info(tmpCalculatedTime.TotalMilliseconds.ToString() + (char)9 + (char)9 + "END - saveRfIdCardPerClients ");
+
+            return retVal;
+        }
+
+        public long deleteRfIdCardPerClients(RfIdCardPerClients itemObj)
+        {
+            DateTime tmpCalculateSaveTimeStart = System.DateTime.Now;
+            //LogManager.GetLogger("TimeLog").Info("STARTING - deleteRfIdCardPerClients " + tmpCalculateSaveTimeStart);
+            long retVal = -1;
+
+            try
+            {
+                if (DataRepository.RfIdCardPerClientsProvider.Delete(itemObj))
+                    retVal = 0;
+                else
+                    retVal = -1;
+            }
+            catch (Exception e)
+            {
+                log.Error("Error", e);
+                retVal = -2;
+            }
+            DateTime tmpCalculateSaveTimeEnd = System.DateTime.Now;
+            TimeSpan tmpCalculatedTime = tmpCalculateSaveTimeEnd.Subtract(tmpCalculateSaveTimeStart);
+
+            if (_debugMode)
+                LogManager.GetLogger("TimeLog").Info(tmpCalculatedTime.TotalMilliseconds.ToString() + (char)9 + (char)9 + "END - deleteRfIdCardPerClients ");
+
+            return retVal;
+        }
+
+        public long updateRfIdCardPerClients(RfIdCardPerClients itemObj)
+        {
+            DateTime tmpCalculateSaveTimeStart = System.DateTime.Now;
+            //LogManager.GetLogger("TimeLog").Info("STARTING - updateRfIdCardPerClients " + tmpCalculateSaveTimeStart);
+            long retVal = -1;
+
+            try
+            {
+                if (DataRepository.RfIdCardPerClientsProvider.Update(itemObj))
+                    retVal = 0;
+                else
+                    retVal = -1;
+            }
+            catch (Exception e)
+            {
+                log.Error("Error", e);
+                retVal = -2;
+            }
+            DateTime tmpCalculateSaveTimeEnd = System.DateTime.Now;
+            TimeSpan tmpCalculatedTime = tmpCalculateSaveTimeEnd.Subtract(tmpCalculateSaveTimeStart);
+
+            if (_debugMode)
+                LogManager.GetLogger("TimeLog").Info(tmpCalculatedTime.TotalMilliseconds.ToString() + (char)9 + (char)9 + "END - updateRfIdCardPerClients ");
+
+            return retVal;
+        }
+
+        public TList<RfIdCardPerClients> getAllRfIdCardPerClients()
+        {
+            DateTime tmpCalculateSaveTimeStart = System.DateTime.Now;
+            //LogManager.GetLogger("TimeLog").Info("STARTING - getAllRfIdCardPerClients " + tmpCalculateSaveTimeStart);
+            TList<RfIdCardPerClients> retVal;
+
+            try
+            {
+
+                retVal = DataRepository.RfIdCardPerClientsProvider.GetAll();
+
+                Type[] tl = new Type[2];
+                tl[0] = typeof(Clients);
+                tl[1] = typeof(RfIdCards);
+
+                DataRepository.RfIdCardPerClientsProvider.DeepLoad(retVal, true, DeepLoadType.IncludeChildren, tl);
+
+            }
+            catch (Exception e)
+            {
+                log.Error("ERROR", e);
+                retVal = null;
+            }
+            DateTime tmpCalculateSaveTimeEnd = System.DateTime.Now;
+            TimeSpan tmpCalculatedTime = tmpCalculateSaveTimeEnd.Subtract(tmpCalculateSaveTimeStart);
+
+            if (_debugMode)
+                LogManager.GetLogger("TimeLog").Info(tmpCalculatedTime.TotalMilliseconds.ToString() + (char)9 + (char)9 + "END - getAllRfIdCardPerClients ");
+
+            return retVal;
+        }
+
+        public RfIdCardPerClients getRfIdCardPerClients(long ID_RfIdCardPerClients)
+        {
+            DateTime tmpCalculateSaveTimeStart = System.DateTime.Now;
+            //LogManager.GetLogger("TimeLog").Info("STARTING - getRfIdCardPerClients " + tmpCalculateSaveTimeStart);
+            RfIdCardPerClients retVal;
+
+            try
+            {
+
+                retVal = DataRepository.RfIdCardPerClientsProvider.GetByIDRfIdCardPerClients(ID_RfIdCardPerClients);
+
+                Type[] tl = new Type[2];
+                tl[0] = typeof(Clients);
+                tl[1] = typeof(RfIdCards);
+
+                DataRepository.RfIdCardPerClientsProvider.DeepLoad(retVal, true, DeepLoadType.IncludeChildren, tl);
+
+            }
+            catch (Exception e)
+            {
+                log.Error("ERROR", e);
+                retVal = null;
+            }
+            DateTime tmpCalculateSaveTimeEnd = System.DateTime.Now;
+            TimeSpan tmpCalculatedTime = tmpCalculateSaveTimeEnd.Subtract(tmpCalculateSaveTimeStart);
+
+            if (_debugMode)
+                LogManager.GetLogger("TimeLog").Info(tmpCalculatedTime.TotalMilliseconds.ToString() + (char)9 + (char)9 + "END - getRfIdCardPerClients ");
+
+            return retVal;
+        }
+
+        public TList<RfIdCardPerClients> getAllRfIdCardPerClientssForIdRfIdCard(long IdRfIdCard, bool permanentlyDiscarded, bool takenBack)
+        {
+            DateTime tmpCalculateSaveTimeStart = System.DateTime.Now;
+            //LogManager.GetLogger("TimeLog").Info("STARTING - getAllRfIdCardPerClientssForIdRfIdCard " + tmpCalculateSaveTimeStart);
+            TList<RfIdCardPerClients> retVal;
+
+            try
+            {
+
+                retVal =
+                    DataRepository.RfIdCardPerClientsProvider.GetAllRfIdCardPerClient(IdRfIdCard, permanentlyDiscarded,
+                                                                                      takenBack);
+                Type[] tl = new Type[2];
+                tl[0] = typeof(Clients);
+                tl[1] = typeof(RfIdCards);
+
+                DataRepository.RfIdCardPerClientsProvider.DeepLoad(retVal, true, DeepLoadType.IncludeChildren, tl);
+
+            }
+            catch (Exception e)
+            {
+                log.Error("ERROR", e);
+                retVal = null;
+            }
+            DateTime tmpCalculateSaveTimeEnd = System.DateTime.Now;
+            TimeSpan tmpCalculatedTime = tmpCalculateSaveTimeEnd.Subtract(tmpCalculateSaveTimeStart);
+
+            if (_debugMode)
+                LogManager.GetLogger("TimeLog").Info(tmpCalculatedTime.TotalMilliseconds.ToString() + (char)9 + (char)9 + "END - getAllRfIdCardPerClientssForIdRfIdCard ");
+
+            return retVal;
+
+        }
+
+
+        #endregion
+
+        #endregion
+
+        public long VehicleForceState(long ID_Vehicle, long ID_User, long ID_State)
+        {
+            DateTime tmpCalculateSaveTimeStart = System.DateTime.Now;
+            long retVal = -1;
+
+            try
+            {
+                Vehicle currentVehicle = this.getSingleVehicle(ID_Vehicle, ID_User);
+
+                //Za prakanje na zvuci
+                byte[] retValByte;
+                StateMachine.clsMessageCreator tMessageCreator = new Taxi.Communication.Server.StateMachine.clsMessageCreator();
+
+
+                if (currentVehicle != null)
+                {
+                    switch (ID_State)
+                    {
+                        case 1:
+                            retVal = VehiclesContainer.Instance.ForceStateUndefine(ID_Vehicle, ID_User);
+                            retValByte = tMessageCreator.CreateStationStatus(currentVehicle, 4);
+                            _gpsListener.SendMsgToVehicle(currentVehicle.IDVehicle, retValByte);
+                            break;
+                        case 2:
+                            retVal = VehiclesContainer.Instance.ForceStateIdle(ID_Vehicle, ID_User);
+                            retValByte = tMessageCreator.CreateStationStatus(currentVehicle, 4);
+                            _gpsListener.SendMsgToVehicle(currentVehicle.IDVehicle, retValByte);
+                            break;
+                        case 9:
+                            currentVehicle.currentState = new StateMachine.StateVoice(currentVehicle);
+                            currentVehicle.StateChanged = true;
+                            break;
+
+                        case 10501:
+                            //Zvuk Adresata se otkazuva
+                            retValByte = tMessageCreator.CreateSoundMessage(currentVehicle, 10501);
+                            _gpsListener.SendMsgToVehicle(currentVehicle.IDVehicle, retValByte);
+                            break;
+
+                        case 10502:
+                            //Zvuk Klientot se otkazuva
+                            retValByte = tMessageCreator.CreateSoundMessage(currentVehicle, 10502);
+                            _gpsListener.SendMsgToVehicle(currentVehicle.IDVehicle, retValByte);
+                            break;
+
+                        case 10503:
+                            //Zvuk Vrati se vo garaza
+                            retValByte = tMessageCreator.CreateSoundMessage(currentVehicle, 10503);
+                            _gpsListener.SendMsgToVehicle(currentVehicle.IDVehicle, retValByte);
+                            break;
+
+                        case 10504:
+                            //Zvuk Zakasnivte na lokacija
+                            retValByte = tMessageCreator.CreateSoundMessage(currentVehicle, 10504);
+                            _gpsListener.SendMsgToVehicle(currentVehicle.IDVehicle, retValByte);
+                            break;
+
+                        case 10505:
+                            //Zvuk Parking "Градска Болница"
+                            retValByte = tMessageCreator.CreateSoundMessage(currentVehicle, 10505);
+                            _gpsListener.SendMsgToVehicle(currentVehicle.IDVehicle, retValByte);
+                            break;
+
+                        case 10506:
+                            //Zvuk Parking "Клинички Центар Стоматологија"
+                            retValByte = tMessageCreator.CreateSoundMessage(currentVehicle, 10506);
+                            _gpsListener.SendMsgToVehicle(currentVehicle.IDVehicle, retValByte);
+                            break;
+
+                        case 10507:
+                            //Zvuk Parking "Макпетрол дирекција"
+                            retValByte = tMessageCreator.CreateSoundMessage(currentVehicle, 10507);
+                            _gpsListener.SendMsgToVehicle(currentVehicle.IDVehicle, retValByte);
+                            break;
+
+                        case 10508:
+                            //Zvuk Parking "Дом на печат Нова Македонија"
+                            retValByte = tMessageCreator.CreateSoundMessage(currentVehicle, 10508);
+                            _gpsListener.SendMsgToVehicle(currentVehicle.IDVehicle, retValByte);
+                            break;
+
+                        case 10509:
+                            //Zvuk Parking "Јужен булевар до Рамстор"
+                            retValByte = tMessageCreator.CreateSoundMessage(currentVehicle, 10509);
+                            _gpsListener.SendMsgToVehicle(currentVehicle.IDVehicle, retValByte);
+                            break;
+
+                        case 10510:
+                            //Zvuk Parking "Булевар Кочо Рацин карши Црвен Крст"
+                            retValByte = tMessageCreator.CreateSoundMessage(currentVehicle, 10510);
+                            _gpsListener.SendMsgToVehicle(currentVehicle.IDVehicle, retValByte);
+                            break;
+
+                        case 10511:
+                            //Zvuk Parking "Телеком"
+                            retValByte = tMessageCreator.CreateSoundMessage(currentVehicle, 10511);
+                            _gpsListener.SendMsgToVehicle(currentVehicle.IDVehicle, retValByte);
+                            break;
+
+                        case 10512:
+                            //Zvuk Parking "Ресторан Воденица кај Фабрика Треска"
+                            retValByte = tMessageCreator.CreateSoundMessage(currentVehicle, 10512);
+                            _gpsListener.SendMsgToVehicle(currentVehicle.IDVehicle, retValByte);
+                            break;
+
+                        case 10513:
+                            //Zvuk Parking "Кај Злате ВОен Базен"
+                            retValByte = tMessageCreator.CreateSoundMessage(currentVehicle, 10513);
+                            _gpsListener.SendMsgToVehicle(currentVehicle.IDVehicle, retValByte);
+                            break;
+
+                        case 99001:
+                            //PRATI APN
+                            retValByte = tMessageCreator.SendAPN(currentVehicle);
+                            _gpsListener.SendMsgToVehicle(currentVehicle.IDVehicle, retValByte);
+                            break;
+                        case 99002:
+                            //PRATI PASSWORD
+                            retValByte = tMessageCreator.SendPassword(currentVehicle);
+                            _gpsListener.SendMsgToVehicle(currentVehicle.IDVehicle, retValByte);
+                            break;
+                        case 99003:
+                            //PRATI USERNAME
+                            retValByte = tMessageCreator.SendUser(currentVehicle);
+                            _gpsListener.SendMsgToVehicle(currentVehicle.IDVehicle, retValByte);
+                            break;
+                    }
+                }
+                retVal = 0;
+            }
+            catch (Exception e)
+            {
+                log.Error("Error", e);
+                retVal = -2;
+            }
+            DateTime tmpCalculateSaveTimeEnd = System.DateTime.Now;
+            TimeSpan tmpCalculatedTime = tmpCalculateSaveTimeEnd.Subtract(tmpCalculateSaveTimeStart);
+
+            if (_debugMode)
+                LogManager.GetLogger("TimeLog").Info(tmpCalculatedTime.TotalMilliseconds.ToString() + (char)9 + (char)9 + "END - VehicleForceState ");
+
+            return retVal;
+        }
+
+    }
+}

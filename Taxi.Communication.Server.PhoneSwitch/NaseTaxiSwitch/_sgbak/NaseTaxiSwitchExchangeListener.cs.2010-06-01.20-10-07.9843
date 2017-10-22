@@ -1,0 +1,409 @@
+using System;
+using System.Collections.Generic;
+using System.IO.Ports;
+using System.Reflection;
+using System.Text;
+using System.Threading;
+using log4net;
+using Taxi.Communication.Server.PhoneSwitch.NaseTaxiSwitch.Parsers;
+using GlobSaldo.AVL.Data;
+using GlobSaldo.AVL.Entities;
+using System.IO;
+using Taxi.Communication.Server.Utils;
+
+namespace Taxi.Communication.Server.PhoneSwitch.NaseTaxiSwitch
+{
+    internal class NaseTaxiSwitchExchangeListener : PhoneSwitchListener
+    {
+
+        static SerialPort ComPort;
+        private static readonly ASCIIEncoding enc = new ASCIIEncoding();
+        private static readonly PhoneExchangeMessageParser phoneParser = new PhoneExchangeMessageParser();
+
+        private static List<PhoneCalls> activePhoneCalls = new List<PhoneCalls>();
+
+        private bool m_work;
+        private static ILog log;
+
+        PhoneCallRecived delegateHandler;
+
+        List<byte[]> phoneFiles;
+
+
+        internal NaseTaxiSwitchExchangeListener(string port, int baud)
+        {
+            m_work = true;
+            log = LogManager.GetLogger("MyService");
+
+            phoneFiles = new List<byte[]>();
+
+            //string port = System.Configuration.ConfigurationManager.AppSettings["commPortId"];
+            //int baud = Int32.Parse(System.Configuration.ConfigurationManager.AppSettings["commPortBaud"]);
+
+            InitializeComPort(port, baud);
+            log.Debug("TEST");
+        }
+
+
+
+        public override void Start()
+        {
+            log.Debug("Staring");
+
+            delegateHandler = _callBack.CallForPhoneCallRecived;
+
+            while (m_work)
+            {
+                Thread.Sleep(1000);
+
+                //    phoneFiles = getAllPhoneFiles(@".\Centrala");
+
+                //    serialDataReceivedFromFile(phoneFiles);
+
+                //    //int test = ComPort.ReceivedBytesThreshold;
+                //    //Console.WriteLine("Proba " + test);
+                //    //ComPort.Write
+                //    //ComPort.ReadByte();
+            }
+        }
+
+        private void InitializeComPort(string port, int baud)
+        {
+            ComPort = new SerialPort(port, baud);
+            ComPort.Parity = Parity.None;
+            ComPort.StopBits = StopBits.One;
+            ComPort.DataBits = 8;
+            ComPort.Handshake = Handshake.RequestToSend;
+            ComPort.ReceivedBytesThreshold = 1;
+            ComPort.DataReceived += new SerialDataReceivedEventHandler(OnSerialDataReceived);
+
+            try
+            {
+                if (ComPort.IsOpen)
+                {
+                    ComPort.Close();
+                    Thread.Sleep(1000);
+                }
+                
+                ComPort.Open();
+
+            }
+            catch (Exception ex)
+            {
+                log.Error("ERROR, ComPort.Open(); " + ex.Message);
+                Console.WriteLine("ERROR, ComPort.Open(); " + ex.Message);
+            }
+
+
+        }
+
+
+        public override void Stop()
+        {
+            this.m_work = false;
+            ComPort.Close();
+        }
+
+
+        public void OnSerialDataReceived(object sender, SerialDataReceivedEventArgs args)
+        {
+
+            try
+            {
+                string message = ComPort.ReadLine();
+
+                PhoneCalls phoneMessage;
+                phoneMessage = phoneParser.parseIncommingMessage(enc.GetBytes(message));
+
+                if (phoneMessage == null)
+                {
+                    log.Debug("COMM - " + ComPort.PortName + " - MESSAGE - " + message);
+                    return;
+                }
+
+                phoneMessage.oAddressFrom = new GlobSaldo.AVL.Entities.PartialClasses.clsAddress();
+
+                switch (phoneMessage.MessageType)
+                {
+
+                    case "NA":
+
+                        foreach (PhoneCalls phoneCall in activePhoneCalls)
+                        {
+                            if (phoneCall.PhoneNumber == phoneMessage.PhoneNumber)
+                            {
+                                phoneCall.Extension = phoneMessage.Extension;
+                                phoneCall.RingDuration = phoneMessage.RingDuration;
+                                phoneCall.MessageType = phoneMessage.MessageType;
+
+                                if (!DataRepository.PhoneCallsProvider.Update(phoneCall))
+                                {
+                                    log.Error("ERROR : Problem so baza ");
+                                }
+
+                                activePhoneCalls.Remove(phoneCall);
+                                
+                                //if (_callBack.OnPhoneCallRecived != null)
+                                //{
+                                //    _callBack.OnPhoneCallRecived(this, phoneCall);
+                                //}
+
+                                delegateHandler(this, phoneCall);
+
+                                break;
+                            }
+                        }
+                        break;
+
+                    case "RC":
+
+                        foreach (PhoneCalls phoneCall in activePhoneCalls)
+                        {
+                            if (phoneCall.PhoneNumber == phoneMessage.PhoneNumber)
+                            {
+
+                                log.Error("ERROR : Problem so centralata ");
+                                break;
+                            }
+                        }
+
+                        // ZORAN:   Ova go dodavam tuka za Dipecerot da ima info za adresata ako toj telefon veke postoi vo baza:
+                        //          Dilema mi e dali da ja baram adresata tuka, ili vo moment na AN?
+
+                        //          Celoto ke go stavam vo try/catch, bidejki ima nekolku mesta kade moze da zezne, 
+                        //          a bilo kade da se sluci seedno e, ne e korisen ovoj del od kodot
+
+                        try
+                        {
+                            GisPhoneNumbers gisPhoneNumber = DataRepository.GisPhoneNumbersProvider.GetByPhoneNumber(phoneMessage.PhoneNumber);
+
+                            if (gisPhoneNumber != null) // Ako nema, nisto, si ostanuva null
+                            {
+
+                                // OK, ima zapis, vednas da si napravam DeepLoad po se sto mi treba:
+
+                                Type[] tl = new Type[3];
+                                tl[0] = typeof(GisObjects);
+                                tl[1] = typeof(GisStreets);
+                                tl[2] = typeof(GisRegions);
+
+                                DataRepository.GisPhoneNumbersProvider.DeepLoad(gisPhoneNumber, true, JP.Data.Utils.DeepLoadType.IncludeChildren, tl);
+
+                                if (gisPhoneNumber.LocationType == 1)               // Znaci, ulica e!
+                                {
+                                    phoneMessage.oAddressFrom.oGisStreets = gisPhoneNumber.IDStreetSource;
+                                    phoneMessage.oAddressFrom.HouseNumber = (int)gisPhoneNumber.HouseNumber;
+                                }
+                                else                                                // Znaci objekt e. Tuka treba poveke kontrola, no i vaka ke pomine
+                                {
+                                    phoneMessage.oAddressFrom.oGisObjects = gisPhoneNumber.IDObjectSource;
+                                }
+
+                                // Sega da gi stavam rabotite sto se zaednicki, nezavisno dali e adresa ili objekt
+
+                                phoneMessage.oAddressFrom.oGisRegions = gisPhoneNumber.IDRegionSource;
+                                phoneMessage.oAddressFrom.LocationX = (double)gisPhoneNumber.LongitudeX;
+                                phoneMessage.oAddressFrom.LocationY = (double)gisPhoneNumber.LatitudeY;
+
+                                if (gisPhoneNumber.LocationQuality != null) // Vo start site ke bidat null, bidejki e novo pole. Treba da se trgne ovaa kontrola pokasno...
+                                    phoneMessage.oAddressFrom.LocationQuality = (int)gisPhoneNumber.LocationQuality;
+                                else
+                                    phoneMessage.oAddressFrom.LocationQuality = 4;
+                            }
+                        }
+
+                        catch (Exception ex)
+                        {
+                            log.Error("ZORAN (problem vo obrabotka na RC od centrala): Nekoj problem so citaneje na GisPhoneNumbers", ex);
+                        }
+
+
+
+
+                        if (DataRepository.PhoneCallsProvider.Insert(phoneMessage))
+                        {
+                            activePhoneCalls.Add(phoneMessage);
+                        }
+                        else
+                        {
+                            log.Error("ERROR : Problem so baza ");
+                        }
+
+
+                        //if (_callBack.OnPhoneCallRecived != null)
+                        //{
+                        //    _callBack.OnPhoneCallRecived(this, phoneMessage);
+                        //}
+
+                        delegateHandler(this, phoneMessage);
+
+                        break;
+                    case "AN":
+
+                        foreach (PhoneCalls phoneCall in activePhoneCalls)
+                        {
+                            if (phoneCall.PhoneNumber == phoneMessage.PhoneNumber)
+                            {
+                                phoneCall.Extension = phoneMessage.Extension;
+                                phoneCall.RingDuration = phoneMessage.RingDuration;
+                                phoneCall.MessageType = phoneMessage.MessageType;
+
+                                if (!DataRepository.PhoneCallsProvider.Update(phoneCall))
+                                {
+                                    log.Error("ERROR : Problem so baza ");
+                                }
+                                //if (_callBack.OnPhoneCallRecived != null)
+                                //{
+                                //    _callBack.OnPhoneCallRecived(this, phoneCall);
+                                //}
+
+                                delegateHandler(this, phoneCall);
+
+                                break;
+                            }
+                        }
+
+                        break;
+                    case "CC":
+
+                        foreach (PhoneCalls phoneCall in activePhoneCalls)
+                        {
+                            if (phoneCall.PhoneNumber == phoneMessage.PhoneNumber)
+                            {
+                                phoneCall.Extension = phoneMessage.Extension;
+                                phoneCall.CallDuration = phoneMessage.CallDuration;
+                                phoneCall.MessageType = phoneMessage.MessageType;
+
+                                if (!DataRepository.PhoneCallsProvider.Update(phoneCall))
+                                {
+                                    log.Error("ERROR : Problem so baza ");
+                                }
+
+                                activePhoneCalls.Remove(phoneCall);
+                                //if (_callBack.OnPhoneCallRecived != null)
+                                //{
+                                //    _callBack.OnPhoneCallRecived(this, phoneCall);
+                                //}
+
+                                delegateHandler(this, phoneCall);
+
+                                break;
+                            }
+                        }
+
+                        break;
+                    default:
+                        //newMsg.MessageType = PhoneExchangeMessageType.NN.ToString();
+                        break;
+
+                }
+
+            }
+            catch (IOException ioex)
+            {
+                log.Error("ERROR ", ioex);
+            }
+            catch (UnauthorizedAccessException uaex)
+            {
+                log.Error("ERROR ", uaex);
+            }
+            catch (Exception e) //TimeoutException)
+            {
+                log.Error("ERROR ", e);
+            }
+
+            return;
+        }
+
+
+        // Funkcija za generiranje na CALL
+        // Se povikuva od Dispecer. Na ovoj nacin i racno generiranite CALL-ovi se evidentiraat vo bazata
+        // Se praka do site dispeceri, a "go gleda" samo dispecerot prijaven na toj extension
+        // 
+        // Ne se stava vo listata na tekovni povici activePhoneCalls, nema logika
+        // ***************************************************************************************************
+
+        public override void GeneratePhoneCall(string strPhoneNumber, string strPhoneExtension)
+        {
+            PhoneCalls phoneMessage = new PhoneCalls();
+
+            phoneMessage.oAddressFrom = new GlobSaldo.AVL.Entities.PartialClasses.clsAddress();
+
+            phoneMessage.PhoneNumber = strPhoneNumber;
+            phoneMessage.Extension = strPhoneExtension;
+
+            phoneMessage.MessageType = "GC"; //Demek, od Generated Call...
+            phoneMessage.LineIn = 0;
+            phoneMessage.CallDuration = 0;
+            phoneMessage.RingDuration = 0;
+            phoneMessage.RinglDateTime = System.DateTime.Now;
+
+
+            // ZORAN:   Ova e identicno kako za RC
+
+            try
+            {
+                GisPhoneNumbers gisPhoneNumber = DataRepository.GisPhoneNumbersProvider.GetByPhoneNumber(phoneMessage.PhoneNumber);
+
+                if (gisPhoneNumber != null) // Ako nema, nisto, si ostanuva null
+                {
+
+                    // OK, ima zapis, vednas da si napravam DeepLoad po se sto mi treba:
+
+                    Type[] tl = new Type[3];
+                    tl[0] = typeof(GisObjects);
+                    tl[1] = typeof(GisStreets);
+                    tl[2] = typeof(GisRegions);
+
+                    DataRepository.GisPhoneNumbersProvider.DeepLoad(gisPhoneNumber, true, JP.Data.Utils.DeepLoadType.IncludeChildren, tl);
+
+                    if (gisPhoneNumber.LocationType == 1)               // Znaci, ulica e!
+                    {
+                        phoneMessage.oAddressFrom.oGisStreets = gisPhoneNumber.IDStreetSource;
+                        phoneMessage.oAddressFrom.HouseNumber = (int)gisPhoneNumber.HouseNumber;
+                    }
+                    else                                                // Znaci objekt e. Tuka treba poveke kontrola, no i vaka ke pomine
+                    {
+                        phoneMessage.oAddressFrom.oGisObjects = gisPhoneNumber.IDObjectSource;
+                    }
+
+                    // Sega da gi stavam rabotite sto se zaednicki, nezavisno dali e adresa ili objekt
+
+                    phoneMessage.oAddressFrom.oGisRegions = gisPhoneNumber.IDRegionSource;
+                    phoneMessage.oAddressFrom.LocationX = (double)gisPhoneNumber.LongitudeX;
+                    phoneMessage.oAddressFrom.LocationY = (double)gisPhoneNumber.LatitudeY;
+
+                    if (gisPhoneNumber.LocationQuality != null) // Vo start site ke bidat null, bidejki e novo pole. Treba da se trgne ovaa kontrola pokasno...
+                        phoneMessage.oAddressFrom.LocationQuality = (int)gisPhoneNumber.LocationQuality;
+                    else
+                        phoneMessage.oAddressFrom.LocationQuality = 4;
+                }
+            }
+
+            catch (Exception ex)
+            {
+                log.Error("ZORAN (problem vo obrabotka na GC od centrala): Nekoj problem so citaneje na GisPhoneNumbers", ex);
+            }
+
+
+            try
+            {
+                DataRepository.PhoneCallsProvider.Insert(phoneMessage);
+            }
+            catch (Exception ex)
+            {
+                log.Error("ZORAN (problem vo obrabotka na GC od centrala): Greska so upis na Generiraniot CALL vo baza", ex);
+            }
+
+            //if (_callBack.OnPhoneCallRecived != null)
+            //{
+            //    _callBack.OnPhoneCallRecived(this, phoneMessage);
+            //}
+
+            delegateHandler(this, phoneMessage);
+        }
+
+
+
+    }
+}

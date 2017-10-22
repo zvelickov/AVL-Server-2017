@@ -1,0 +1,1220 @@
+using System;
+using System.Collections.Generic;
+using System.Text;
+
+using JP.Data.Utils;
+using GlobSaldo.AVL.Data;
+using GlobSaldo.AVL.Data.Bases;
+using GlobSaldo.AVL.Entities;
+
+
+namespace Taxi.Communication.Server
+{
+    public class TaxiAdministrationService : AdministrationService, IAdministration
+    {
+        #region LayersPerCompany
+
+        public long DeleteLayerForCompany(LayersPerCompany _LayerPerCompany)
+        {
+            long retVal = -1;
+            
+            try
+            {
+                if (DataRepository.LayersPerCompanyProvider.Delete(_LayerPerCompany))
+                    retVal =  0;
+                else
+                    retVal = 1;
+            }
+            catch (Exception e)
+            {
+                log.Error("Error", e);
+            }
+
+            return retVal;
+        }
+
+
+
+        public long InsertLayerForCompany(GlobSaldo.AVL.Entities.LayersPerCompany _LayerPerCompany)
+        {
+            long retVal = -1;
+
+            try
+            {
+                DataRepository.LayersPerCompanyProvider.Insert(_LayerPerCompany);
+                retVal = _LayerPerCompany.IDLayer;
+            }
+            catch (Exception e)
+            {
+                log.Error("Error", e);
+            }
+
+            return retVal;
+        }
+
+
+        # endregion
+
+
+        #region Users
+
+        public TList<Users> getAllUsersByCompany(Company pIdCompany)
+        {
+            TList<Users> retVal = null;
+
+            try
+            {
+                retVal = DataRepository.UsersProvider.GetByIDCompany(pIdCompany.IDCompany);
+            }
+            catch (Exception ex)
+            {
+                log.Error("Greska vo getAllUsersByCompany(Company pIdCompany)" + ex.Message);
+            }
+
+            return retVal;
+        }
+
+
+        public long InsertUser(Users pUser)
+        {
+            long retVal = -1;
+
+            try
+            {
+                DataRepository.UsersProvider.Insert(pUser);
+                retVal = pUser.IDUser;
+            }
+            catch (Exception ex)
+            {
+                log.Error("Greska vo InsertUser" + ex.Message);
+            }
+
+            return retVal;
+        }
+
+
+        public long UpdateUser(Users pUser)
+        {
+            long retVal = -1;
+
+            try
+            {
+                if(DataRepository.UsersProvider.Update(pUser))
+                    return 0;
+                else
+                    return 1;
+            }
+            catch (Exception ex)
+            {
+                log.Error("Greska vo UpdateUser" + ex.Message);
+            }
+
+            return retVal;
+        }
+
+
+        public long DeleteUser(Users pUser)
+        {
+            long retVal = -1;
+
+            try
+            {
+                if(DataRepository.UsersProvider.Delete(pUser))
+                    return 0;
+                else
+                    return 1;
+            }
+            catch (Exception ex)
+            {
+                log.Error("Greska vo DeleteUser" + ex.Message);
+            }
+
+            return retVal;
+        }
+
+
+#endregion
+
+        #region Drivers
+
+        public TList<Driver> getAllDriversByCompany(Company pCompany)
+        {
+            TList<Driver> retVal = new TList<Driver>();
+            TList<Driver> tmpRetVal = null;
+
+            try
+            {
+                tmpRetVal = DataRepository.DriverProvider.GetByIDCompany(pCompany.IDCompany);
+
+                if (tmpRetVal != null)
+                    foreach (Driver tmpDriver in tmpRetVal)
+                        if (tmpDriver.IsDeleted == false)
+                            retVal.Add(tmpDriver);
+                
+            }
+            catch (Exception ex)
+            {
+                log.Error("Greska vo getAllDriversByCompany(Company pCompany)" + ex.Message);
+            }
+
+            if (retVal.Count == 0)
+                retVal = null;
+
+            return retVal;
+        }
+
+
+        public TList<Driver> getAllDriversByCompanyWithoutRfIdCard (Company pCompany)
+        {
+            TList<Driver> retVal = new TList<Driver>();
+            TList<Driver> tmpRetVal = null;
+
+            try
+            {
+                tmpRetVal = DataRepository.DriverProvider.GetByIDCompany(pCompany.IDCompany);
+
+                if (tmpRetVal != null)
+                    foreach (Driver tmpDriver in tmpRetVal)
+                        if ((tmpDriver.IDRfIdCard == null) && (tmpDriver.IsDeleted == false))
+                            retVal.Add(tmpDriver);
+            }
+            catch (Exception ex)
+            {
+                log.Error("Greska vo getAllDriversByCompanyWithoutRfIdCard (Company pCompany)" + ex.Message);
+            }
+
+            if (retVal.Count == 0)
+                retVal = null;
+
+            return retVal;
+        }
+
+
+        public TList<Driver> getAllDriversByCompanyWithRfIdCard(Company pCompany)
+        {
+            TList<Driver> retVal = new TList<Driver>();
+            TList<Driver> tmpRetVal = null;
+
+            try
+            {
+                tmpRetVal = DataRepository.DriverProvider.GetByIDCompany(pCompany.IDCompany);
+
+                if (tmpRetVal != null)
+                    foreach (Driver tmpDriver in tmpRetVal)
+                        if ((tmpDriver.IDRfIdCard != null) && (tmpDriver.IsDeleted == false))
+                            retVal.Add(tmpDriver);
+
+            }
+            catch (Exception ex)
+            {
+                log.Error("Greska vo getAllDriversByCompanyWithRfIdCard(Company pCompany)" + ex.Message);
+            }
+
+            if (retVal.Count == 0)
+                retVal = null;
+
+            return retVal;
+        }
+
+
+
+        public long InsertDriver(Driver pDriver)
+        {
+            long retVal = -1;
+
+            try
+            {
+                DataRepository.DriverProvider.Insert(pDriver);
+                retVal = pDriver.IDDriver;
+            }
+            catch (Exception ex)
+            {
+                log.Error("Greska vo InsertDriver(Driver pDriver)" + ex.Message);
+            }
+
+            return retVal;
+
+        }
+
+
+        public long UpdateDriver(Driver pDriver)
+        {
+            long retVal = -1;
+
+            try
+            {
+                if (DataRepository.DriverProvider.Update(pDriver))
+                    return 0;
+                else
+                    return 1;
+            }
+            catch (Exception ex)
+            {
+                log.Error("Greska vo UpdateDriver(Driver pDriver)" + ex.Message);
+            }
+
+            return retVal;
+        }
+
+
+        public long DeleteDriver(Driver pDriver)
+        {
+            long retVal = -1;
+
+            try
+            {
+                if (DataRepository.DriverProvider.Delete(pDriver))
+                    return 0;
+                else
+                    return 1;
+            }
+            catch (Exception ex)
+            {
+                log.Error("Greska vo DeleteDriver(Driver pDriver)" + ex.Message);
+            }
+
+            return retVal;
+
+        }
+
+
+
+        #endregion
+
+        #region Clients
+
+
+        public TList<Clients> getAllClientsByCompany(Company pIdCompany)
+         {
+             TList<Clients> retVal = null;
+
+            try
+            {
+                retVal = DataRepository.ClientsProvider.GetByIDCompany (pIdCompany.IDCompany);
+            }
+            catch (Exception ex)
+            {
+                log.Error("Greska vo getAllClientsByCompany(Company pIdCompany)" + ex.Message);
+            }
+
+            return retVal;
+        }
+
+        public TList<Clients> getAllClientsByName(string Name, Company pIdCompany)
+        {
+            TList<Clients> retVal = null;
+
+            StringBuilder strBuild = new StringBuilder();
+
+            strBuild.Append("Name LIKE N'%");
+            strBuild.Append(Name);
+            strBuild.Append("%' AND ID_Company = ");
+            strBuild.Append(pIdCompany.IDCompany.ToString());   
+
+            try
+            {
+                int i;
+                retVal = DataRepository.ClientsProvider.GetPaged(strBuild.ToString(), "Name", 0, 100000, out i);
+            }
+            catch (Exception ex)
+            {
+                log.Error("Greska vo getAllClientsByCompany(Company pIdCompany)" + ex.Message);
+            }
+
+            return retVal;
+        }
+
+        public long InsertClient(Clients pClient)
+        {
+            long retVal = -1;
+
+            try
+            {
+                DataRepository.ClientsProvider.Insert(pClient);
+                retVal = pClient.IDClient;
+            }
+            catch (Exception ex)
+            {
+                log.Error("Greska vo InsertClient" + ex.Message);
+            }
+
+            return retVal;
+        }
+
+        public long UpdateClient(Clients pClient)
+         {
+            long retVal = -1;
+
+            try
+            {
+                if (DataRepository.ClientsProvider.Update(pClient))
+                    return 0;
+                else
+                    return 1;
+            }
+            catch (Exception ex)
+            {
+                log.Error("Greska vo UpdateClient" + ex.Message);
+            }
+
+            return retVal;
+        }
+
+        public long DeleteClient(Clients pClient)
+        {
+            long retVal = -1;
+
+            try
+            {
+                if (DataRepository.ClientsProvider.Delete(pClient))
+                    return 0;
+                else
+                    return 1;
+            }
+            catch (Exception ex)
+            {
+                log.Error("Greska vo DeleteClient" + ex.Message);
+            }
+
+            return retVal;
+        }
+
+
+#endregion
+
+        #region FiskalReceipt
+
+        public TList<FiskalReceipt> getAllFiskalReceiptByVehicleForPeriod(Vehicle vehicle, DateTime dateFrom, DateTime dateTo)
+        {
+            TList<FiskalReceipt> retVal = null;
+
+            string _from = dateFrom.ToString("yyyy-MM-dd");
+            string _to = dateTo.ToString("yyyy-MM-dd");
+
+            StringBuilder strBuild = new StringBuilder();
+
+            strBuild.Append(" ID_Vehicle = ");
+            strBuild.Append(vehicle.IDVehicle.ToString());
+            strBuild.Append(" AND SystemDate BETWEEN '");
+            strBuild.Append(_from);
+            strBuild.Append("' AND '");
+            strBuild.Append(_to);
+            strBuild.Append("'");           
+
+            try
+            {
+                int i;
+                retVal = DataRepository.FiskalReceiptProvider.GetPaged(strBuild.ToString(), "SystemDate", 0, 100000, out i);
+            }
+            catch (Exception ex)
+            {
+                log.Error("Greska vo getAllClientsByCompany(Company pIdCompany)" + ex.Message);
+            }
+
+            return retVal;
+        }
+
+        public long UpdateFiskalReceipt(FiskalReceipt pObject)
+        {
+            long retVal = -1;
+
+            try
+            {
+                if (DataRepository.FiskalReceiptProvider.Update(pObject))
+                    return 0;
+                else
+                    return 1;
+            }
+            catch (Exception ex)
+            {
+                log.Error("Greska vo UpdateFiscal" + ex.Message);
+            }
+
+            return retVal;
+        }
+
+        #endregion
+
+        #region Companies
+
+
+        public TList<Company> getAllCompanies()
+        {
+            TList<Company> retVal = null;
+
+            try
+            {
+                retVal = DataRepository.CompanyProvider.GetAll();
+            }
+            catch (Exception ex)
+            {
+                log.Error("Greska vo getAllCompanies()" + ex.Message);
+            }
+
+            return retVal;
+        }
+
+
+        public Company GetCompanyByID(long pCompany)
+        {
+            Company retVal = null;
+
+            try
+            {
+                retVal = DataRepository.CompanyProvider.GetByIDCompany(pCompany);
+            }
+            catch (Exception ex)
+            {
+                log.Error("Greska vo GetCompanyByID()" + ex.Message);
+            }
+
+            return retVal;
+        }
+
+
+        public long InsertCompany(Company pCompany)
+        {
+            long retVal = -1;
+
+            try
+            {
+                DataRepository.CompanyProvider.Insert(pCompany);
+                retVal = pCompany.IDCompany;
+            }
+            catch (Exception ex)
+            {
+                log.Error("Greska vo InsertUser" + ex.Message);
+            }
+
+            return retVal;
+        }
+
+
+        public long UpdateCompany(Company pCompany)
+        {
+            long retVal = -1;
+
+            try
+            {
+                if (DataRepository.CompanyProvider.Update(pCompany))
+                    return 0;
+                else
+                    return 1;
+            }
+            catch (Exception ex)
+            {
+                log.Error("Greska vo UpdateUser" + ex.Message);
+            }
+
+            return retVal;
+        }
+
+
+        public long DeleteCompany(Company pCompany)
+        {
+            long retVal = -1;
+
+            try
+            {
+                if (DataRepository.CompanyProvider.Delete(pCompany))
+                    return 0;
+                else
+                    return 1;
+            }
+            catch (Exception ex)
+            {
+                log.Error("Greska vo DeleteUser" + ex.Message);
+            }
+
+            return retVal;
+        }
+
+
+        #endregion
+
+
+        #region Vehicles
+
+
+        public TList<Vehicle> getAllVehiclesByCompany(Company pIdCompany)
+        {
+            TList<Vehicle> retVal = null;
+
+            try
+            {
+                retVal = DataRepository.VehicleProvider.GetByIDCompany (pIdCompany.IDCompany);
+            }
+            catch (Exception ex)
+            {
+                log.Error("Greska vo getAllUsersByCompany(Company pIdCompany)" + ex.Message);
+            }
+
+            return retVal;
+        }
+
+
+        public long InsertVehicle(Vehicle pVehicle)
+        {
+            long retVal = -1;
+
+            try
+            {
+                DataRepository.VehicleProvider.Insert(pVehicle);
+                retVal = pVehicle.IDCompany;
+            }
+            catch (Exception ex)
+            {
+                log.Error("Greska vo InsertUser" + ex.Message);
+            }
+
+            return retVal;
+        }
+
+
+        public long UpdateVehicle(Vehicle pVehicle)
+        {
+            long retVal = -1;
+
+            try
+            {
+                if (DataRepository.VehicleProvider.Update(pVehicle))
+                    return 0;
+                else
+                    return 1;
+            }
+            catch (Exception ex)
+            {
+                log.Error("Greska vo UpdateUser" + ex.Message);
+            }
+
+            return retVal;
+        }
+
+
+        public long DeleteVehicle(Vehicle pVehicle)
+        {
+            long retVal = -1;
+
+            try
+            {
+                if (DataRepository.VehicleProvider.Delete(pVehicle))
+                    return 0;
+                else
+                    return 1;
+            }
+            catch (Exception ex)
+            {
+                log.Error("Greska vo DeleteUser" + ex.Message);
+            }
+
+            return retVal;
+        }
+
+
+        
+        public long AttachUnitOnVehicle(Unit pUnit, Vehicle pVehicle, string pComment)
+        {
+            long retVal = -1;
+
+            try
+            {
+                UnitHistory tmpUnitHistory = new UnitHistory();
+
+                tmpUnitHistory.IDUnit = pUnit.IDUnit;
+                tmpUnitHistory.IDVehicle = pVehicle.IDVehicle;
+                tmpUnitHistory.InstalationDate = System.DateTime.Now;
+                tmpUnitHistory.Description = "Montaza: " + pComment;
+
+                DataRepository.UnitHistoryProvider.Insert(tmpUnitHistory);
+
+
+
+                pVehicle.IDUnit = pUnit.IDUnit;
+
+                DataRepository.VehicleProvider.Update(pVehicle);
+
+                retVal = 1;
+
+            }
+            catch (Exception ex)
+            {
+                log.Error("Greska vo AttachUnitOnVehicle(Unit pUnit, Vehicle pVehicle, string pComment)" + ex.Message);
+            }
+
+            return retVal;
+        }
+
+
+
+
+
+        public long DetachUnitFromVehicle(Unit pUnit, Vehicle pVehicle, string pComment)
+        {
+            long retVal = -1;
+            TList<UnitHistory> tmpUnitHistory = null;
+
+            try
+            {
+                pVehicle.IDUnit = null;
+
+                DataRepository.VehicleProvider.Update(pVehicle);
+
+                tmpUnitHistory = DataRepository.UnitHistoryProvider.GetByIDUnit(pUnit.IDUnit);
+
+                if (tmpUnitHistory != null)
+                {
+                    foreach (UnitHistory tmpUH in tmpUnitHistory)
+                        if ((tmpUH.IDVehicle == pVehicle.IDVehicle) && (tmpUH.UninstallationDate == null))
+                        {
+                            tmpUH.UninstallationDate = System.DateTime.Now;
+                            tmpUH.Description += " Demontaza: " + pComment;
+
+                            DataRepository.UnitHistoryProvider.Update(tmpUH);
+
+                            retVal = 1;
+                        }
+                }
+                else
+                    retVal = -1;
+
+            }
+            catch (Exception ex)
+            {
+                log.Error("Greska vo DetachUnitFromVehicle(Unit pUnit, Vehicle pVehicle, string pComment)" + ex.Message);
+            }
+
+            return retVal;
+        }
+
+
+#endregion
+
+
+        #region Units
+
+
+        public TList<Unit> getAllUnitsByCompany(Company pCompany)
+        {
+            TList<Unit> retVal = null;
+
+            try
+            {
+                retVal = DataRepository.UnitProvider.GetByIDCompany(pCompany.IDCompany);
+            }
+            catch (Exception ex)
+            {
+                log.Error("Greska vo getAllUsersByCompany(Company pIdCompany)" + ex.Message);
+            }
+
+            return retVal;
+        }
+
+
+        public long InsertUnit(Unit pUnit)
+        {
+            long retVal = -1;
+
+            try
+            {
+                DataRepository.UnitProvider.Insert(pUnit);
+                retVal = pUnit.IDUnit;
+            }
+            catch (Exception ex)
+            {
+                log.Error("Greska vo InsertUser" + ex.Message);
+            }
+
+            return retVal;
+        }
+
+
+        public long UpdateUnit(Unit pUnit)
+        {
+            long retVal = -1;
+
+            try
+            {
+                if (DataRepository.UnitProvider.Update(pUnit))
+                    return 0;
+                else
+                    return 1;
+            }
+            catch (Exception ex)
+            {
+                log.Error("Greska vo UpdateUser" + ex.Message);
+            }
+
+            return retVal;
+        }
+
+
+        public long DeleteUnit(Unit pUnit)
+        {
+            long retVal = -1;
+
+            try
+            {
+                if (DataRepository.UnitProvider.Delete(pUnit))
+                    return 0;
+                else
+                    return 1;
+            }
+            catch (Exception ex)
+            {
+                log.Error("Greska vo DeleteUser" + ex.Message);
+            }
+
+            return retVal;
+        }
+
+
+        public TList<UnitHistory> GetUnitHistory(Unit pUnit)
+        {
+            TList<UnitHistory> retVal = null;
+
+            try
+            {
+                retVal = DataRepository.UnitHistoryProvider.GetByIDUnit(pUnit.IDUnit);
+            }
+
+            catch (Exception ex)
+            {
+                log.Error("Greska vo GetUnitHistory(Unit pUnit)" + ex.Message);
+            }
+
+            return retVal;
+
+        }
+
+
+        #endregion
+
+
+        #region RfIdCardPerClients
+
+        public long saveRfIdCardPerClients(RfIdCardPerClients pRfIdCardPerClients)
+        {
+            long retVal = -1;
+
+            try
+            {
+                
+                if (DataRepository.RfIdCardPerClientsProvider.Insert(pRfIdCardPerClients))
+                {
+                    RfIdCards tmpRfIdCard = DataRepository.RfIdCardsProvider.GetByIDRfIdCard(pRfIdCardPerClients.IDRfIdCard);
+
+                    if (tmpRfIdCard != null)
+                    {
+                        tmpRfIdCard.Busy = true;
+
+                        DataRepository.RfIdCardsProvider.Update(tmpRfIdCard);
+
+                        retVal = pRfIdCardPerClients.IDRfIdCardPerClients;
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                log.Error("ERROR", e);
+            }
+
+            return retVal;
+
+        }
+
+        public long deleteRfIdCardPerClients(RfIdCardPerClients pRfIdCardPerClients)
+        {
+            long retVal = -1;
+
+            try
+            {
+
+                if (DataRepository.RfIdCardPerClientsProvider.Delete(pRfIdCardPerClients))
+                {
+                    RfIdCards tmpRfIdCard = DataRepository.RfIdCardsProvider.GetByIDRfIdCard(pRfIdCardPerClients.IDRfIdCard);
+
+                    if (tmpRfIdCard != null)
+                    {
+                        tmpRfIdCard.Busy = false;
+
+                        DataRepository.RfIdCardsProvider.Update(tmpRfIdCard);
+
+                        retVal = 0;
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                log.Error("ERROR", e);
+            }
+
+            return retVal;
+        }
+
+        public long updateRfIdCardPerClients(RfIdCardPerClients pRfIdCardPerClients)
+        {
+            try
+            {
+                if (DataRepository.RfIdCardPerClientsProvider.Update(pRfIdCardPerClients))
+                    return 0;
+                else
+                    return -1;
+            }
+            catch (Exception e)
+            {
+                log.Error("ERROR", e);
+                return -1;
+            }
+        }
+
+        public TList<RfIdCardPerClients> getAllRfIdCardPerClient(Clients pClient)
+        {
+            TList<RfIdCardPerClients> tmpRfIdCardPerClients;
+            TList<RfIdCardPerClients> retVal = new TList<RfIdCardPerClients>();
+
+            try
+            {
+                tmpRfIdCardPerClients = DataRepository.RfIdCardPerClientsProvider.GetByIDClient(pClient.IDClient);
+
+                Type[] tl = new Type[2];
+                tl[0] = typeof(Clients);
+                tl[1] = typeof(RfIdCards);
+
+                DataRepository.RfIdCardPerClientsProvider.DeepLoad(tmpRfIdCardPerClients, true, DeepLoadType.IncludeChildren, tl);
+
+                if (tmpRfIdCardPerClients != null)
+                    foreach (RfIdCardPerClients tmpRfIdCardPerClient in tmpRfIdCardPerClients)
+                        if (tmpRfIdCardPerClient.IDRfIdCardSource.IsDeleted == false)
+                            retVal.Add(tmpRfIdCardPerClient);
+
+                if (retVal.Count == 0)
+                    retVal = null;
+            }
+            catch (Exception e)
+            {
+                log.Error("ERROR", e);
+                retVal = null;
+            }
+
+            return retVal;
+        }
+
+        public TList<RfIdCards> getAllRfIdCardPerCompany(Company pCompany)
+        {
+
+            TList<RfIdCards> tmpRfIdCards;
+            TList<RfIdCards> retVal = new TList<RfIdCards>();
+
+            try
+            {
+                tmpRfIdCards = DataRepository.RfIdCardsProvider.GetByIDCompany(pCompany.IDCompany);
+
+                if (tmpRfIdCards != null)
+                    foreach (RfIdCards tmpRfIdCard in tmpRfIdCards)
+                        if (tmpRfIdCard.IsDeleted == false )
+                            retVal.Add(tmpRfIdCard);
+
+                if (retVal.Count == 0)
+                    retVal = null;
+                
+            }
+            catch (Exception e)
+            {
+                log.Error("ERROR", e);
+                retVal = null;
+            }
+
+            return retVal;
+        }
+
+
+        public TList<RfIdCards> getAllFreeRfIdCardPerCompany(Company pCompany)
+        {
+            TList<RfIdCards> tmpRfIdCards;
+            TList<RfIdCards> retVal = new TList<RfIdCards>();
+
+            try
+            {
+                tmpRfIdCards = DataRepository.RfIdCardsProvider.GetByIDCompany(pCompany.IDCompany);
+
+                if (tmpRfIdCards != null)
+                    foreach (RfIdCards tmpRfIdCard in tmpRfIdCards)
+                        if ((tmpRfIdCard.IsDeleted == false) && (tmpRfIdCard.Busy == false))
+                            retVal.Add(tmpRfIdCard);
+
+                if (retVal.Count == 0)
+                    retVal = null;
+
+            }
+            catch (Exception e)
+            {
+                log.Error("ERROR", e);
+                retVal = null;
+            }
+
+            return retVal;
+        }
+
+
+
+        public TList<RfIdCards> getAllBusyRfIdCardPerCompany(Company pCompany)
+        {
+            TList<RfIdCards> tmpRfIdCards;
+            TList<RfIdCards> retVal = new TList<RfIdCards>();
+
+            try
+            {
+                tmpRfIdCards = DataRepository.RfIdCardsProvider.GetByIDCompany(pCompany.IDCompany);
+
+                if (tmpRfIdCards != null)
+                    foreach (RfIdCards tmpRfIdCard in tmpRfIdCards)
+                        if ((tmpRfIdCard.IsDeleted == false) && (tmpRfIdCard.Busy == true))
+                            retVal.Add(tmpRfIdCard);
+
+                if (retVal.Count == 0)
+                    retVal = null;
+
+            }
+            catch (Exception e)
+            {
+                log.Error("ERROR", e);
+                retVal = null;
+            }
+
+            return retVal;
+        }
+
+
+
+        public RfIdCardPerClients getRfIdCardPerClients(long ID_RfIdCardPerClients)
+        {
+            try
+            {
+                RfIdCardPerClients retVal;
+
+                retVal = DataRepository.RfIdCardPerClientsProvider.GetByIDRfIdCardPerClients(ID_RfIdCardPerClients);
+
+                Type[] tl = new Type[2];
+                tl[0] = typeof(Clients);
+                tl[1] = typeof(RfIdCards);
+
+                DataRepository.RfIdCardPerClientsProvider.DeepLoad(retVal, true, DeepLoadType.IncludeChildren, tl);
+
+                return retVal;
+            }
+            catch (Exception e)
+            {
+                log.Error("ERROR", e);
+                return null;
+            }
+        }
+
+
+        public RfIdCards getRfIdCardByDriver(Driver pDriver)
+        {
+            RfIdCards retVal = null;
+
+            try
+            {
+                if (pDriver.IDRfIdCard != null)
+                    retVal = DataRepository.RfIdCardsProvider.GetByIDRfIdCard((long)pDriver.IDRfIdCard);
+            }
+            catch (Exception e)
+            {
+                log.Error("ERROR", e);
+            }
+            return retVal;
+
+        }
+
+
+
+        public long InsertRfIdCardHistory(RfIdCards pRfIdCard, string pComment)
+        {
+            long retVal = -1;
+
+            RfIdCardHistory tmpRfIdCardHistory = new RfIdCardHistory();
+
+            tmpRfIdCardHistory.IDRfIdCard = pRfIdCard.IDRfIdCard;
+            tmpRfIdCardHistory.SerialNumber = pRfIdCard.SerialNumber;
+            tmpRfIdCardHistory.Date = System.DateTime.Now;
+            tmpRfIdCardHistory.Description = pComment;
+
+            try
+            {
+                DataRepository.RfIdCardHistoryProvider.Insert(tmpRfIdCardHistory);
+                retVal = tmpRfIdCardHistory.IDRfIdCardHistory ;
+            }
+            catch (Exception ex)
+            {
+                log.Error("Greska vo InsertRfIdCardHistory" + ex.Message);
+            }
+
+            return retVal;
+        }
+
+
+        public long InsertRfIdCard(RfIdCards pRfIdCard)
+        {
+            long retVal = -1;
+
+            try
+            {
+                DataRepository.RfIdCardsProvider.Insert(pRfIdCard);
+                retVal = pRfIdCard.IDRfIdCard;
+            }
+            catch (Exception ex)
+            {
+                log.Error("Greska vo InsertRfIdCard" + ex.Message);
+            }
+
+            return retVal;
+
+        }
+       
+        public long UpdateRfIdCard(RfIdCards pRfIdCard)
+        {
+            long retVal = -1;
+
+            try
+            {
+                if (DataRepository.RfIdCardsProvider.Update(pRfIdCard))
+                    return 0;
+                else
+                    return 1;
+            }
+            catch (Exception ex)
+            {
+                log.Error("Greska vo UpdateRfIdCard" + ex.Message);
+            }
+
+            return retVal;
+        }
+
+        public long DeleteRfIdCard(RfIdCards pRfIdCard)
+        {
+            long retVal = -1;
+
+            try
+            {
+                pRfIdCard.IsDeleted = true;
+
+                if (DataRepository.RfIdCardsProvider.Update(pRfIdCard))
+                    return 0;
+                else
+                    return 1;
+            }
+            catch (Exception ex)
+            {
+                log.Error("Greska vo DeleteRfIdCard" + ex.Message);
+            }
+
+            return retVal;
+
+        }
+
+        #endregion
+
+
+
+        #region  ClientPhoneNumbers
+
+        public long saveClientPhoneNumbers(ClientPhoneNumbers pClientPhoneNumbers)
+        {
+            long retVal = -1;
+
+            try
+            {
+                DataRepository.ClientPhoneNumbersProvider.Insert(pClientPhoneNumbers);
+                retVal = pClientPhoneNumbers.IDClientPhoneNumbers;
+            }
+            catch (Exception ex)
+            {
+                log.Error("Greska vo saveClientPhoneNumbers" + ex.Message);
+            }
+
+            return retVal;
+        }
+
+        public long deleteClientPhoneNumbers(ClientPhoneNumbers pClientPhoneNumbers)
+        {
+            long retVal = -1;
+
+            try
+            {
+                if (DataRepository.ClientPhoneNumbersProvider.Delete(pClientPhoneNumbers))
+                    return 0;
+                else
+                    return 1;
+            }
+            catch (Exception ex)
+            {
+                log.Error("Greska vo deleteClientPhoneNumbers" + ex.Message);
+            }
+
+            return retVal;
+        }
+
+        public long updateClientPhoneNumbers(ClientPhoneNumbers pClientPhoneNumbers)
+        {
+            long retVal = -1;
+
+            try
+            {
+                if (DataRepository.ClientPhoneNumbersProvider.Update(pClientPhoneNumbers))
+                    return 0;
+                else
+                    return 1;
+            }
+            catch (Exception ex)
+            {
+                log.Error("Greska vo updateClientPhoneNumbers" + ex.Message);
+            }
+
+            return retVal;
+        }
+
+        public TList<ClientPhoneNumbers> getAllClientPhoneNumbers(Clients pClient)
+        {
+            TList<ClientPhoneNumbers> retVal = null;
+
+            try
+            {
+                retVal = DataRepository.ClientPhoneNumbersProvider.GetByIDClient (pClient.IDClient);
+            }
+            catch (Exception ex)
+            {
+                log.Error("Greska vo getAllClientPhoneNumbers" + ex.Message);
+            }
+
+            return retVal;
+
+        }
+
+        #endregion
+
+        #region GisPhoneNumber
+
+        public long updateGisPhoneNumbers(GisPhoneNumbers newPhoneNumber)
+        {
+            long retVal = -1;
+
+            try
+            {
+                if (DataRepository.GisPhoneNumbersProvider.Update(newPhoneNumber))
+                    return 0;
+                else
+                    return 1;
+            }
+            catch (Exception ex)
+            {
+                log.Error("Greska vo updateGisPhoneNumbers" + ex.Message);
+            }
+
+            return retVal;
+
+        }
+
+        #endregion
+    }
+}

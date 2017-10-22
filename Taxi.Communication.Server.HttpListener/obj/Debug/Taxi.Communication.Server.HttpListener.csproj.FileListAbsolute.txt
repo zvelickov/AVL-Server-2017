@@ -1,0 +1,221 @@
+C:\GLOBSALDO\AVL-Server\Taxi.Communication.Server.HttpListener\obj\Debug\ResolveAssemblyReference.cache
+C:\GLOBSALDO\AVL-Server\Taxi.Communication.Server.HttpListener\bin\Debug\Taxi.Communication.Server.HttpListener.dll
+C:\GLOBSALDO\AVL-Server\Taxi.Communication.Server.HttpListener\bin\Debug\Taxi.Communication.Server.HttpListener.pdb
+C:\GLOBSALDO\AVL-Server\Taxi.Communication.Server.HttpListener\bin\Debug\CommunicationServer.dll
+C:\GLOBSALDO\AVL-Server\Taxi.Communication.Server.HttpListener\bin\Debug\GlobSaldo.AVL.Data.dll
+C:\GLOBSALDO\AVL-Server\Taxi.Communication.Server.HttpListener\bin\Debug\GlobSaldo.AVL.Data.SqlClient.dll
+C:\GLOBSALDO\AVL-Server\Taxi.Communication.Server.HttpListener\bin\Debug\GlobSaldo.AVL.Entities.dll
+C:\GLOBSALDO\AVL-Server\Taxi.Communication.Server.HttpListener\bin\Debug\JP.Data.Utils.dll
+C:\GLOBSALDO\AVL-Server\Taxi.Communication.Server.HttpListener\bin\Debug\log4net.dll
+C:\GLOBSALDO\AVL-Server\Taxi.Communication.Server.HttpListener\bin\Debug\Taxi.Communication.Server.Utils.dll
+C:\GLOBSALDO\AVL-Server\Taxi.Communication.Server.HttpListener\bin\Debug\Microsoft.Practices.EnterpriseLibrary.Data.dll
+C:\GLOBSALDO\AVL-Server\Taxi.Communication.Server.HttpListener\bin\Debug\Taxi.Communication.Server.MessageParsers.dll
+C:\GLOBSALDO\AVL-Server\Taxi.Communication.Server.HttpListener\bin\Debug\Microsoft.Practices.ObjectBuilder2.dll
+C:\GLOBSALDO\AVL-Server\Taxi.Communication.Server.HttpListener\bin\Debug\GlobSaldo.GISDB.Entities.dll
+C:\GLOBSALDO\AVL-Server\Taxi.Communication.Server.HttpListener\bin\Debug\Taxi.Communication.Server.PhoneSwitch.dll
+C:\GLOBSALDO\AVL-Server\Taxi.Communication.Server.HttpListener\bin\Debug\Microsoft.Practices.EnterpriseLibrary.Security.Cryptography.dll
+C:\GLOBSALDO\AVL-Server\Taxi.Communication.Server.HttpListener\bin\Debug\Microsoft.Practices.EnterpriseLibrary.Caching.Cryptography.dll
+C:\GLOBSALDO\AVL-Server\Taxi.Communication.Server.HttpListener\bin\Debug\Taxi.Communication.Server.BL.dll
+C:\GLOBSALDO\AVL-Server\Taxi.Communication.Server.HttpListener\bin\Debug\Microsoft.Practices.EnterpriseLibrary.Caching.dll
+C:\GLOBSALDO\AVL-Server\Taxi.Communication.Server.HttpListener\bin\Debug\Microsoft.Practices.ObjectBuilder.dll
+C:\GLOBSALDO\AVL-Server\Taxi.Communication.Server.HttpListener\bin\Debug\Microsoft.Practices.EnterpriseLibrary.Common.dll
+C:\GLOBSALDO\AVL-Server\Taxi.Communication.Server.HttpListener\bin\Debug\GlobSaldo.GISDB.Data.dll
+C:\GLOBSALDO\AVL-Server\Taxi.Communication.Server.HttpListener\bin\Debug\log4net.xml
+C:\GLOBSALDO\AVL-Server\Taxi.Communication.Server.HttpListener\bin\Debug\CommunicationServer.pdb
+C:\GLOBSALDO\AVL-Server\Taxi.Communication.Server.HttpListener\bin\Debug\GlobSaldo.AVL.Entities.pdb
+C:\GLOBSALDO\AVL-Server\Taxi.Communication.Server.HttpListener\bin\Debug\GlobSaldo.AVL.Entities.xml
+C:\GLOBSALDO\AVL-Server\Taxi.Communication.Server.HttpListener\bin\Debug\Taxi.Communication.Server.MessageParsers.pdb
+C:\GLOBSALDO\AVL-Server\Taxi.Communication.Server.HttpListener\bin\Debug\GlobSaldo.GISDB.Entities.pdb
+C:\GLOBSALDO\AVL-Server\Taxi.Communication.Server.HttpListener\bin\Debug\GlobSaldo.GISDB.Entities.xml
+C:\GLOBSALDO\AVL-Server\Taxi.Communication.Server.HttpListener\bin\Debug\Taxi.Communication.Server.PhoneSwitch.pdb
+C:\GLOBSALDO\AVL-Server\Taxi.Communication.Server.HttpListener\bin\Debug\Taxi.Communication.Server.BL.pdb
+C:\GLOBSALDO\AVL-Server\Taxi.Communication.Server.HttpListener\bin\Debug\JP.Data.Utils.pdb
+C:\GLOBSALDO\AVL-Server\Taxi.Communication.Server.HttpListener\bin\Debug\GlobSaldo.AVL.Data.SqlClient.pdb
+C:\GLOBSALDO\AVL-Server\Taxi.Communication.Server.HttpListener\bin\Debug\GlobSaldo.AVL.Data.SqlClient.xml
+C:\GLOBSALDO\AVL-Server\Taxi.Communication.Server.HttpListener\bin\Debug\GlobSaldo.AVL.Data.pdb
+C:\GLOBSALDO\AVL-Server\Taxi.Communication.Server.HttpListener\bin\Debug\GlobSaldo.AVL.Data.xml
+C:\GLOBSALDO\AVL-Server\Taxi.Communication.Server.HttpListener\bin\Debug\Taxi.Communication.Server.Utils.pdb
+C:\GLOBSALDO\AVL-Server\Taxi.Communication.Server.HttpListener\bin\Debug\GlobSaldo.GISDB.Data.pdb
+C:\GLOBSALDO\AVL-Server\Taxi.Communication.Server.HttpListener\bin\Debug\GlobSaldo.GISDB.Data.xml
+C:\GLOBSALDO\AVL-Server\Taxi.Communication.Server.HttpListener\obj\Debug\Taxi.Communication.Server.HttpListener.dll
+C:\GLOBSALDO\AVL-Server\Taxi.Communication.Server.HttpListener\obj\Debug\Taxi.Communication.Server.HttpListener.pdb
+D:\PROJECT\NaseTaksi\Tekoven razvoj\AVL-Server\Taxi.Communication.Server.HttpListener\bin\Debug\Taxi.Communication.Server.HttpListener.dll
+D:\PROJECT\NaseTaksi\Tekoven razvoj\AVL-Server\Taxi.Communication.Server.HttpListener\bin\Debug\Taxi.Communication.Server.HttpListener.pdb
+D:\PROJECT\NaseTaksi\Tekoven razvoj\AVL-Server\Taxi.Communication.Server.HttpListener\bin\Debug\CommunicationServer.dll
+D:\PROJECT\NaseTaksi\Tekoven razvoj\AVL-Server\Taxi.Communication.Server.HttpListener\bin\Debug\GlobSaldo.AVL.Data.dll
+D:\PROJECT\NaseTaksi\Tekoven razvoj\AVL-Server\Taxi.Communication.Server.HttpListener\bin\Debug\GlobSaldo.AVL.Data.SqlClient.dll
+D:\PROJECT\NaseTaksi\Tekoven razvoj\AVL-Server\Taxi.Communication.Server.HttpListener\bin\Debug\GlobSaldo.AVL.Entities.dll
+D:\PROJECT\NaseTaksi\Tekoven razvoj\AVL-Server\Taxi.Communication.Server.HttpListener\bin\Debug\GlobSaldo.GISDB.Data.dll
+D:\PROJECT\NaseTaksi\Tekoven razvoj\AVL-Server\Taxi.Communication.Server.HttpListener\bin\Debug\GlobSaldo.GISDB.Data.SqlClient.dll
+D:\PROJECT\NaseTaksi\Tekoven razvoj\AVL-Server\Taxi.Communication.Server.HttpListener\bin\Debug\GlobSaldo.GISDB.Entities.dll
+D:\PROJECT\NaseTaksi\Tekoven razvoj\AVL-Server\Taxi.Communication.Server.HttpListener\bin\Debug\JP.Data.Utils.dll
+D:\PROJECT\NaseTaksi\Tekoven razvoj\AVL-Server\Taxi.Communication.Server.HttpListener\bin\Debug\log4net.dll
+D:\PROJECT\NaseTaksi\Tekoven razvoj\AVL-Server\Taxi.Communication.Server.HttpListener\bin\Debug\Taxi.Communication.Server.Utils.dll
+D:\PROJECT\NaseTaksi\Tekoven razvoj\AVL-Server\Taxi.Communication.Server.HttpListener\bin\Debug\Microsoft.Practices.EnterpriseLibrary.Data.dll
+D:\PROJECT\NaseTaksi\Tekoven razvoj\AVL-Server\Taxi.Communication.Server.HttpListener\bin\Debug\Taxi.Communication.Server.MessageParsers.dll
+D:\PROJECT\NaseTaksi\Tekoven razvoj\AVL-Server\Taxi.Communication.Server.HttpListener\bin\Debug\Microsoft.Practices.ObjectBuilder2.dll
+D:\PROJECT\NaseTaksi\Tekoven razvoj\AVL-Server\Taxi.Communication.Server.HttpListener\bin\Debug\Taxi.Communication.Server.PhoneSwitch.dll
+D:\PROJECT\NaseTaksi\Tekoven razvoj\AVL-Server\Taxi.Communication.Server.HttpListener\bin\Debug\Microsoft.Practices.EnterpriseLibrary.Security.Cryptography.dll
+D:\PROJECT\NaseTaksi\Tekoven razvoj\AVL-Server\Taxi.Communication.Server.HttpListener\bin\Debug\Microsoft.Practices.EnterpriseLibrary.Caching.Cryptography.dll
+D:\PROJECT\NaseTaksi\Tekoven razvoj\AVL-Server\Taxi.Communication.Server.HttpListener\bin\Debug\Taxi.Communication.Server.BL.dll
+D:\PROJECT\NaseTaksi\Tekoven razvoj\AVL-Server\Taxi.Communication.Server.HttpListener\bin\Debug\Microsoft.Practices.EnterpriseLibrary.Caching.dll
+D:\PROJECT\NaseTaksi\Tekoven razvoj\AVL-Server\Taxi.Communication.Server.HttpListener\bin\Debug\Microsoft.Practices.ObjectBuilder.dll
+D:\PROJECT\NaseTaksi\Tekoven razvoj\AVL-Server\Taxi.Communication.Server.HttpListener\bin\Debug\Microsoft.Practices.EnterpriseLibrary.Common.dll
+D:\PROJECT\NaseTaksi\Tekoven razvoj\AVL-Server\Taxi.Communication.Server.HttpListener\bin\Debug\log4net.xml
+D:\PROJECT\NaseTaksi\Tekoven razvoj\AVL-Server\Taxi.Communication.Server.HttpListener\bin\Debug\CommunicationServer.pdb
+D:\PROJECT\NaseTaksi\Tekoven razvoj\AVL-Server\Taxi.Communication.Server.HttpListener\bin\Debug\GlobSaldo.AVL.Entities.pdb
+D:\PROJECT\NaseTaksi\Tekoven razvoj\AVL-Server\Taxi.Communication.Server.HttpListener\bin\Debug\GlobSaldo.AVL.Entities.xml
+D:\PROJECT\NaseTaksi\Tekoven razvoj\AVL-Server\Taxi.Communication.Server.HttpListener\bin\Debug\Taxi.Communication.Server.MessageParsers.pdb
+D:\PROJECT\NaseTaksi\Tekoven razvoj\AVL-Server\Taxi.Communication.Server.HttpListener\bin\Debug\GlobSaldo.GISDB.Entities.pdb
+D:\PROJECT\NaseTaksi\Tekoven razvoj\AVL-Server\Taxi.Communication.Server.HttpListener\bin\Debug\GlobSaldo.GISDB.Entities.xml
+D:\PROJECT\NaseTaksi\Tekoven razvoj\AVL-Server\Taxi.Communication.Server.HttpListener\bin\Debug\Taxi.Communication.Server.PhoneSwitch.pdb
+D:\PROJECT\NaseTaksi\Tekoven razvoj\AVL-Server\Taxi.Communication.Server.HttpListener\bin\Debug\Taxi.Communication.Server.BL.pdb
+D:\PROJECT\NaseTaksi\Tekoven razvoj\AVL-Server\Taxi.Communication.Server.HttpListener\bin\Debug\GlobSaldo.GISDB.Data.SqlClient.pdb
+D:\PROJECT\NaseTaksi\Tekoven razvoj\AVL-Server\Taxi.Communication.Server.HttpListener\bin\Debug\GlobSaldo.GISDB.Data.SqlClient.xml
+D:\PROJECT\NaseTaksi\Tekoven razvoj\AVL-Server\Taxi.Communication.Server.HttpListener\bin\Debug\JP.Data.Utils.pdb
+D:\PROJECT\NaseTaksi\Tekoven razvoj\AVL-Server\Taxi.Communication.Server.HttpListener\bin\Debug\GlobSaldo.AVL.Data.SqlClient.pdb
+D:\PROJECT\NaseTaksi\Tekoven razvoj\AVL-Server\Taxi.Communication.Server.HttpListener\bin\Debug\GlobSaldo.AVL.Data.SqlClient.xml
+D:\PROJECT\NaseTaksi\Tekoven razvoj\AVL-Server\Taxi.Communication.Server.HttpListener\bin\Debug\GlobSaldo.AVL.Data.pdb
+D:\PROJECT\NaseTaksi\Tekoven razvoj\AVL-Server\Taxi.Communication.Server.HttpListener\bin\Debug\GlobSaldo.AVL.Data.xml
+D:\PROJECT\NaseTaksi\Tekoven razvoj\AVL-Server\Taxi.Communication.Server.HttpListener\bin\Debug\Taxi.Communication.Server.Utils.pdb
+D:\PROJECT\NaseTaksi\Tekoven razvoj\AVL-Server\Taxi.Communication.Server.HttpListener\bin\Debug\GlobSaldo.GISDB.Data.pdb
+D:\PROJECT\NaseTaksi\Tekoven razvoj\AVL-Server\Taxi.Communication.Server.HttpListener\bin\Debug\GlobSaldo.GISDB.Data.xml
+D:\PROJECT\NaseTaksi\Tekoven razvoj\AVL-Server\Taxi.Communication.Server.HttpListener\obj\Debug\ResolveAssemblyReference.cache
+D:\PROJECT\NaseTaksi\Tekoven razvoj\AVL-Server\Taxi.Communication.Server.HttpListener\obj\Debug\Taxi.Communication.Server.HttpListener.dll
+D:\PROJECT\NaseTaksi\Tekoven razvoj\AVL-Server\Taxi.Communication.Server.HttpListener\obj\Debug\Taxi.Communication.Server.HttpListener.pdb
+C:\PROJECT\NaseTaksi\Tekoven razvoj\AVL-Server\Taxi.Communication.Server.HttpListener\bin\Debug\Taxi.Communication.Server.HttpListener.dll
+C:\PROJECT\NaseTaksi\Tekoven razvoj\AVL-Server\Taxi.Communication.Server.HttpListener\bin\Debug\Taxi.Communication.Server.HttpListener.pdb
+C:\PROJECT\NaseTaksi\Tekoven razvoj\AVL-Server\Taxi.Communication.Server.HttpListener\bin\Debug\CommunicationServer.dll
+C:\PROJECT\NaseTaksi\Tekoven razvoj\AVL-Server\Taxi.Communication.Server.HttpListener\bin\Debug\GlobSaldo.AVL.Data.dll
+C:\PROJECT\NaseTaksi\Tekoven razvoj\AVL-Server\Taxi.Communication.Server.HttpListener\bin\Debug\GlobSaldo.AVL.Data.SqlClient.dll
+C:\PROJECT\NaseTaksi\Tekoven razvoj\AVL-Server\Taxi.Communication.Server.HttpListener\bin\Debug\GlobSaldo.AVL.Entities.dll
+C:\PROJECT\NaseTaksi\Tekoven razvoj\AVL-Server\Taxi.Communication.Server.HttpListener\bin\Debug\GlobSaldo.GISDB.Data.dll
+C:\PROJECT\NaseTaksi\Tekoven razvoj\AVL-Server\Taxi.Communication.Server.HttpListener\bin\Debug\GlobSaldo.GISDB.Data.SqlClient.dll
+C:\PROJECT\NaseTaksi\Tekoven razvoj\AVL-Server\Taxi.Communication.Server.HttpListener\bin\Debug\GlobSaldo.GISDB.Entities.dll
+C:\PROJECT\NaseTaksi\Tekoven razvoj\AVL-Server\Taxi.Communication.Server.HttpListener\bin\Debug\JP.Data.Utils.dll
+C:\PROJECT\NaseTaksi\Tekoven razvoj\AVL-Server\Taxi.Communication.Server.HttpListener\bin\Debug\log4net.dll
+C:\PROJECT\NaseTaksi\Tekoven razvoj\AVL-Server\Taxi.Communication.Server.HttpListener\bin\Debug\Taxi.Communication.Server.Utils.dll
+C:\PROJECT\NaseTaksi\Tekoven razvoj\AVL-Server\Taxi.Communication.Server.HttpListener\bin\Debug\Microsoft.Practices.EnterpriseLibrary.Data.dll
+C:\PROJECT\NaseTaksi\Tekoven razvoj\AVL-Server\Taxi.Communication.Server.HttpListener\bin\Debug\Taxi.Communication.Server.MessageParsers.dll
+C:\PROJECT\NaseTaksi\Tekoven razvoj\AVL-Server\Taxi.Communication.Server.HttpListener\bin\Debug\Microsoft.Practices.ObjectBuilder2.dll
+C:\PROJECT\NaseTaksi\Tekoven razvoj\AVL-Server\Taxi.Communication.Server.HttpListener\bin\Debug\Taxi.Communication.Server.PhoneSwitch.dll
+C:\PROJECT\NaseTaksi\Tekoven razvoj\AVL-Server\Taxi.Communication.Server.HttpListener\bin\Debug\Microsoft.Practices.EnterpriseLibrary.Security.Cryptography.dll
+C:\PROJECT\NaseTaksi\Tekoven razvoj\AVL-Server\Taxi.Communication.Server.HttpListener\bin\Debug\Microsoft.Practices.EnterpriseLibrary.Caching.Cryptography.dll
+C:\PROJECT\NaseTaksi\Tekoven razvoj\AVL-Server\Taxi.Communication.Server.HttpListener\bin\Debug\Taxi.Communication.Server.BL.dll
+C:\PROJECT\NaseTaksi\Tekoven razvoj\AVL-Server\Taxi.Communication.Server.HttpListener\bin\Debug\Microsoft.Practices.EnterpriseLibrary.Caching.dll
+C:\PROJECT\NaseTaksi\Tekoven razvoj\AVL-Server\Taxi.Communication.Server.HttpListener\bin\Debug\Microsoft.Practices.ObjectBuilder.dll
+C:\PROJECT\NaseTaksi\Tekoven razvoj\AVL-Server\Taxi.Communication.Server.HttpListener\bin\Debug\Microsoft.Practices.EnterpriseLibrary.Common.dll
+C:\PROJECT\NaseTaksi\Tekoven razvoj\AVL-Server\Taxi.Communication.Server.HttpListener\bin\Debug\log4net.xml
+C:\PROJECT\NaseTaksi\Tekoven razvoj\AVL-Server\Taxi.Communication.Server.HttpListener\bin\Debug\CommunicationServer.pdb
+C:\PROJECT\NaseTaksi\Tekoven razvoj\AVL-Server\Taxi.Communication.Server.HttpListener\bin\Debug\GlobSaldo.AVL.Entities.pdb
+C:\PROJECT\NaseTaksi\Tekoven razvoj\AVL-Server\Taxi.Communication.Server.HttpListener\bin\Debug\GlobSaldo.AVL.Entities.xml
+C:\PROJECT\NaseTaksi\Tekoven razvoj\AVL-Server\Taxi.Communication.Server.HttpListener\bin\Debug\Taxi.Communication.Server.MessageParsers.pdb
+C:\PROJECT\NaseTaksi\Tekoven razvoj\AVL-Server\Taxi.Communication.Server.HttpListener\bin\Debug\GlobSaldo.GISDB.Entities.pdb
+C:\PROJECT\NaseTaksi\Tekoven razvoj\AVL-Server\Taxi.Communication.Server.HttpListener\bin\Debug\GlobSaldo.GISDB.Entities.xml
+C:\PROJECT\NaseTaksi\Tekoven razvoj\AVL-Server\Taxi.Communication.Server.HttpListener\bin\Debug\Taxi.Communication.Server.PhoneSwitch.pdb
+C:\PROJECT\NaseTaksi\Tekoven razvoj\AVL-Server\Taxi.Communication.Server.HttpListener\bin\Debug\Taxi.Communication.Server.BL.pdb
+C:\PROJECT\NaseTaksi\Tekoven razvoj\AVL-Server\Taxi.Communication.Server.HttpListener\bin\Debug\GlobSaldo.GISDB.Data.SqlClient.pdb
+C:\PROJECT\NaseTaksi\Tekoven razvoj\AVL-Server\Taxi.Communication.Server.HttpListener\bin\Debug\GlobSaldo.GISDB.Data.SqlClient.xml
+C:\PROJECT\NaseTaksi\Tekoven razvoj\AVL-Server\Taxi.Communication.Server.HttpListener\bin\Debug\JP.Data.Utils.pdb
+C:\PROJECT\NaseTaksi\Tekoven razvoj\AVL-Server\Taxi.Communication.Server.HttpListener\bin\Debug\GlobSaldo.AVL.Data.SqlClient.pdb
+C:\PROJECT\NaseTaksi\Tekoven razvoj\AVL-Server\Taxi.Communication.Server.HttpListener\bin\Debug\GlobSaldo.AVL.Data.SqlClient.xml
+C:\PROJECT\NaseTaksi\Tekoven razvoj\AVL-Server\Taxi.Communication.Server.HttpListener\bin\Debug\GlobSaldo.AVL.Data.pdb
+C:\PROJECT\NaseTaksi\Tekoven razvoj\AVL-Server\Taxi.Communication.Server.HttpListener\bin\Debug\GlobSaldo.AVL.Data.xml
+C:\PROJECT\NaseTaksi\Tekoven razvoj\AVL-Server\Taxi.Communication.Server.HttpListener\bin\Debug\Taxi.Communication.Server.Utils.pdb
+C:\PROJECT\NaseTaksi\Tekoven razvoj\AVL-Server\Taxi.Communication.Server.HttpListener\bin\Debug\GlobSaldo.GISDB.Data.pdb
+C:\PROJECT\NaseTaksi\Tekoven razvoj\AVL-Server\Taxi.Communication.Server.HttpListener\bin\Debug\GlobSaldo.GISDB.Data.xml
+C:\PROJECT\NaseTaksi\Tekoven razvoj\AVL-Server\Taxi.Communication.Server.HttpListener\obj\Debug\ResolveAssemblyReference.cache
+C:\PROJECT\NaseTaksi\Tekoven razvoj\AVL-Server\Taxi.Communication.Server.HttpListener\obj\Debug\Taxi.Communication.Server.HttpListener.dll
+C:\PROJECT\NaseTaksi\Tekoven razvoj\AVL-Server\Taxi.Communication.Server.HttpListener\obj\Debug\Taxi.Communication.Server.HttpListener.pdb
+D:\PROJECTS\NaseTaksi\Tekoven razvoj\AVL-Server\Taxi.Communication.Server.HttpListener\bin\Debug\Taxi.Communication.Server.HttpListener.dll
+D:\PROJECTS\NaseTaksi\Tekoven razvoj\AVL-Server\Taxi.Communication.Server.HttpListener\bin\Debug\Taxi.Communication.Server.HttpListener.pdb
+D:\PROJECTS\NaseTaksi\Tekoven razvoj\AVL-Server\Taxi.Communication.Server.HttpListener\bin\Debug\CommunicationServer.dll
+D:\PROJECTS\NaseTaksi\Tekoven razvoj\AVL-Server\Taxi.Communication.Server.HttpListener\bin\Debug\GlobSaldo.AVL.Data.dll
+D:\PROJECTS\NaseTaksi\Tekoven razvoj\AVL-Server\Taxi.Communication.Server.HttpListener\bin\Debug\GlobSaldo.AVL.Data.SqlClient.dll
+D:\PROJECTS\NaseTaksi\Tekoven razvoj\AVL-Server\Taxi.Communication.Server.HttpListener\bin\Debug\GlobSaldo.AVL.Entities.dll
+D:\PROJECTS\NaseTaksi\Tekoven razvoj\AVL-Server\Taxi.Communication.Server.HttpListener\bin\Debug\GlobSaldo.GISDB.Data.dll
+D:\PROJECTS\NaseTaksi\Tekoven razvoj\AVL-Server\Taxi.Communication.Server.HttpListener\bin\Debug\GlobSaldo.GISDB.Data.SqlClient.dll
+D:\PROJECTS\NaseTaksi\Tekoven razvoj\AVL-Server\Taxi.Communication.Server.HttpListener\bin\Debug\GlobSaldo.GISDB.Entities.dll
+D:\PROJECTS\NaseTaksi\Tekoven razvoj\AVL-Server\Taxi.Communication.Server.HttpListener\bin\Debug\JP.Data.Utils.dll
+D:\PROJECTS\NaseTaksi\Tekoven razvoj\AVL-Server\Taxi.Communication.Server.HttpListener\bin\Debug\log4net.dll
+D:\PROJECTS\NaseTaksi\Tekoven razvoj\AVL-Server\Taxi.Communication.Server.HttpListener\bin\Debug\Taxi.Communication.Server.Utils.dll
+D:\PROJECTS\NaseTaksi\Tekoven razvoj\AVL-Server\Taxi.Communication.Server.HttpListener\bin\Debug\Microsoft.Practices.EnterpriseLibrary.Data.dll
+D:\PROJECTS\NaseTaksi\Tekoven razvoj\AVL-Server\Taxi.Communication.Server.HttpListener\bin\Debug\Taxi.Communication.Server.MessageParsers.dll
+D:\PROJECTS\NaseTaksi\Tekoven razvoj\AVL-Server\Taxi.Communication.Server.HttpListener\bin\Debug\Microsoft.Practices.ObjectBuilder2.dll
+D:\PROJECTS\NaseTaksi\Tekoven razvoj\AVL-Server\Taxi.Communication.Server.HttpListener\bin\Debug\Taxi.Communication.Server.PhoneSwitch.dll
+D:\PROJECTS\NaseTaksi\Tekoven razvoj\AVL-Server\Taxi.Communication.Server.HttpListener\bin\Debug\Microsoft.Practices.EnterpriseLibrary.Security.Cryptography.dll
+D:\PROJECTS\NaseTaksi\Tekoven razvoj\AVL-Server\Taxi.Communication.Server.HttpListener\bin\Debug\Microsoft.Practices.EnterpriseLibrary.Caching.Cryptography.dll
+D:\PROJECTS\NaseTaksi\Tekoven razvoj\AVL-Server\Taxi.Communication.Server.HttpListener\bin\Debug\Taxi.Communication.Server.BL.dll
+D:\PROJECTS\NaseTaksi\Tekoven razvoj\AVL-Server\Taxi.Communication.Server.HttpListener\bin\Debug\Microsoft.Practices.EnterpriseLibrary.Caching.dll
+D:\PROJECTS\NaseTaksi\Tekoven razvoj\AVL-Server\Taxi.Communication.Server.HttpListener\bin\Debug\Microsoft.Practices.EnterpriseLibrary.Common.dll
+D:\PROJECTS\NaseTaksi\Tekoven razvoj\AVL-Server\Taxi.Communication.Server.HttpListener\bin\Debug\log4net.xml
+D:\PROJECTS\NaseTaksi\Tekoven razvoj\AVL-Server\Taxi.Communication.Server.HttpListener\bin\Debug\CommunicationServer.pdb
+D:\PROJECTS\NaseTaksi\Tekoven razvoj\AVL-Server\Taxi.Communication.Server.HttpListener\bin\Debug\GlobSaldo.AVL.Entities.pdb
+D:\PROJECTS\NaseTaksi\Tekoven razvoj\AVL-Server\Taxi.Communication.Server.HttpListener\bin\Debug\GlobSaldo.AVL.Entities.xml
+D:\PROJECTS\NaseTaksi\Tekoven razvoj\AVL-Server\Taxi.Communication.Server.HttpListener\bin\Debug\Taxi.Communication.Server.MessageParsers.pdb
+D:\PROJECTS\NaseTaksi\Tekoven razvoj\AVL-Server\Taxi.Communication.Server.HttpListener\bin\Debug\GlobSaldo.GISDB.Entities.pdb
+D:\PROJECTS\NaseTaksi\Tekoven razvoj\AVL-Server\Taxi.Communication.Server.HttpListener\bin\Debug\GlobSaldo.GISDB.Entities.xml
+D:\PROJECTS\NaseTaksi\Tekoven razvoj\AVL-Server\Taxi.Communication.Server.HttpListener\bin\Debug\Taxi.Communication.Server.PhoneSwitch.pdb
+D:\PROJECTS\NaseTaksi\Tekoven razvoj\AVL-Server\Taxi.Communication.Server.HttpListener\bin\Debug\Taxi.Communication.Server.BL.pdb
+D:\PROJECTS\NaseTaksi\Tekoven razvoj\AVL-Server\Taxi.Communication.Server.HttpListener\bin\Debug\GlobSaldo.GISDB.Data.SqlClient.pdb
+D:\PROJECTS\NaseTaksi\Tekoven razvoj\AVL-Server\Taxi.Communication.Server.HttpListener\bin\Debug\GlobSaldo.GISDB.Data.SqlClient.xml
+D:\PROJECTS\NaseTaksi\Tekoven razvoj\AVL-Server\Taxi.Communication.Server.HttpListener\bin\Debug\JP.Data.Utils.pdb
+D:\PROJECTS\NaseTaksi\Tekoven razvoj\AVL-Server\Taxi.Communication.Server.HttpListener\bin\Debug\GlobSaldo.AVL.Data.SqlClient.pdb
+D:\PROJECTS\NaseTaksi\Tekoven razvoj\AVL-Server\Taxi.Communication.Server.HttpListener\bin\Debug\GlobSaldo.AVL.Data.SqlClient.xml
+D:\PROJECTS\NaseTaksi\Tekoven razvoj\AVL-Server\Taxi.Communication.Server.HttpListener\bin\Debug\GlobSaldo.AVL.Data.pdb
+D:\PROJECTS\NaseTaksi\Tekoven razvoj\AVL-Server\Taxi.Communication.Server.HttpListener\bin\Debug\GlobSaldo.AVL.Data.xml
+D:\PROJECTS\NaseTaksi\Tekoven razvoj\AVL-Server\Taxi.Communication.Server.HttpListener\bin\Debug\Taxi.Communication.Server.Utils.pdb
+D:\PROJECTS\NaseTaksi\Tekoven razvoj\AVL-Server\Taxi.Communication.Server.HttpListener\bin\Debug\GlobSaldo.GISDB.Data.pdb
+D:\PROJECTS\NaseTaksi\Tekoven razvoj\AVL-Server\Taxi.Communication.Server.HttpListener\bin\Debug\GlobSaldo.GISDB.Data.xml
+D:\PROJECTS\NaseTaksi\Tekoven razvoj\AVL-Server\Taxi.Communication.Server.HttpListener\obj\Debug\ResolveAssemblyReference.cache
+D:\PROJECTS\NaseTaksi\Tekoven razvoj\AVL-Server\Taxi.Communication.Server.HttpListener\obj\Debug\Taxi.Communication.Server.HttpListener.dll
+D:\PROJECTS\NaseTaksi\Tekoven razvoj\AVL-Server\Taxi.Communication.Server.HttpListener\obj\Debug\Taxi.Communication.Server.HttpListener.pdb
+D:\PROJECTS\NaseTaksi\Tekoven razvoj\AVL-Server - 2017\Taxi.Communication.Server.HttpListener\bin\Debug\Taxi.Communication.Server.HttpListener.dll
+D:\PROJECTS\NaseTaksi\Tekoven razvoj\AVL-Server - 2017\Taxi.Communication.Server.HttpListener\bin\Debug\Taxi.Communication.Server.HttpListener.pdb
+D:\PROJECTS\NaseTaksi\Tekoven razvoj\AVL-Server - 2017\Taxi.Communication.Server.HttpListener\bin\Debug\CommunicationServer.dll
+D:\PROJECTS\NaseTaksi\Tekoven razvoj\AVL-Server - 2017\Taxi.Communication.Server.HttpListener\bin\Debug\GlobSaldo.AVL.Data.dll
+D:\PROJECTS\NaseTaksi\Tekoven razvoj\AVL-Server - 2017\Taxi.Communication.Server.HttpListener\bin\Debug\GlobSaldo.AVL.Data.SqlClient.dll
+D:\PROJECTS\NaseTaksi\Tekoven razvoj\AVL-Server - 2017\Taxi.Communication.Server.HttpListener\bin\Debug\GlobSaldo.AVL.Entities.dll
+D:\PROJECTS\NaseTaksi\Tekoven razvoj\AVL-Server - 2017\Taxi.Communication.Server.HttpListener\bin\Debug\GlobSaldo.GISDB.Data.dll
+D:\PROJECTS\NaseTaksi\Tekoven razvoj\AVL-Server - 2017\Taxi.Communication.Server.HttpListener\bin\Debug\GlobSaldo.GISDB.Data.SqlClient.dll
+D:\PROJECTS\NaseTaksi\Tekoven razvoj\AVL-Server - 2017\Taxi.Communication.Server.HttpListener\bin\Debug\GlobSaldo.GISDB.Entities.dll
+D:\PROJECTS\NaseTaksi\Tekoven razvoj\AVL-Server - 2017\Taxi.Communication.Server.HttpListener\bin\Debug\JP.Data.Utils.dll
+D:\PROJECTS\NaseTaksi\Tekoven razvoj\AVL-Server - 2017\Taxi.Communication.Server.HttpListener\bin\Debug\log4net.dll
+D:\PROJECTS\NaseTaksi\Tekoven razvoj\AVL-Server - 2017\Taxi.Communication.Server.HttpListener\bin\Debug\Taxi.Communication.Server.Utils.dll
+D:\PROJECTS\NaseTaksi\Tekoven razvoj\AVL-Server - 2017\Taxi.Communication.Server.HttpListener\bin\Debug\Taxi.Communication.Server.PhoneSwitch.dll
+D:\PROJECTS\NaseTaksi\Tekoven razvoj\AVL-Server - 2017\Taxi.Communication.Server.HttpListener\bin\Debug\Microsoft.SqlServer.Types.dll
+D:\PROJECTS\NaseTaksi\Tekoven razvoj\AVL-Server - 2017\Taxi.Communication.Server.HttpListener\bin\Debug\Taxi.Communication.Server.MessageParsers.dll
+D:\PROJECTS\NaseTaksi\Tekoven razvoj\AVL-Server - 2017\Taxi.Communication.Server.HttpListener\bin\Debug\Taxi.Communication.Server.BL.dll
+D:\PROJECTS\NaseTaksi\Tekoven razvoj\AVL-Server - 2017\Taxi.Communication.Server.HttpListener\bin\Debug\Microsoft.Practices.EnterpriseLibrary.Data.dll
+D:\PROJECTS\NaseTaksi\Tekoven razvoj\AVL-Server - 2017\Taxi.Communication.Server.HttpListener\bin\Debug\Microsoft.Practices.ObjectBuilder2.dll
+D:\PROJECTS\NaseTaksi\Tekoven razvoj\AVL-Server - 2017\Taxi.Communication.Server.HttpListener\bin\Debug\EnvDTE80.dll
+D:\PROJECTS\NaseTaksi\Tekoven razvoj\AVL-Server - 2017\Taxi.Communication.Server.HttpListener\bin\Debug\EnvDTE.dll
+D:\PROJECTS\NaseTaksi\Tekoven razvoj\AVL-Server - 2017\Taxi.Communication.Server.HttpListener\bin\Debug\Microsoft.Practices.EnterpriseLibrary.Caching.dll
+D:\PROJECTS\NaseTaksi\Tekoven razvoj\AVL-Server - 2017\Taxi.Communication.Server.HttpListener\bin\Debug\Microsoft.Practices.EnterpriseLibrary.Common.dll
+D:\PROJECTS\NaseTaksi\Tekoven razvoj\AVL-Server - 2017\Taxi.Communication.Server.HttpListener\bin\Debug\Microsoft.Practices.EnterpriseLibrary.Caching.Cryptography.dll
+D:\PROJECTS\NaseTaksi\Tekoven razvoj\AVL-Server - 2017\Taxi.Communication.Server.HttpListener\bin\Debug\stdole.dll
+D:\PROJECTS\NaseTaksi\Tekoven razvoj\AVL-Server - 2017\Taxi.Communication.Server.HttpListener\bin\Debug\Microsoft.Practices.EnterpriseLibrary.Security.Cryptography.dll
+D:\PROJECTS\NaseTaksi\Tekoven razvoj\AVL-Server - 2017\Taxi.Communication.Server.HttpListener\bin\Debug\CommunicationServer.pdb
+D:\PROJECTS\NaseTaksi\Tekoven razvoj\AVL-Server - 2017\Taxi.Communication.Server.HttpListener\bin\Debug\CommunicationServer.dll.config
+D:\PROJECTS\NaseTaksi\Tekoven razvoj\AVL-Server - 2017\Taxi.Communication.Server.HttpListener\bin\Debug\Taxi.Communication.Server.Utils.pdb
+D:\PROJECTS\NaseTaksi\Tekoven razvoj\AVL-Server - 2017\Taxi.Communication.Server.HttpListener\bin\Debug\GlobSaldo.AVL.Data.pdb
+D:\PROJECTS\NaseTaksi\Tekoven razvoj\AVL-Server - 2017\Taxi.Communication.Server.HttpListener\bin\Debug\GlobSaldo.AVL.Data.xml
+D:\PROJECTS\NaseTaksi\Tekoven razvoj\AVL-Server - 2017\Taxi.Communication.Server.HttpListener\bin\Debug\GlobSaldo.AVL.Data.SqlClient.pdb
+D:\PROJECTS\NaseTaksi\Tekoven razvoj\AVL-Server - 2017\Taxi.Communication.Server.HttpListener\bin\Debug\GlobSaldo.AVL.Data.SqlClient.xml
+D:\PROJECTS\NaseTaksi\Tekoven razvoj\AVL-Server - 2017\Taxi.Communication.Server.HttpListener\bin\Debug\GlobSaldo.AVL.Entities.pdb
+D:\PROJECTS\NaseTaksi\Tekoven razvoj\AVL-Server - 2017\Taxi.Communication.Server.HttpListener\bin\Debug\GlobSaldo.AVL.Entities.xml
+D:\PROJECTS\NaseTaksi\Tekoven razvoj\AVL-Server - 2017\Taxi.Communication.Server.HttpListener\bin\Debug\GlobSaldo.GISDB.Data.pdb
+D:\PROJECTS\NaseTaksi\Tekoven razvoj\AVL-Server - 2017\Taxi.Communication.Server.HttpListener\bin\Debug\GlobSaldo.GISDB.Data.xml
+D:\PROJECTS\NaseTaksi\Tekoven razvoj\AVL-Server - 2017\Taxi.Communication.Server.HttpListener\bin\Debug\GlobSaldo.GISDB.Data.SqlClient.pdb
+D:\PROJECTS\NaseTaksi\Tekoven razvoj\AVL-Server - 2017\Taxi.Communication.Server.HttpListener\bin\Debug\GlobSaldo.GISDB.Data.SqlClient.xml
+D:\PROJECTS\NaseTaksi\Tekoven razvoj\AVL-Server - 2017\Taxi.Communication.Server.HttpListener\bin\Debug\GlobSaldo.GISDB.Entities.pdb
+D:\PROJECTS\NaseTaksi\Tekoven razvoj\AVL-Server - 2017\Taxi.Communication.Server.HttpListener\bin\Debug\GlobSaldo.GISDB.Entities.xml
+D:\PROJECTS\NaseTaksi\Tekoven razvoj\AVL-Server - 2017\Taxi.Communication.Server.HttpListener\bin\Debug\JP.Data.Utils.pdb
+D:\PROJECTS\NaseTaksi\Tekoven razvoj\AVL-Server - 2017\Taxi.Communication.Server.HttpListener\bin\Debug\log4net.xml
+D:\PROJECTS\NaseTaksi\Tekoven razvoj\AVL-Server - 2017\Taxi.Communication.Server.HttpListener\bin\Debug\Taxi.Communication.Server.PhoneSwitch.pdb
+D:\PROJECTS\NaseTaksi\Tekoven razvoj\AVL-Server - 2017\Taxi.Communication.Server.HttpListener\bin\Debug\Taxi.Communication.Server.MessageParsers.pdb
+D:\PROJECTS\NaseTaksi\Tekoven razvoj\AVL-Server - 2017\Taxi.Communication.Server.HttpListener\bin\Debug\Taxi.Communication.Server.BL.pdb
+D:\PROJECTS\NaseTaksi\Tekoven razvoj\AVL-Server - 2017\Taxi.Communication.Server.HttpListener\obj\Debug\Taxi.Communication.Server.HttpListener.csprojResolveAssemblyReference.cache
+D:\PROJECTS\NaseTaksi\Tekoven razvoj\AVL-Server - 2017\Taxi.Communication.Server.HttpListener\obj\Debug\Taxi.Communication.Server.HttpListener.csproj.CoreCompileInputs.cache
+D:\PROJECTS\NaseTaksi\Tekoven razvoj\AVL-Server - 2017\Taxi.Communication.Server.HttpListener\obj\Debug\Taxi.Communication.Server.HttpListener.dll
+D:\PROJECTS\NaseTaksi\Tekoven razvoj\AVL-Server - 2017\Taxi.Communication.Server.HttpListener\obj\Debug\Taxi.Communication.Server.HttpListener.pdb

@@ -1,0 +1,94 @@
+using System;
+using System.Collections.Generic;
+using System.Text;
+using GlobSaldo.AVL.Entities;
+
+namespace Taxi.Communication.Server.Utils
+{
+    public static class GeneralFunctions
+    {
+        public static bool checkShiftInOutSensorForStateIn(SensorData sensorData)
+        {
+            switch (GeneralConstants.ShiftInOutSensor)
+            {
+                case "1":
+                    if (sensorData.Senzor_1 == GeneralConstants.ShiftInOutSensorStateIn)
+                        return true;
+                    else
+                        return false;
+                    break;
+                case "2":
+                    if (sensorData.Senzor_2 == GeneralConstants.ShiftInOutSensorStateIn)
+                        return true;
+                    else
+                        return false;
+                    break;
+                case "3":
+                    if (sensorData.Senzor_3 == GeneralConstants.ShiftInOutSensorStateIn)
+                        return true;
+                    else
+                        return false;
+                    break;
+                case "4":
+                    if (sensorData.Senzor_4 == GeneralConstants.ShiftInOutSensorStateIn)
+                        return true;
+                    else
+                        return false;
+                    break;
+                case "5":
+                    if (sensorData.Senzor_5 == GeneralConstants.ShiftInOutSensorStateIn)
+                        return true;
+                    else
+                        return false;
+                    break;
+                case "6":
+                    if (sensorData.Senzor_6 == GeneralConstants.ShiftInOutSensorStateIn)
+                        return true;
+                    else
+                        return false;
+                    break;
+                case "7":
+                    if (sensorData.Senzor_7 == GeneralConstants.ShiftInOutSensorStateIn)
+                        return true;
+                    else
+                        return false;
+                    break;
+                case "8":
+                    if (sensorData.Senzor_8 == GeneralConstants.ShiftInOutSensorStateIn)
+                        return true;
+                    else
+                        return false;
+                    break;
+                case "9":
+                    if (sensorData.Senzor_9 == GeneralConstants.ShiftInOutSensorStateIn)
+                        return true;
+                    else
+                        return false;
+                    break;
+                case "10":
+                    if (sensorData.Senzor_10 == GeneralConstants.ShiftInOutSensorStateIn)
+                        return true;
+                    else
+                        return false;
+                    break;
+                case "11":
+                    if (sensorData.Senzor_11 == GeneralConstants.ShiftInOutSensorStateIn)
+                        return true;
+                    else
+                        return false;
+                    break;
+                case "12":
+                    if (sensorData.Senzor_12 == GeneralConstants.ShiftInOutSensorStateIn)
+                        return true;
+                    else
+                        return false;
+                    break;
+                default:
+                    return false;
+                    break;
+            }
+
+
+        }
+    }
+}

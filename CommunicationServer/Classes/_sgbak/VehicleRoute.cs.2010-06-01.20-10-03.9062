@@ -1,0 +1,292 @@
+using System;
+using System.Collections.Generic;
+using System.Text;
+using GlobSaldo.AVL.Entities;
+using GlobSaldo.AVL.Data;
+using GlobSaldo.AVL.Data.SqlClient;
+using JP.Data.Utils;
+using log4net;
+
+namespace Taxi.Communication.Server.Classes
+{
+    public class VehicleRoute
+    {
+        private List<GeoFenceRoutesVehicle> _lstRouteForVehicle;
+
+        private bool inActiveRoute = false;
+
+        private Dictionary<long, bool> _geofenceCompleted;
+
+        private RouteCompletionStautsList _currentRouteStatus = RouteCompletionStautsList.Unknown;
+
+        private ILog log;
+
+        private int _lastRouteItemSerial;
+
+        private List<RoutesReport> _lstRouteRpt;
+
+        RoutesReport locRpt;
+        RoutesItemsReport locRptItem;
+
+
+        public VehicleRoute(Vehicle veh)
+        {
+
+            log = LogManager.GetLogger("MyService");
+
+            Type[] tl = new Type[2];
+            tl[0] = typeof(GeoFenceRoutes);
+            tl[1] = typeof(TList<GeoFenceRouteItems>);
+
+
+            int? maxPages = -1;
+            _lstRouteForVehicle = new List<GeoFenceRoutesVehicle>();
+            TList<GeoFenceRoutesVehicle> lstRoutesVehicles = DataRepository.GeoFenceRoutesVehicleProvider.GetForTimeInterval(veh.IDVehicle, DateTime.Now.AddDays(-1), DateTime.Now.AddDays(3), 0, 100, ref maxPages);
+            DataRepository.GeoFenceRoutesVehicleProvider.DeepLoad(lstRoutesVehicles, true, DeepLoadType.IncludeChildren, tl);
+
+
+
+            _lstRouteRpt = new List<RoutesReport>();
+
+            foreach (GeoFenceRoutesVehicle geoVehicleRoute in lstRoutesVehicles)
+            {
+                if ((geoVehicleRoute.IDGeoFenceRouteSource.GeoFenceRouteItemsCollection == null) ||
+                (geoVehicleRoute.IDGeoFenceRouteSource.GeoFenceRouteItemsCollection.Count == 0)
+                )
+                {
+                    continue;
+                }
+                geoVehicleRoute.IDGeoFenceRouteSource.GeoFenceRouteItemsCollection.Sort("ItemOrder");
+                _lstRouteForVehicle.Add(geoVehicleRoute);
+
+                locRpt = new RoutesReport();
+                locRpt.IDGeoFenceRoute = geoVehicleRoute.IDGeoFenceRoute;
+                locRpt.IDVehicle = geoVehicleRoute.IDVehicle;
+                locRpt.RouteDescription = "";
+                locRpt.PlannedStartDate = geoVehicleRoute.DateFrom;
+                locRpt.PlannedEndDate = geoVehicleRoute.DateTo;
+
+                locRpt.IDRouteCompletionStatus = (long)RouteCompletionStautsList.NotStarted;
+
+                locRpt.RoutesItemsReportCollection = new TList<RoutesItemsReport>();
+
+                foreach (GeoFenceRouteItems rItem in geoVehicleRoute.IDGeoFenceRouteSource.GeoFenceRouteItemsCollection)
+                {
+                    locRptItem = new RoutesItemsReport();
+                    locRptItem.IDGeoFence = rItem.IDGeoFence;
+                    locRptItem.GeoFenceDescription = rItem.GeoFenceDescription;
+                    locRptItem.IDRoutesItemsCompletionStatus = (long)RouteCompletionStautsList.NotStarted;
+                    locRpt.RoutesItemsReportCollection.Add(locRptItem);
+                }
+
+                _lstRouteRpt.Add(locRpt);
+
+            }
+
+            _geofenceCompleted = new Dictionary<long, bool>();
+
+            inActiveRoute = false;
+
+        }
+
+        private void activateRoute(GeoFenceRoutes route)
+        {
+            inActiveRoute = true;
+            _lastRouteItemSerial = -1;
+
+            _geofenceCompleted = new Dictionary<long, bool>();
+            _currentRouteStatus = RouteCompletionStautsList.InProgress;
+
+            Type[] tlRpt = new Type[1];
+            tlRpt[0] = typeof(TList<RoutesItemsReport>);
+
+
+            locRpt = _lstRouteRpt[0];
+            try
+            {
+                DataRepository.RoutesReportProvider.DeepSave(locRpt, DeepSaveType.IncludeChildren, tlRpt);
+            }
+            catch (Exception e)
+            {
+                log.Error("ERROR", e);
+            }
+
+            for (long i = 0; i < _lstRouteForVehicle[0].IDGeoFenceRouteSource.GeoFenceRouteItemsCollection.Count; i++)
+            {
+                _geofenceCompleted.Add(i, false);
+            }
+
+        }
+
+        private RouteCompletionStautsList updateActiveRouteProgress(int index, Locations loc)
+        {
+            _geofenceCompleted[index] = true;
+
+            bool curr = true;
+
+            _lstRouteRpt[0].RoutesItemsReportCollection[index].EnterDate = loc.LocalTime;
+            _lstRouteRpt[0].RoutesItemsReportCollection[index].IDRoutesItemsCompletionStatus = (long)RouteCompletionStautsList.Completed;
+
+            try
+            {
+                DataRepository.RoutesItemsReportProvider.Update(_lstRouteRpt[0].RoutesItemsReportCollection[index]);
+            }
+            catch (Exception e)
+            {
+                log.Error("ERROR", e);
+            }
+
+            long cnt = 0;
+            foreach (bool status in _geofenceCompleted.Values)
+            {
+                curr = curr && status;
+                if (curr == false)
+                {
+                    break;
+                }
+                cnt++;
+            }
+
+            if (_lstRouteForVehicle[0].DateTo < loc.LocalTime)
+            {
+                _currentRouteStatus = RouteCompletionStautsList.UnfinishedInTime;
+                return _currentRouteStatus;
+            }
+
+            if (curr == true)
+            {
+                _currentRouteStatus = RouteCompletionStautsList.Completed;
+                return _currentRouteStatus;
+            }
+
+            if ((cnt - 1) == index)
+            {
+                _currentRouteStatus = RouteCompletionStautsList.InProgress;
+                return _currentRouteStatus;
+            }
+
+            if (index == (_geofenceCompleted.Values.Count - 1))
+            {
+                _currentRouteStatus = RouteCompletionStautsList.PartialyCompleted;
+                return _currentRouteStatus;
+            }
+
+
+
+            return _currentRouteStatus;
+        }
+
+        private RouteCompletionStautsList updateRoute(Locations loc)
+        {
+            RouteCompletionStautsList retVal = _currentRouteStatus;
+
+            if ((_lastRouteItemSerial >= 0) &&
+                (loc.IDGeoFence != _lstRouteRpt[0].RoutesItemsReportCollection[_lastRouteItemSerial].IDGeoFence) &&
+                (_lstRouteRpt[0].RoutesItemsReportCollection[_lastRouteItemSerial].ExitDate == null)
+                )
+            {
+                _lstRouteRpt[0].RoutesItemsReportCollection[_lastRouteItemSerial].ExitDate = loc.LocalTime;
+
+
+                try
+                {
+                    DataRepository.RoutesItemsReportProvider.Update(_lstRouteRpt[0].RoutesItemsReportCollection[_lastRouteItemSerial]);
+                }
+                catch (Exception e)
+                {
+                    log.Error("ERROR", e);
+                }
+            }
+
+            if (loc.IDGeoFence != null)
+            {
+
+
+
+                int routeItemSerial = -1;
+
+                int cnt = 0;
+                foreach (GeoFenceRouteItems routeItem in _lstRouteForVehicle[0].IDGeoFenceRouteSource.GeoFenceRouteItemsCollection)
+                {
+                    if (routeItem.IDGeoFence == loc.IDGeoFence)
+                    {
+                        routeItemSerial = cnt;
+                        break;
+                    }
+                    cnt++;
+                }
+
+
+                if (routeItemSerial == -1)
+                {
+                    return _currentRouteStatus;
+                }
+
+                _lastRouteItemSerial = routeItemSerial;
+                retVal = updateActiveRouteProgress(routeItemSerial, loc);
+            }
+            else
+            {
+                if (_lstRouteForVehicle[0].DateTo < loc.LocalTime)
+                {
+                    _currentRouteStatus = RouteCompletionStautsList.UnfinishedInTime;
+                } 
+                retVal = _currentRouteStatus;
+            }
+            _lstRouteForVehicle[0].IDRouteCompletionStatus = (long)_currentRouteStatus;
+            _lstRouteRpt[0].IDRouteCompletionStatus = (long)_currentRouteStatus;
+            _lstRouteRpt[0].ActualEndDate = DateTime.Now;
+
+            try
+            {
+                DataRepository.GeoFenceRoutesVehicleProvider.Update(_lstRouteForVehicle[0]);
+                DataRepository.RoutesReportProvider.Update(_lstRouteRpt[0]);
+            }
+            catch (Exception e)
+            {
+                log.Error("ERROR", e);
+            }
+
+            if ((retVal == RouteCompletionStautsList.Completed) ||
+               (retVal == RouteCompletionStautsList.PartialyCompleted) ||
+               (retVal == RouteCompletionStautsList.UnfinishedInTime))
+            {
+                inActiveRoute = false;
+                _lastRouteItemSerial = -1;
+                _geofenceCompleted.Clear();
+
+                _lstRouteForVehicle.RemoveAt(0);
+                _lstRouteRpt.RemoveAt(0);
+            }
+
+            return retVal;
+        }
+
+        public RouteCompletionStautsList checkLocation(Locations loc)
+        {
+
+            if (inActiveRoute)
+            {
+                return updateRoute(loc);
+            }
+
+            if ((_lstRouteForVehicle == null) || (_lstRouteForVehicle.Count == 0))
+            {
+                return RouteCompletionStautsList.Unknown;
+            }
+            else
+            {
+                GeoFenceRoutesVehicle route = _lstRouteForVehicle[0];
+                if (route.DateFrom <= loc.LocalTime)
+                {
+                    activateRoute(route.IDGeoFenceRouteSource);
+                    return updateRoute(loc);
+                }
+
+
+            }
+            return RouteCompletionStautsList.Unknown;
+        }
+
+    }
+}

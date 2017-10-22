@@ -1,0 +1,150 @@
+C:\Projects\AVL\Pre_Installed_Versions\NaseTaxi\AVL-Server\Taxi.Communication.Server.PhoneSwitch\bin\Debug\Taxi.Communication.Server.PhoneSwitch.dll
+C:\Projects\AVL\Pre_Installed_Versions\NaseTaxi\AVL-Server\Taxi.Communication.Server.PhoneSwitch\bin\Debug\Taxi.Communication.Server.PhoneSwitch.pdb
+C:\Projects\AVL\Pre_Installed_Versions\NaseTaxi\AVL-Server\Taxi.Communication.Server.PhoneSwitch\bin\Debug\GlobSaldo.AVL.Data.dll
+C:\Projects\AVL\Pre_Installed_Versions\NaseTaxi\AVL-Server\Taxi.Communication.Server.PhoneSwitch\bin\Debug\GlobSaldo.AVL.Data.SqlClient.dll
+C:\Projects\AVL\Pre_Installed_Versions\NaseTaxi\AVL-Server\Taxi.Communication.Server.PhoneSwitch\bin\Debug\GlobSaldo.AVL.Entities.dll
+C:\Projects\AVL\Pre_Installed_Versions\NaseTaxi\AVL-Server\Taxi.Communication.Server.PhoneSwitch\bin\Debug\JP.Data.Utils.dll
+C:\Projects\AVL\Pre_Installed_Versions\NaseTaxi\AVL-Server\Taxi.Communication.Server.PhoneSwitch\bin\Debug\log4net.dll
+C:\Projects\AVL\Pre_Installed_Versions\NaseTaxi\AVL-Server\Taxi.Communication.Server.PhoneSwitch\bin\Debug\Taxi.Communication.Server.Utils.dll
+C:\Projects\AVL\Pre_Installed_Versions\NaseTaxi\AVL-Server\Taxi.Communication.Server.PhoneSwitch\bin\Debug\GlobSaldo.GISDB.Entities.dll
+C:\Projects\AVL\Pre_Installed_Versions\NaseTaxi\AVL-Server\Taxi.Communication.Server.PhoneSwitch\bin\Debug\Interop.MapXLib.dll
+C:\Projects\AVL\Pre_Installed_Versions\NaseTaxi\AVL-Server\Taxi.Communication.Server.PhoneSwitch\bin\Debug\Microsoft.Practices.EnterpriseLibrary.Data.dll
+C:\Projects\AVL\Pre_Installed_Versions\NaseTaxi\AVL-Server\Taxi.Communication.Server.PhoneSwitch\bin\Debug\Microsoft.Practices.EnterpriseLibrary.Security.Cryptography.dll
+C:\Projects\AVL\Pre_Installed_Versions\NaseTaxi\AVL-Server\Taxi.Communication.Server.PhoneSwitch\bin\Debug\Microsoft.Practices.ObjectBuilder.dll
+C:\Projects\AVL\Pre_Installed_Versions\NaseTaxi\AVL-Server\Taxi.Communication.Server.PhoneSwitch\bin\Debug\Microsoft.Practices.EnterpriseLibrary.Common.dll
+C:\Projects\AVL\Pre_Installed_Versions\NaseTaxi\AVL-Server\Taxi.Communication.Server.PhoneSwitch\bin\Debug\GlobSaldo.GISDB.Data.dll
+C:\Projects\AVL\Pre_Installed_Versions\NaseTaxi\AVL-Server\Taxi.Communication.Server.PhoneSwitch\bin\Debug\Microsoft.Practices.EnterpriseLibrary.Caching.dll
+C:\Projects\AVL\Pre_Installed_Versions\NaseTaxi\AVL-Server\Taxi.Communication.Server.PhoneSwitch\bin\Debug\Microsoft.Practices.EnterpriseLibrary.Caching.Cryptography.dll
+C:\Projects\AVL\Pre_Installed_Versions\NaseTaxi\AVL-Server\Taxi.Communication.Server.PhoneSwitch\bin\Debug\GlobSaldo.GISDB.Entities.pdb
+C:\Projects\AVL\Pre_Installed_Versions\NaseTaxi\AVL-Server\Taxi.Communication.Server.PhoneSwitch\bin\Debug\GlobSaldo.GISDB.Entities.xml
+C:\Projects\AVL\Pre_Installed_Versions\NaseTaxi\AVL-Server\Taxi.Communication.Server.PhoneSwitch\bin\Debug\GlobSaldo.AVL.Entities.pdb
+C:\Projects\AVL\Pre_Installed_Versions\NaseTaxi\AVL-Server\Taxi.Communication.Server.PhoneSwitch\bin\Debug\GlobSaldo.AVL.Entities.xml
+C:\Projects\AVL\Pre_Installed_Versions\NaseTaxi\AVL-Server\Taxi.Communication.Server.PhoneSwitch\bin\Debug\Taxi.Communication.Server.Utils.pdb
+C:\Projects\AVL\Pre_Installed_Versions\NaseTaxi\AVL-Server\Taxi.Communication.Server.PhoneSwitch\bin\Debug\log4net.xml
+C:\Projects\AVL\Pre_Installed_Versions\NaseTaxi\AVL-Server\Taxi.Communication.Server.PhoneSwitch\bin\Debug\GlobSaldo.AVL.Data.pdb
+C:\Projects\AVL\Pre_Installed_Versions\NaseTaxi\AVL-Server\Taxi.Communication.Server.PhoneSwitch\bin\Debug\GlobSaldo.AVL.Data.xml
+C:\Projects\AVL\Pre_Installed_Versions\NaseTaxi\AVL-Server\Taxi.Communication.Server.PhoneSwitch\bin\Debug\Microsoft.Practices.EnterpriseLibrary.Data.xml
+C:\Projects\AVL\Pre_Installed_Versions\NaseTaxi\AVL-Server\Taxi.Communication.Server.PhoneSwitch\bin\Debug\Microsoft.Practices.EnterpriseLibrary.Security.Cryptography.xml
+C:\Projects\AVL\Pre_Installed_Versions\NaseTaxi\AVL-Server\Taxi.Communication.Server.PhoneSwitch\bin\Debug\Microsoft.Practices.EnterpriseLibrary.Common.xml
+C:\Projects\AVL\Pre_Installed_Versions\NaseTaxi\AVL-Server\Taxi.Communication.Server.PhoneSwitch\bin\Debug\GlobSaldo.AVL.Data.SqlClient.pdb
+C:\Projects\AVL\Pre_Installed_Versions\NaseTaxi\AVL-Server\Taxi.Communication.Server.PhoneSwitch\bin\Debug\GlobSaldo.AVL.Data.SqlClient.xml
+C:\Projects\AVL\Pre_Installed_Versions\NaseTaxi\AVL-Server\Taxi.Communication.Server.PhoneSwitch\bin\Debug\JP.Data.Utils.pdb
+C:\Projects\AVL\Pre_Installed_Versions\NaseTaxi\AVL-Server\Taxi.Communication.Server.PhoneSwitch\bin\Debug\GlobSaldo.GISDB.Data.pdb
+C:\Projects\AVL\Pre_Installed_Versions\NaseTaxi\AVL-Server\Taxi.Communication.Server.PhoneSwitch\bin\Debug\GlobSaldo.GISDB.Data.xml
+C:\Projects\AVL\Pre_Installed_Versions\NaseTaxi\AVL-Server\Taxi.Communication.Server.PhoneSwitch\bin\Debug\Microsoft.Practices.EnterpriseLibrary.Caching.xml
+C:\Projects\AVL\Pre_Installed_Versions\NaseTaxi\AVL-Server\Taxi.Communication.Server.PhoneSwitch\bin\Debug\Microsoft.Practices.EnterpriseLibrary.Caching.Cryptography.xml
+C:\Projects\AVL\Pre_Installed_Versions\NaseTaxi\AVL-Server\Taxi.Communication.Server.PhoneSwitch\obj\Debug\ResolveAssemblyReference.cache
+C:\Projects\AVL\Pre_Installed_Versions\NaseTaxi\AVL-Server\Taxi.Communication.Server.PhoneSwitch\obj\Debug\Taxi.Communication.Server.PhoneSwitch.dll
+C:\Projects\AVL\Pre_Installed_Versions\NaseTaxi\AVL-Server\Taxi.Communication.Server.PhoneSwitch\obj\Debug\Taxi.Communication.Server.PhoneSwitch.pdb
+C:\Projects\AVL\Pre_Installed_Versions\NaseTaxi - Posle 17.11.2012\AVL-Server\Taxi.Communication.Server.PhoneSwitch\obj\Debug\ResolveAssemblyReference.cache
+C:\Projects\AVL\Pre_Installed_Versions\NaseTaxi - Posle 17.11.2012\AVL-Server\Taxi.Communication.Server.PhoneSwitch\bin\Debug\Taxi.Communication.Server.PhoneSwitch.dll
+C:\Projects\AVL\Pre_Installed_Versions\NaseTaxi - Posle 17.11.2012\AVL-Server\Taxi.Communication.Server.PhoneSwitch\bin\Debug\Taxi.Communication.Server.PhoneSwitch.pdb
+C:\Projects\AVL\Pre_Installed_Versions\NaseTaxi - Posle 17.11.2012\AVL-Server\Taxi.Communication.Server.PhoneSwitch\bin\Debug\GlobSaldo.AVL.Data.dll
+C:\Projects\AVL\Pre_Installed_Versions\NaseTaxi - Posle 17.11.2012\AVL-Server\Taxi.Communication.Server.PhoneSwitch\bin\Debug\GlobSaldo.AVL.Data.SqlClient.dll
+C:\Projects\AVL\Pre_Installed_Versions\NaseTaxi - Posle 17.11.2012\AVL-Server\Taxi.Communication.Server.PhoneSwitch\bin\Debug\GlobSaldo.AVL.Entities.dll
+C:\Projects\AVL\Pre_Installed_Versions\NaseTaxi - Posle 17.11.2012\AVL-Server\Taxi.Communication.Server.PhoneSwitch\bin\Debug\JP.Data.Utils.dll
+C:\Projects\AVL\Pre_Installed_Versions\NaseTaxi - Posle 17.11.2012\AVL-Server\Taxi.Communication.Server.PhoneSwitch\bin\Debug\log4net.dll
+C:\Projects\AVL\Pre_Installed_Versions\NaseTaxi - Posle 17.11.2012\AVL-Server\Taxi.Communication.Server.PhoneSwitch\bin\Debug\Taxi.Communication.Server.Utils.dll
+C:\Projects\AVL\Pre_Installed_Versions\NaseTaxi - Posle 17.11.2012\AVL-Server\Taxi.Communication.Server.PhoneSwitch\bin\Debug\GlobSaldo.GISDB.Entities.dll
+C:\Projects\AVL\Pre_Installed_Versions\NaseTaxi - Posle 17.11.2012\AVL-Server\Taxi.Communication.Server.PhoneSwitch\bin\Debug\Interop.MapXLib.dll
+C:\Projects\AVL\Pre_Installed_Versions\NaseTaxi - Posle 17.11.2012\AVL-Server\Taxi.Communication.Server.PhoneSwitch\bin\Debug\Microsoft.Practices.EnterpriseLibrary.Data.dll
+C:\Projects\AVL\Pre_Installed_Versions\NaseTaxi - Posle 17.11.2012\AVL-Server\Taxi.Communication.Server.PhoneSwitch\bin\Debug\Microsoft.Practices.EnterpriseLibrary.Security.Cryptography.dll
+C:\Projects\AVL\Pre_Installed_Versions\NaseTaxi - Posle 17.11.2012\AVL-Server\Taxi.Communication.Server.PhoneSwitch\bin\Debug\Microsoft.Practices.ObjectBuilder.dll
+C:\Projects\AVL\Pre_Installed_Versions\NaseTaxi - Posle 17.11.2012\AVL-Server\Taxi.Communication.Server.PhoneSwitch\bin\Debug\Microsoft.Practices.EnterpriseLibrary.Common.dll
+C:\Projects\AVL\Pre_Installed_Versions\NaseTaxi - Posle 17.11.2012\AVL-Server\Taxi.Communication.Server.PhoneSwitch\bin\Debug\GlobSaldo.GISDB.Data.dll
+C:\Projects\AVL\Pre_Installed_Versions\NaseTaxi - Posle 17.11.2012\AVL-Server\Taxi.Communication.Server.PhoneSwitch\bin\Debug\Microsoft.Practices.EnterpriseLibrary.Caching.dll
+C:\Projects\AVL\Pre_Installed_Versions\NaseTaxi - Posle 17.11.2012\AVL-Server\Taxi.Communication.Server.PhoneSwitch\bin\Debug\Microsoft.Practices.EnterpriseLibrary.Caching.Cryptography.dll
+C:\Projects\AVL\Pre_Installed_Versions\NaseTaxi - Posle 17.11.2012\AVL-Server\Taxi.Communication.Server.PhoneSwitch\bin\Debug\GlobSaldo.GISDB.Entities.pdb
+C:\Projects\AVL\Pre_Installed_Versions\NaseTaxi - Posle 17.11.2012\AVL-Server\Taxi.Communication.Server.PhoneSwitch\bin\Debug\GlobSaldo.GISDB.Entities.xml
+C:\Projects\AVL\Pre_Installed_Versions\NaseTaxi - Posle 17.11.2012\AVL-Server\Taxi.Communication.Server.PhoneSwitch\bin\Debug\GlobSaldo.AVL.Entities.pdb
+C:\Projects\AVL\Pre_Installed_Versions\NaseTaxi - Posle 17.11.2012\AVL-Server\Taxi.Communication.Server.PhoneSwitch\bin\Debug\GlobSaldo.AVL.Entities.xml
+C:\Projects\AVL\Pre_Installed_Versions\NaseTaxi - Posle 17.11.2012\AVL-Server\Taxi.Communication.Server.PhoneSwitch\bin\Debug\Taxi.Communication.Server.Utils.pdb
+C:\Projects\AVL\Pre_Installed_Versions\NaseTaxi - Posle 17.11.2012\AVL-Server\Taxi.Communication.Server.PhoneSwitch\bin\Debug\log4net.xml
+C:\Projects\AVL\Pre_Installed_Versions\NaseTaxi - Posle 17.11.2012\AVL-Server\Taxi.Communication.Server.PhoneSwitch\bin\Debug\GlobSaldo.AVL.Data.pdb
+C:\Projects\AVL\Pre_Installed_Versions\NaseTaxi - Posle 17.11.2012\AVL-Server\Taxi.Communication.Server.PhoneSwitch\bin\Debug\GlobSaldo.AVL.Data.xml
+C:\Projects\AVL\Pre_Installed_Versions\NaseTaxi - Posle 17.11.2012\AVL-Server\Taxi.Communication.Server.PhoneSwitch\bin\Debug\Microsoft.Practices.EnterpriseLibrary.Data.xml
+C:\Projects\AVL\Pre_Installed_Versions\NaseTaxi - Posle 17.11.2012\AVL-Server\Taxi.Communication.Server.PhoneSwitch\bin\Debug\Microsoft.Practices.EnterpriseLibrary.Security.Cryptography.xml
+C:\Projects\AVL\Pre_Installed_Versions\NaseTaxi - Posle 17.11.2012\AVL-Server\Taxi.Communication.Server.PhoneSwitch\bin\Debug\Microsoft.Practices.EnterpriseLibrary.Common.xml
+C:\Projects\AVL\Pre_Installed_Versions\NaseTaxi - Posle 17.11.2012\AVL-Server\Taxi.Communication.Server.PhoneSwitch\bin\Debug\GlobSaldo.AVL.Data.SqlClient.pdb
+C:\Projects\AVL\Pre_Installed_Versions\NaseTaxi - Posle 17.11.2012\AVL-Server\Taxi.Communication.Server.PhoneSwitch\bin\Debug\GlobSaldo.AVL.Data.SqlClient.xml
+C:\Projects\AVL\Pre_Installed_Versions\NaseTaxi - Posle 17.11.2012\AVL-Server\Taxi.Communication.Server.PhoneSwitch\bin\Debug\JP.Data.Utils.pdb
+C:\Projects\AVL\Pre_Installed_Versions\NaseTaxi - Posle 17.11.2012\AVL-Server\Taxi.Communication.Server.PhoneSwitch\bin\Debug\GlobSaldo.GISDB.Data.pdb
+C:\Projects\AVL\Pre_Installed_Versions\NaseTaxi - Posle 17.11.2012\AVL-Server\Taxi.Communication.Server.PhoneSwitch\bin\Debug\GlobSaldo.GISDB.Data.xml
+C:\Projects\AVL\Pre_Installed_Versions\NaseTaxi - Posle 17.11.2012\AVL-Server\Taxi.Communication.Server.PhoneSwitch\bin\Debug\Microsoft.Practices.EnterpriseLibrary.Caching.xml
+C:\Projects\AVL\Pre_Installed_Versions\NaseTaxi - Posle 17.11.2012\AVL-Server\Taxi.Communication.Server.PhoneSwitch\bin\Debug\Microsoft.Practices.EnterpriseLibrary.Caching.Cryptography.xml
+C:\Projects\AVL\Pre_Installed_Versions\NaseTaxi - Posle 17.11.2012\AVL-Server\Taxi.Communication.Server.PhoneSwitch\obj\Debug\Taxi.Communication.Server.PhoneSwitch.dll
+C:\Projects\AVL\Pre_Installed_Versions\NaseTaxi - Posle 17.11.2012\AVL-Server\Taxi.Communication.Server.PhoneSwitch\obj\Debug\Taxi.Communication.Server.PhoneSwitch.pdb
+C:\GLOBSALDO\AVL-Server\Taxi.Communication.Server.PhoneSwitch\bin\Debug\Taxi.Communication.Server.PhoneSwitch.dll
+C:\GLOBSALDO\AVL-Server\Taxi.Communication.Server.PhoneSwitch\bin\Debug\Taxi.Communication.Server.PhoneSwitch.pdb
+C:\GLOBSALDO\AVL-Server\Taxi.Communication.Server.PhoneSwitch\bin\Debug\GlobSaldo.AVL.Data.dll
+C:\GLOBSALDO\AVL-Server\Taxi.Communication.Server.PhoneSwitch\bin\Debug\GlobSaldo.AVL.Data.SqlClient.dll
+C:\GLOBSALDO\AVL-Server\Taxi.Communication.Server.PhoneSwitch\bin\Debug\GlobSaldo.AVL.Entities.dll
+C:\GLOBSALDO\AVL-Server\Taxi.Communication.Server.PhoneSwitch\bin\Debug\JP.Data.Utils.dll
+C:\GLOBSALDO\AVL-Server\Taxi.Communication.Server.PhoneSwitch\bin\Debug\log4net.dll
+C:\GLOBSALDO\AVL-Server\Taxi.Communication.Server.PhoneSwitch\bin\Debug\Taxi.Communication.Server.Utils.dll
+C:\GLOBSALDO\AVL-Server\Taxi.Communication.Server.PhoneSwitch\bin\Debug\GlobSaldo.GISDB.Entities.dll
+C:\GLOBSALDO\AVL-Server\Taxi.Communication.Server.PhoneSwitch\bin\Debug\Microsoft.Practices.EnterpriseLibrary.Caching.dll
+C:\GLOBSALDO\AVL-Server\Taxi.Communication.Server.PhoneSwitch\bin\Debug\Microsoft.Practices.EnterpriseLibrary.Security.Cryptography.dll
+C:\GLOBSALDO\AVL-Server\Taxi.Communication.Server.PhoneSwitch\bin\Debug\Microsoft.Practices.ObjectBuilder.dll
+C:\GLOBSALDO\AVL-Server\Taxi.Communication.Server.PhoneSwitch\bin\Debug\Microsoft.Practices.EnterpriseLibrary.Data.dll
+C:\GLOBSALDO\AVL-Server\Taxi.Communication.Server.PhoneSwitch\bin\Debug\Microsoft.Practices.EnterpriseLibrary.Common.dll
+C:\GLOBSALDO\AVL-Server\Taxi.Communication.Server.PhoneSwitch\bin\Debug\GlobSaldo.GISDB.Data.dll
+C:\GLOBSALDO\AVL-Server\Taxi.Communication.Server.PhoneSwitch\bin\Debug\Microsoft.Practices.EnterpriseLibrary.Caching.Cryptography.dll
+C:\GLOBSALDO\AVL-Server\Taxi.Communication.Server.PhoneSwitch\bin\Debug\GlobSaldo.GISDB.Entities.pdb
+C:\GLOBSALDO\AVL-Server\Taxi.Communication.Server.PhoneSwitch\bin\Debug\GlobSaldo.GISDB.Entities.xml
+C:\GLOBSALDO\AVL-Server\Taxi.Communication.Server.PhoneSwitch\bin\Debug\GlobSaldo.AVL.Entities.pdb
+C:\GLOBSALDO\AVL-Server\Taxi.Communication.Server.PhoneSwitch\bin\Debug\GlobSaldo.AVL.Entities.xml
+C:\GLOBSALDO\AVL-Server\Taxi.Communication.Server.PhoneSwitch\bin\Debug\Taxi.Communication.Server.Utils.pdb
+C:\GLOBSALDO\AVL-Server\Taxi.Communication.Server.PhoneSwitch\bin\Debug\log4net.xml
+C:\GLOBSALDO\AVL-Server\Taxi.Communication.Server.PhoneSwitch\bin\Debug\GlobSaldo.AVL.Data.pdb
+C:\GLOBSALDO\AVL-Server\Taxi.Communication.Server.PhoneSwitch\bin\Debug\GlobSaldo.AVL.Data.xml
+C:\GLOBSALDO\AVL-Server\Taxi.Communication.Server.PhoneSwitch\bin\Debug\Microsoft.Practices.EnterpriseLibrary.Caching.xml
+C:\GLOBSALDO\AVL-Server\Taxi.Communication.Server.PhoneSwitch\bin\Debug\Microsoft.Practices.EnterpriseLibrary.Security.Cryptography.xml
+C:\GLOBSALDO\AVL-Server\Taxi.Communication.Server.PhoneSwitch\bin\Debug\Microsoft.Practices.EnterpriseLibrary.Data.xml
+C:\GLOBSALDO\AVL-Server\Taxi.Communication.Server.PhoneSwitch\bin\Debug\Microsoft.Practices.EnterpriseLibrary.Common.xml
+C:\GLOBSALDO\AVL-Server\Taxi.Communication.Server.PhoneSwitch\bin\Debug\GlobSaldo.AVL.Data.SqlClient.pdb
+C:\GLOBSALDO\AVL-Server\Taxi.Communication.Server.PhoneSwitch\bin\Debug\GlobSaldo.AVL.Data.SqlClient.xml
+C:\GLOBSALDO\AVL-Server\Taxi.Communication.Server.PhoneSwitch\bin\Debug\JP.Data.Utils.pdb
+C:\GLOBSALDO\AVL-Server\Taxi.Communication.Server.PhoneSwitch\bin\Debug\GlobSaldo.GISDB.Data.pdb
+C:\GLOBSALDO\AVL-Server\Taxi.Communication.Server.PhoneSwitch\bin\Debug\GlobSaldo.GISDB.Data.xml
+C:\GLOBSALDO\AVL-Server\Taxi.Communication.Server.PhoneSwitch\bin\Debug\Microsoft.Practices.EnterpriseLibrary.Caching.Cryptography.xml
+C:\GLOBSALDO\AVL-Server\Taxi.Communication.Server.PhoneSwitch\obj\Debug\ResolveAssemblyReference.cache
+C:\GLOBSALDO\AVL-Server\Taxi.Communication.Server.PhoneSwitch\obj\Debug\Taxi.Communication.Server.PhoneSwitch.dll
+C:\GLOBSALDO\AVL-Server\Taxi.Communication.Server.PhoneSwitch\obj\Debug\Taxi.Communication.Server.PhoneSwitch.pdb
+C:\GLOBSALDO\AVL-Server - za priprema na REST\Taxi.Communication.Server.PhoneSwitch\bin\Debug\Taxi.Communication.Server.PhoneSwitch.dll
+C:\GLOBSALDO\AVL-Server - za priprema na REST\Taxi.Communication.Server.PhoneSwitch\bin\Debug\Taxi.Communication.Server.PhoneSwitch.pdb
+C:\GLOBSALDO\AVL-Server - za priprema na REST\Taxi.Communication.Server.PhoneSwitch\bin\Debug\GlobSaldo.AVL.Data.dll
+C:\GLOBSALDO\AVL-Server - za priprema na REST\Taxi.Communication.Server.PhoneSwitch\bin\Debug\GlobSaldo.AVL.Data.SqlClient.dll
+C:\GLOBSALDO\AVL-Server - za priprema na REST\Taxi.Communication.Server.PhoneSwitch\bin\Debug\GlobSaldo.AVL.Entities.dll
+C:\GLOBSALDO\AVL-Server - za priprema na REST\Taxi.Communication.Server.PhoneSwitch\bin\Debug\JP.Data.Utils.dll
+C:\GLOBSALDO\AVL-Server - za priprema na REST\Taxi.Communication.Server.PhoneSwitch\bin\Debug\log4net.dll
+C:\GLOBSALDO\AVL-Server - za priprema na REST\Taxi.Communication.Server.PhoneSwitch\bin\Debug\Taxi.Communication.Server.Utils.dll
+C:\GLOBSALDO\AVL-Server - za priprema na REST\Taxi.Communication.Server.PhoneSwitch\bin\Debug\GlobSaldo.GISDB.Entities.dll
+C:\GLOBSALDO\AVL-Server - za priprema na REST\Taxi.Communication.Server.PhoneSwitch\bin\Debug\Microsoft.Practices.EnterpriseLibrary.Caching.dll
+C:\GLOBSALDO\AVL-Server - za priprema na REST\Taxi.Communication.Server.PhoneSwitch\bin\Debug\Microsoft.Practices.EnterpriseLibrary.Security.Cryptography.dll
+C:\GLOBSALDO\AVL-Server - za priprema na REST\Taxi.Communication.Server.PhoneSwitch\bin\Debug\Microsoft.Practices.ObjectBuilder.dll
+C:\GLOBSALDO\AVL-Server - za priprema na REST\Taxi.Communication.Server.PhoneSwitch\bin\Debug\Microsoft.Practices.EnterpriseLibrary.Data.dll
+C:\GLOBSALDO\AVL-Server - za priprema na REST\Taxi.Communication.Server.PhoneSwitch\bin\Debug\Microsoft.Practices.EnterpriseLibrary.Common.dll
+C:\GLOBSALDO\AVL-Server - za priprema na REST\Taxi.Communication.Server.PhoneSwitch\bin\Debug\GlobSaldo.GISDB.Data.dll
+C:\GLOBSALDO\AVL-Server - za priprema na REST\Taxi.Communication.Server.PhoneSwitch\bin\Debug\Microsoft.Practices.EnterpriseLibrary.Caching.Cryptography.dll
+C:\GLOBSALDO\AVL-Server - za priprema na REST\Taxi.Communication.Server.PhoneSwitch\bin\Debug\GlobSaldo.GISDB.Entities.pdb
+C:\GLOBSALDO\AVL-Server - za priprema na REST\Taxi.Communication.Server.PhoneSwitch\bin\Debug\GlobSaldo.GISDB.Entities.xml
+C:\GLOBSALDO\AVL-Server - za priprema na REST\Taxi.Communication.Server.PhoneSwitch\bin\Debug\GlobSaldo.AVL.Entities.pdb
+C:\GLOBSALDO\AVL-Server - za priprema na REST\Taxi.Communication.Server.PhoneSwitch\bin\Debug\GlobSaldo.AVL.Entities.xml
+C:\GLOBSALDO\AVL-Server - za priprema na REST\Taxi.Communication.Server.PhoneSwitch\bin\Debug\Taxi.Communication.Server.Utils.pdb
+C:\GLOBSALDO\AVL-Server - za priprema na REST\Taxi.Communication.Server.PhoneSwitch\bin\Debug\log4net.xml
+C:\GLOBSALDO\AVL-Server - za priprema na REST\Taxi.Communication.Server.PhoneSwitch\bin\Debug\GlobSaldo.AVL.Data.pdb
+C:\GLOBSALDO\AVL-Server - za priprema na REST\Taxi.Communication.Server.PhoneSwitch\bin\Debug\GlobSaldo.AVL.Data.xml
+C:\GLOBSALDO\AVL-Server - za priprema na REST\Taxi.Communication.Server.PhoneSwitch\bin\Debug\Microsoft.Practices.EnterpriseLibrary.Caching.xml
+C:\GLOBSALDO\AVL-Server - za priprema na REST\Taxi.Communication.Server.PhoneSwitch\bin\Debug\Microsoft.Practices.EnterpriseLibrary.Security.Cryptography.xml
+C:\GLOBSALDO\AVL-Server - za priprema na REST\Taxi.Communication.Server.PhoneSwitch\bin\Debug\Microsoft.Practices.EnterpriseLibrary.Data.xml
+C:\GLOBSALDO\AVL-Server - za priprema na REST\Taxi.Communication.Server.PhoneSwitch\bin\Debug\Microsoft.Practices.EnterpriseLibrary.Common.xml
+C:\GLOBSALDO\AVL-Server - za priprema na REST\Taxi.Communication.Server.PhoneSwitch\bin\Debug\GlobSaldo.AVL.Data.SqlClient.pdb
+C:\GLOBSALDO\AVL-Server - za priprema na REST\Taxi.Communication.Server.PhoneSwitch\bin\Debug\GlobSaldo.AVL.Data.SqlClient.xml
+C:\GLOBSALDO\AVL-Server - za priprema na REST\Taxi.Communication.Server.PhoneSwitch\bin\Debug\JP.Data.Utils.pdb
+C:\GLOBSALDO\AVL-Server - za priprema na REST\Taxi.Communication.Server.PhoneSwitch\bin\Debug\GlobSaldo.GISDB.Data.pdb
+C:\GLOBSALDO\AVL-Server - za priprema na REST\Taxi.Communication.Server.PhoneSwitch\bin\Debug\GlobSaldo.GISDB.Data.xml
+C:\GLOBSALDO\AVL-Server - za priprema na REST\Taxi.Communication.Server.PhoneSwitch\bin\Debug\Microsoft.Practices.EnterpriseLibrary.Caching.Cryptography.xml
+C:\GLOBSALDO\AVL-Server - za priprema na REST\Taxi.Communication.Server.PhoneSwitch\obj\Debug\ResolveAssemblyReference.cache
+C:\GLOBSALDO\AVL-Server - za priprema na REST\Taxi.Communication.Server.PhoneSwitch\obj\Debug\Taxi.Communication.Server.PhoneSwitch.dll
+C:\GLOBSALDO\AVL-Server - za priprema na REST\Taxi.Communication.Server.PhoneSwitch\obj\Debug\Taxi.Communication.Server.PhoneSwitch.pdb

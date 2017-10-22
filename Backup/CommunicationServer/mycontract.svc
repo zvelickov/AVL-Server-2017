@@ -1,0 +1,2 @@
+<%@ServiceHost Service="Taxi.Communication.Server.MyContract" %>
+<%@Assembly Name="CommunicationServer" %>

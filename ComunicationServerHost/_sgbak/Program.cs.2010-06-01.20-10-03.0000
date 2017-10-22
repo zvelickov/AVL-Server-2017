@@ -1,0 +1,398 @@
+using System;
+using System.Collections.Generic;
+using System.Text;
+using System.ServiceModel;
+using System.Configuration;
+using JP.Data.Utils;
+using log4net;
+using System.Reflection;
+using Taxi.Communication.Server.ConnectionListeners;
+using System.Threading;
+using Taxi.Communication.Server.StateMachine;
+using GlobSaldo.AVL.Data;
+using GlobSaldo.AVL.Entities;
+using Taxi.Communication.Server.Containers;
+using Taxi.Communication.Server.Utils;
+using Taxi.Communication.Server.PhoneSwitch;
+using System.Diagnostics;
+
+
+namespace Taxi.Communication.Server.Host
+{
+
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            try
+            {
+
+                GPSListener m_gpsListeners;
+                PhoneSwitchListener m_phoneListener;
+
+                ReservationProcessingThread m_reservation;
+                UpdateMapLocations m_UpdateMapLocation;
+                KeepAliveThread m_keepAliveThread;
+
+                Thread phoneExchThread = null;
+                Thread gpsThread = null;
+                Thread confThread = null;
+                Thread reservationThread = null;
+                Thread keepAliveThread = null;
+                Thread UpdateMapLocationThread = null;
+
+                bool startPhoneListener = true;
+                bool startReservationProcessing = true;
+
+
+                log4net.Config.XmlConfigurator.Configure();
+                //log4net.Config.DOMConfigurator.Configure();
+                log4net.LogManager.GetLogger("MyService").Info("STARTING");
+
+                log4net.LogManager.GetLogger("TimeLog").Info("STARTING");
+
+
+                try
+                {
+
+                    if (!bool.Parse(ConfigurationManager.AppSettings["startPhoneListener"]))
+                        startPhoneListener = false;
+                }
+                catch (FormatException fe)
+                {
+                    startPhoneListener = false;
+                    log4net.LogManager.GetLogger("MyService").Error("PhoneListener", fe);
+                }
+
+                try
+                {
+                    if (!bool.Parse(ConfigurationManager.AppSettings["startReservationProcessing"]))
+                        startReservationProcessing = false;
+                }
+                catch (FormatException fe)
+                {
+                    startReservationProcessing = false;
+                    log4net.LogManager.GetLogger("MyService").Error("ReservationProcessing", fe);
+                }
+
+                Uri baseAddressCore = new Uri(ConfigurationManager.AppSettings["baseAddressCore"]);
+                Uri baseAdminAddressCore = new Uri(ConfigurationManager.AppSettings["baseAdminAddressCore"]);
+                Uri baseTaxiAdminAddressCore = new Uri(ConfigurationManager.AppSettings["baseTaxiAdminAddressCore"]);
+
+                GeneralConstants.ShiftInOutSensor = ConfigurationManager.AppSettings["ShiftInOutSensor"];
+                GeneralConstants.ShiftInOutSensorStateIn = Int16.Parse(ConfigurationManager.AppSettings["ShiftInOutSensorStateIn"]);
+
+
+                ServiceHost webConnectServiceHost = null;
+                Uri baseWebConnectCore = new Uri(ConfigurationManager.AppSettings["baseWebConnectCore"]);
+                if (ConfigurationManager.AppSettings["StartWebConnect"].Equals("true", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    webConnectServiceHost = new ServiceHost(typeof(WebConnectService), baseWebConnectCore);
+                    webConnectServiceHost.Open();
+                }
+
+
+
+
+                Taxi.Communication.Server.Utils.ThreadsConfigurationHandler tHand =
+                    ConfigurationManager.GetSection("ThreadsConfiguration")
+                    as Taxi.Communication.Server.Utils.ThreadsConfigurationHandler;
+
+
+
+                //WSDualHttpBinding wsDualBinding = new WSDualHttpBinding(WSDualHttpSecurityMode.None); //(SecurityMode.None, true);
+                //wsDualBinding.ReceiveTimeout = TimeSpan.MaxValue;
+
+
+
+                //CoreServiceHost.AddServiceEndpoint (typeof (ServiceCallBack), wsDualBinding, baseAddressCore);
+
+                MapUtils mapUtils = new Taxi.Communication.Server.Utils.MapUtils();
+
+                //Initialize the VehiclesContainer
+                VehiclesContainer.Instance.initialize(initVechicle(), mapUtils);
+
+
+                CurrentServerData currServerData = new CurrentServerData(initPhoneExchangeMessage());
+
+
+
+                LocationSynchQueue locQueue = LocationSynchQueue.Instance;
+                m_gpsListeners = new GPSListener(mapUtils, locQueue);
+
+
+                ConfigurationSendThread confSend = new ConfigurationSendThread(10000, m_gpsListeners, 3);
+
+
+                //m_phoneListener = new PhoneExchangeListener();
+
+
+                string port = System.Configuration.ConfigurationManager.AppSettings["commPortId"];
+                int baud = Int32.Parse(System.Configuration.ConfigurationManager.AppSettings["commPortBaud"]);
+                string switchType = System.Configuration.ConfigurationManager.AppSettings["commListenerType"];
+
+                m_phoneListener = Taxi.Communication.Server.PhoneSwitch.PhoneSwitchFacotry.CreateSwitchListener(switchType, port, baud);
+
+
+                m_reservation = new ReservationProcessingThread(10000, 3);
+                m_UpdateMapLocation = new UpdateMapLocations(mapUtils, locQueue);
+                m_keepAliveThread = new KeepAliveThread(1000 * 60 * 2); //5min sleep time
+
+                ServiceCallBack servCallBack = new ServiceCallBack(m_gpsListeners, m_phoneListener);
+
+                m_reservation.setCallBack(servCallBack);
+                m_keepAliveThread.setCallBack(servCallBack);
+
+                // Instantiate new ServiceHost
+                ServiceHost CoreServiceHost = new ServiceHost(servCallBack, baseAddressCore);
+                //new ServiceHost(typeof(ServiceCallBack), baseAddressCore); 
+                ServiceHost adminServiceHost = new ServiceHost(typeof(AdministrationService), baseAdminAddressCore);
+
+                ServiceHost taxiAdminServiceHost = new ServiceHost(typeof(TaxiAdministrationService), baseTaxiAdminAddressCore);
+
+                Console.WriteLine("Starting listeners");
+
+                confThread = new Thread(new ThreadStart(confSend.start));
+                confThread.Start();
+                Console.WriteLine("Wait for configuration thread");
+                while (!confThread.IsAlive) ;
+
+                if (startReservationProcessing)
+                {
+                    reservationThread = new Thread(new ThreadStart(m_reservation.start));
+                    reservationThread.Start();
+                    Console.WriteLine("Wait for reservation thread");
+                    while (!reservationThread.IsAlive) ;
+                }
+
+                if (startPhoneListener)
+                {
+                    phoneExchThread = new Thread(new ThreadStart(m_phoneListener.Start));
+                    phoneExchThread.Start();
+                    Console.WriteLine("Start Done Waiting for Phone Exchange");
+                    while (!phoneExchThread.IsAlive) ;
+                }
+
+                UpdateMapLocationThread = new Thread(new ThreadStart(m_UpdateMapLocation.start));
+                UpdateMapLocationThread.Start();
+                Console.WriteLine("Wait for Update Map Location thread");
+                while (!UpdateMapLocationThread.IsAlive) ;
+
+                gpsThread = new Thread(new ThreadStart(m_gpsListeners.Start));
+                gpsThread.Start();
+                Console.WriteLine("Wait for GPS Listener thread");
+                while (!gpsThread.IsAlive) ;
+
+                CoreServiceHost.Open();
+                adminServiceHost.Open();
+                taxiAdminServiceHost.Open();
+
+                keepAliveThread = new Thread(new ThreadStart(m_keepAliveThread.start));
+                keepAliveThread.Start();
+                Console.WriteLine("Wait for keepAliveThread thread");
+                while (!keepAliveThread.IsAlive)
+
+                    Console.WriteLine("Taxi Service is Online.");
+                Console.WriteLine("-----------------------------------");
+
+                Console.WriteLine("Press any key to terminate service.");
+                Console.ReadKey();
+
+                if (phoneExchThread != null)
+                {
+                    m_phoneListener.Stop();
+                    phoneExchThread.Join();
+                }
+                if (gpsThread != null)
+                {
+                    m_gpsListeners.Stop();
+                    gpsThread.Join();
+                }
+
+                if (confThread != null)
+                {
+                    confSend.stop();
+                    confThread.Join();
+                }
+                if (reservationThread != null)
+                {
+                    m_reservation.stop();
+                    reservationThread.Join();
+                }
+                if (UpdateMapLocationThread != null)
+                {
+                    m_UpdateMapLocation.Stop();
+                    UpdateMapLocationThread.Join();
+                }
+
+                if (keepAliveThread != null)
+                {
+                    m_keepAliveThread.stop();
+                    keepAliveThread.Join();
+                }
+
+                if (webConnectServiceHost != null)
+                {
+                    webConnectServiceHost.Close();
+                }
+
+                adminServiceHost.Close();
+                CoreServiceHost.Close();
+                taxiAdminServiceHost.Close();
+            }
+            catch (Exception ex)
+            {
+                string SourceName = "CommunicationServerHost";
+                if (!EventLog.SourceExists(SourceName))
+                {
+                    EventLog.CreateEventSource(SourceName, "Application");
+                }
+
+                EventLog eventLog = new EventLog();
+                eventLog.Source = SourceName;
+                string message = string.Format("Exception: {0} \n\nStack: {1}", ex.Message, ex.StackTrace);
+                eventLog.WriteEntry(message, EventLogEntryType.Error);
+            }
+
+        }
+
+        static Dictionary<long, TList<Vehicle>> initVechicle()
+        {
+            Dictionary<long, TList<Vehicle>> retVal = new Dictionary<long, TList<Vehicle>>();
+            TList<Vehicle> lstVehicles;
+            TList<Company> lstCompany;
+
+            lstCompany = DataRepository.CompanyProvider.GetAll();
+            //lstCompany = new TList<Company>();
+
+            foreach (Company company in lstCompany)
+            {
+                lstVehicles = DataRepository.VehicleProvider.GetByIDCompany(company.IDCompany);
+                //Console.WriteLine("");
+                //Console.WriteLine("Procitav " + lstVehicles.Count.ToString() + " vozila za " + company.Description);
+                //Console.WriteLine("");
+
+                // Zoran
+                // Tuka gi trgam site vozila koi nemaat montiran ured, inace paga...
+                // Treba pointelegentno, 
+                // plus ni trebaat meetodi za dodavanje / vadenje na vozilo od listata (Container-ot) pri montaza / demontaza na ured
+
+                // od tuka ...........................................................................................
+
+                TList<Vehicle> tmpLstVehicles = new TList<Vehicle>();
+
+
+                foreach (Vehicle tmpVehicle in lstVehicles)
+                    if (tmpVehicle.IDUnit != null)
+                        tmpLstVehicles.Add(tmpVehicle);
+
+                lstVehicles = tmpLstVehicles;
+
+                // do tuka ...........................................................................................
+
+
+                Console.WriteLine("");
+                Console.WriteLine("Procitav " + lstVehicles.Count.ToString() + " vozila za " + company.Description);
+                Console.WriteLine("");
+
+
+                Type[] tl = new Type[3];
+                tl[0] = typeof(Unit);
+                tl[1] = typeof(Company);
+                tl[2] = typeof(CompanyTimeZone);
+
+                DataRepository.VehicleProvider.DeepLoad(lstVehicles, true, DeepLoadType.IncludeChildren, tl);
+
+                foreach (Vehicle vehicle in lstVehicles)
+                {
+
+                    //Zemam koj e najaven Driver, ako ima zapis vo InOutDriver kade za IDDriver DateOut = null
+                    //usr_InOutDriver_GetDriverInByIDVehicle , zema posleden zapis
+                    System.Data.DataSet tINOutDriverList = GlobSaldo.AVL.Data.DataRepository.InOutDriverProvider.GetDriverInByIDVehicle(vehicle.IDVehicle);
+                    if (tINOutDriverList.Tables[0].Rows.Count > 0)
+                    {
+                        //Proveruvam koj e najaven vozac (Prviot od zapisite koi nemaat DateOut
+                        vehicle.IDDriver = (long)tINOutDriverList.Tables[0].Rows[0].ItemArray[0];
+                        System.Diagnostics.Debug.WriteLine(tINOutDriverList.Tables[0].Rows[0].ItemArray[0].ToString()); //
+                    }
+                    //-----------------------------------------------------------------------------------------
+
+                    //Zemam koj e najaven Driver, ako ima zapis vo InOutDriver kade za IDDriver DateOut = null
+                    //usr_InOutDriver_GetDriverInByIDVehicle , zema posleden zapis
+                    vehicle.IDDriverShift = 0;
+                    JP.Data.Utils.TList<GlobSaldo.AVL.Entities.ShiftInOut> tShiftInOutDrivers = GlobSaldo.AVL.Data.DataRepository.ShiftInOutProvider.GetByIDVehicle(vehicle.IDVehicle);
+                    foreach (GlobSaldo.AVL.Entities.ShiftInOut tShiftInOut in tShiftInOutDrivers)
+                    {
+                        //PAZI, Treba da gi dade samo onie so DateTimeOut = null
+                        if (tShiftInOut.DateTimeOut == null)
+                        {
+                            vehicle.IDDriverShift = tShiftInOut.IDDriver;
+                        }
+                    }
+                    //-----------------------------------------------------------------------------------------
+
+
+                    vehicle.currentState = new StateUndefined(vehicle);
+                    vehicle.previousState = new StateUndefined(vehicle);
+                    vehicle.currentSensorData = new SensorData();
+                    vehicle.currentGPSData = new GPSData();
+
+                    vehicle.StateChanged = true;
+
+                }
+
+
+
+
+                //foreach (Vehicle vehicle in lstVehicles)
+                //{
+                //    //PAZI, Pri podiganje, treba state Undefined, ama sega za testiranje mi se Idle
+                //    vehicle.currentState = new StateUndefined(vehicle);
+                //    vehicle.previousState = new StateUndefined(vehicle);
+                //    vehicle.currentSensorData = new SensorData();
+                //    vehicle.currentGPSData = new GPSData();
+
+                //    //Zemam koj e najaven Driver, ako ima zapis vo InOutDriver kade za IDDriver DateOut = null
+
+
+                //    vehicle.StateChanged = true;
+
+                //}
+
+
+                //OD NAUMCE, ZA DA IMAM LOKACIJA ZA PRIKAZ NA KARTA
+                //foreach (Vehicle vehicle in lstVehicles)
+                //{
+                //    //Imam samo tri vozila vo baza.
+                //    switch (vehicle.IDVehicle)
+                //    {
+                //        case 1:
+                //            vehicle.currentGPSData.Latutude_Y = 42.0019311827808;
+                //            vehicle.currentGPSData.Longitude_X = 21.4046762239574;
+                //            break;
+                //        case 2:
+                //            vehicle.currentGPSData.Latutude_Y = 41.9965896644813;
+                //            vehicle.currentGPSData.Longitude_X = 21.4036078958731;
+                //            break;
+                //        case 3:
+                //            vehicle.currentGPSData.Latutude_Y = 42.0006768911571;
+                //            vehicle.currentGPSData.Longitude_X = 21.4133484418674;
+                //            break;
+                //    }
+                //}
+
+
+                retVal.Add(company.IDCompany, lstVehicles);
+            }
+
+
+            return retVal;
+        }
+
+
+        static TList<PhoneCalls> initPhoneExchangeMessage()
+        {
+            return new TList<PhoneCalls>();
+        }
+    }
+}

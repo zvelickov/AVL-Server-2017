@@ -1,0 +1,1787 @@
+using System;
+using System.Collections.Generic;
+using System.Text;
+using System.Reflection;
+using System.ServiceModel;
+using JP.Data.Utils;
+using log4net;
+using Taxi.Communication.Server.ConnectionListeners;
+using GlobSaldo.AVL.Data;
+using GlobSaldo.AVL.Data.Bases;
+using GlobSaldo.AVL.Entities;
+using GlobSaldo.AVL.Data.SqlClient;
+using GlobSaldo.AVL.Entities.PartialClasses;
+using Taxi.Communication.Server.Containers;
+using Taxi.Communication.Server.Utils.Containers;
+
+namespace Taxi.Communication.Server
+{
+    [ServiceContract()]
+    public interface IAdministrationService
+    {
+        #region LayersPerCompany
+        [OperationContract]
+        TList<LayersPerCompany> getDataByIDCompany(long ID_Company);
+
+        [OperationContract]
+        TList<LayersPerCompany> getAllLayersPerCompany(int startPage, int pageSize, out int maxPages);
+        #endregion
+
+
+        #region Users
+        [OperationContract]
+        TList<Users> getAllUsers(int startPage, int pageSize, out int maxPages);
+
+        [OperationContract]
+        TList<Users> getDataByUserNamePassword(string username, string password);
+        #endregion
+
+        #region CanceledPhoneCalls
+        [OperationContract]
+        TList<CanceledPhoneCalls> getAllCanceledPhoneCalls(int startPage, int pageSize, out int maxPages);
+
+        [OperationContract]
+        long insertCanceledPhoneCall(CanceledPhoneCalls newCanceledPhoneCall);
+        #endregion
+
+        #region Penalties
+        [OperationContract]
+        TList<Penalties> getAllPenalties(int startPage, int pageSize, out int maxPages);
+
+        [OperationContract]
+        long insertPenalties(Penalties newPenatly);
+        #endregion
+
+        #region Driver
+        [OperationContract]
+        Driver getDataByLastAssignedDriver(long ID_Vehicle);
+
+        [OperationContract]
+        Driver getDataLastDriverShift(long ID_Vehicle);
+
+        #endregion
+
+        #region Orders
+        [OperationContract]
+        TList<Orders> getAllOrders(int startPage, int pageSize, out int maxPages);
+
+        [OperationContract]
+        long insertOrders(Orders newOrder);
+        #endregion
+
+        #region PhoneNumbersBlackList
+        [OperationContract]
+        TList<PhoneNumbersBlackList> getAllPhoneNumbersBlackList(int startPage, int pageSize, out int maxPages);
+
+        [OperationContract]
+        TList<PhoneNumbersBlackList> getDataByPhoneNumber(string phoneNumber);
+
+        [OperationContract]
+        long insertPhoneNumbersBlackList(PhoneNumbersBlackList newPhoneBlack);
+        #endregion
+
+        #region UserInOut
+        [OperationContract]
+        TList<UserInOut> getAllUserInOut(int startPage, int pageSize, out int maxPages);
+
+        [OperationContract]
+        long UpdateQueryLogOutUser(DateTime dateOut, long ID_User);
+
+        [OperationContract]
+        long insertUserInOut(UserInOut newUserInOut);
+
+        [OperationContract]
+        long updateUserInOut(UserInOut pUserInOut);
+
+        [OperationContract]
+        UserInOut getUserInOutForCurrentExtension(Users pUser, long pExtension);
+
+        #endregion
+
+        #region PhoneNumber
+        [OperationContract]
+        TList<PhoneNumbers> getAllPhoneNumbers(int startPage, int pageSize, out int maxPages);
+
+        [OperationContract]
+        TList<PhoneNumbers> getDataByObjectName(string address);
+        #endregion
+
+
+        #region PhoneCalls
+
+        [OperationContract]
+        long updatePhoneCalls(PhoneCalls pPhoneCalls);
+
+        #endregion
+
+
+        #region GisObjects
+        [OperationContract]
+        TList<GisObjects> getAllGisObjects(int startPage, int pageSize, out int maxPages);
+
+        [OperationContract]
+        GisObjects getGisObjectForIdObject(long ID_Objects);
+
+        [OperationContract]
+        TList<GisObjects> getAllGisObjectsByName(string name);
+
+        [OperationContract]
+        TList<ObjectDescription> getObjectDescriptionsByGisObject(long IDObject);
+
+        [OperationContract]
+        long saveObjectDescriptions(ObjectDescription objectDescription);
+
+        [OperationContract]
+        long deleteObjectDescriptions(ObjectDescription objectDescription);
+
+        #endregion
+
+
+        #region GisStreets
+
+        [OperationContract]
+        TList<GisStreets> getAllGisStreets(int startPage, int pageSize, out int maxPages);
+
+        [OperationContract]
+        TList<GisStreets> getGisStreetsByName(string name);
+
+        [OperationContract]
+        GisStreets GetGisStreetForIdStreet(string IDStreet);
+
+        #endregion
+
+
+        #region GisRegions
+        [OperationContract]
+        GisRegions getGisRegionForIdRegion(int IdRegion);
+
+        [OperationContract]
+        TList<GisRegions> getAllGisRegions(int startPage, int pageSize, out int maxPages);
+        #endregion
+
+
+        #region GisSearchRegions
+        [OperationContract]
+        TList<GisSearchRegions> getAllGisSearchRegions(int startPage, int pageSize, out int maxPages);
+
+        [OperationContract]
+        TList<GisSearchRegions> getGisSearchRegionsByIdRegion(long ID_Region, int typeAlternative);
+        #endregion
+
+        #region GisAddressModel
+
+        [OperationContract]
+        TList<GisAddressModel> getAllGisAddressModel(int startPage, int pageSize, out int maxPages);
+
+        [OperationContract]
+        TList<GisAddressModel> getGisAddressModelForIDStreet(string ID_Street);
+
+        [OperationContract]
+        TList<GisAddressModel> getGisAddressModelForIDStreetHouseNumber(string ID_Street, int houseNumber);
+
+        [OperationContract]
+        TList<AddressModelDescription> getAddressModelDescriptionsForIDStreetHouseNumber(string ID_Street, int houseNumber);
+
+        [OperationContract]
+        TList<AddressModelDescription> getAddressModelDescriptionsByIDStreet(string ID_Street);
+
+        [OperationContract]
+        long saveAddressModelDescriptions(AddressModelDescription addressModelDescription);
+
+        [OperationContract]
+        long deleteAddressModelDescriptions(AddressModelDescription addressModelDescription);
+
+        #endregion
+
+        #region GisPhoneNumber
+        [OperationContract]
+        TList<GisPhoneNumbers> getAllGisPhoneNumbers(int startPage, int pageSize, out int maxPages);
+
+        [OperationContract]
+        GisPhoneNumbers getGisPhoneNumbersByNumber(string phoneNumber);
+
+        [OperationContract]
+        long deleteGisPhoneNumbersForPhoneNumber(GisPhoneNumbers gisPhoneNumber);
+
+        [OperationContract]
+        long insertGisPhoneNumbers(GisPhoneNumbers newPhoneNumber);
+
+        [OperationContract]
+        TList<GisPhoneNumbers> getGisPhoneNumbersByIDObject(long IDObject);
+
+        [OperationContract]
+        TList<PhoneNumberDescription> getPhoneNumberDescriptionsByGisPhoneNumber(string phoneNumber);
+
+        [OperationContract]
+        long savePhoneNumberDescriptions(PhoneNumberDescription phoneNumberDescription);
+
+        [OperationContract]
+        long deletePhoneNumberDescriptions(PhoneNumberDescription phoneNumberDescription);
+
+
+        #endregion
+
+        #region PhoneNumbersSurovi
+        /*
+        [OperationContract]
+        long savePhoneNumbersSurovi(PhoneNumbersSurovi phoneNumbersSurovi);
+
+        [OperationContract]
+        long deletePhoneNumbersSurovi(PhoneNumbersSurovi phoneNumbersSurovi);
+
+        [OperationContract]
+        long updatePhoneNumbersSurovi(PhoneNumbersSurovi phoneNumbersSurovi);
+
+        [OperationContract]
+        TList<PhoneNumbersSurovi> getAllPhoneNumbersSurovi(int pageStart, int pageLength, out int maxPages);
+
+        [OperationContract]
+        TList<PhoneNumbersSurovi> getPhoneNumbersSuroviByPhoneNumber(string phoneNumber);
+
+        [OperationContract]
+        TList<PhoneNumbersSurovi> getPhoneNumbersSuroviByAddress(string address);
+         */
+        #endregion
+
+        #region  ClientPhoneNumbers
+        [OperationContract]
+        Clients searchVipClients(ClientPhoneNumbers clientPhoneNumber);
+        #endregion
+
+        #region  VehicleSymbol
+
+        [OperationContract]
+        VehicleSymbol getVehicleSymbolByIdVehicle(long IDVehicle);
+
+        [OperationContract]
+        long deleteVehicleSymbol(VehicleSymbol delVehicleSymbol);
+
+        [OperationContract]
+        long updateVehicleSymbol(VehicleSymbol updVehicleSymbol);
+
+        [OperationContract]
+        long insertVehicleSymbol(VehicleSymbol newVehicleSymbol);
+
+        #endregion
+
+        #region Reservation
+
+        [OperationContract]
+        TList<Reservations> getReservationsForContactPhone(string phoneNumber);
+
+        [OperationContract]
+        TList<Reservations> getReservationsForPeriod(DateTime dateFrom, DateTime dateTo);
+
+        [OperationContract]
+        int deleteReservationList(TList<Reservations> objReservations);
+
+        [OperationContract]
+        int deleteReservationContactPhonePeriod(string phoneNumber, DateTime dateFrom, DateTime dateTo);
+
+        #endregion
+
+        #region FiskalReceipt
+
+        [OperationContract]
+        TList<FiskalReceipt> getFiskalReceiptForVehicle(long iDVehicle, DateTime dateFrom, DateTime dateTo);
+
+        [OperationContract]
+        TList<FiskalReceipt> getFiskalReceiptForPeriod(DateTime dateFrom, DateTime dateTo);
+
+        [OperationContract]
+        TList<FiskalReceipt> getFiskalReceiptForDriver(long iDDriver, DateTime dateFrom, DateTime dateTo);
+
+        [OperationContract]
+        TList<FiskalReceipt> getFiskalReceiptForRfIdCard(string rfIdCard, DateTime dateFrom, DateTime dateTo);
+
+        [OperationContract]
+        long saveFiskalReceipt(FiskalReceipt objFiskalReceipt);
+
+        [OperationContract]
+        long deleteFiskalReceipt(FiskalReceipt objFiskalReceipt);
+
+        #endregion
+
+        #region RfIDCards
+
+        [OperationContract]
+        RegisteredPassengers getRegisteredPassingerForCard(string description);
+
+        [OperationContract]
+        Driver getDriverForCard(string description);
+
+        #endregion
+
+        #region LogInfo
+
+        [OperationContract]
+        long saveLogInfo(string logInfoText);
+
+        #endregion
+
+        #region SearchVechicles Ror reaon
+
+        [OperationContract]
+        TList<Vehicle> searchAllVechiclesByIDReaon(long ID_Region, int typeAlternative);
+
+        [OperationContract]
+        bool IsVehicleEligibleForCall(Vehicle pVehicle, PhoneCalls phoneCall);
+
+        [OperationContract]
+        TList<Vehicle> GetAllAvailableVehiclesForPhoneCall(PhoneCalls phoneCall);
+
+        [OperationContract]
+        TList<Vehicle> GetAllAvailableVehiclesForLocation(decimal? latitude, decimal? longitude, long id_Region);
+
+        #endregion
+
+    }
+
+    public class AdministrationService : IAdministrationService
+    {
+        public static readonly ILog log = log4net.LogManager.GetLogger("MyService");
+
+        #region IAdministrationService Members
+
+        #region LayersPerCompany
+        public TList<LayersPerCompany> getDataByIDCompany(long ID_Company)
+        {
+            try
+            {
+                return DataRepository.LayersPerCompanyProvider.GetByIDCompany(ID_Company);
+            }
+            catch (Exception e)
+            {
+                log.Error("Error", e);
+                return null;
+            }
+        }
+
+        public TList<LayersPerCompany> getAllLayersPerCompany(int startPage, int pageSize, out int maxPages)
+        {
+            maxPages = -1;
+            try
+            {
+                return DataRepository.LayersPerCompanyProvider.GetPaged(startPage, pageSize, out maxPages);
+            }
+            catch (Exception e)
+            {
+                log.Error("Error", e);
+                return null;
+            }
+        }
+        #endregion
+
+
+        #region Locations
+
+
+
+        public TList<Locations> getLocationsByVehicleAndPeriod(long pIDVehicle, DateTime pDateFrom, DateTime pDateTo)
+        {
+            TList<Locations> retVal = null;
+
+
+
+
+            try
+            {
+                int? tmpMaxPages = 10000;
+
+                //double RazlikaSaati;
+
+                //if (System.DateTime.Now.IsDaylightSavingTime())
+                //    RazlikaSaati = (double)2;
+                //else
+                //    RazlikaSaati = (double)1;
+
+                //DateTime DatumOd;
+                //DateTime DatumDo;
+
+                //DatumOd = pDateFrom.AddHours(-1 * RazlikaSaati);
+                //DatumDo = pDateTo.AddHours(-1 * RazlikaSaati);
+
+                //LocationsParameterBuilder  FilteredLocations = new LocationsParameterBuilder(); 
+
+                //FilteredLocations.AppendEquals(LocationsColumn.IDVehicle,pIDVehicle.ToString());
+                //FilteredLocations.AppendGreaterThanOrEqual(LocationsColumn.UTC, DatumOd.ToString());     //pDateFrom.Date.ToString()); // pDateFrom.Year.ToString("0000") + pDateFrom.Month.ToString("00") + pDateFrom.Day.ToString("00"));
+                //FilteredLocations.AppendLessThanOrEqual(LocationsColumn.UTC, DatumDo.ToString());        //pDateTo.Date.ToString()); // pDateTo.Year.ToString("0000") + pDateTo.Month.ToString("00") + pDateTo.Day.ToString("00"));
+
+                retVal = DataRepository.LocationsProvider.GetLocationByIDVehicleForIntervalPaged(pIDVehicle, pDateFrom, pDateTo, 0, 100000, ref tmpMaxPages);
+
+                //if (retVal != null && retVal.Count > 0)
+                //{
+                //    decimal KmGpsPrevious = 0;
+                //    decimal KmTaximeterPrevious = 0;
+
+                //    decimal KmGpsCurrent = 0;
+                //    decimal KmTaximeterCurrent = 0;
+
+                //    decimal KmGpsKumulativno = 0;
+                //    decimal KmTaximeterKumulativno = 0;
+
+                //    //int RazlikaSaati;
+
+                //    //if (System.DateTime.Now.IsDaylightSavingTime())
+                //    //    RazlikaSaati = 2;
+                //    //else
+                //    //    RazlikaSaati = 1;
+
+
+                //    foreach (Locations tmpLocations in retVal)
+                //    {
+
+                //        //ako e prv zapis, zemi go
+                //        if (KmGpsPrevious == 0)
+                //            KmGpsPrevious = tmpLocations.KmGps;
+
+                //        if (KmTaximeterPrevious == 0)
+                //            KmTaximeterPrevious = tmpLocations.KmTaxiMeter;
+
+                //        KmGpsCurrent = tmpLocations.KmGps;
+                //        KmTaximeterCurrent = tmpLocations.KmTaxiMeter;
+
+
+                //        //tmpLocations.UTC = tmpLocations.UTC.AddHours(RazlikaSaati);
+
+
+                //        // Prvo, da ne se resetiral
+                //        if (KmGpsCurrent >= 9998 && KmGpsCurrent <= 10000 && KmTaximeterCurrent < 1000)
+                //        {
+                //            KmGpsPrevious = 0;
+                //            KmGpsCurrent = 0;
+
+                //            KmTaximeterPrevious = 0;
+                //            KmTaximeterCurrent = 0;
+                //        }
+
+                //        // ova ne bi trebalo da se sluci (ogromen e brojacot), no za sekoj slucaj...
+                //        if (KmGpsCurrent < KmGpsPrevious)
+                //        {
+                //            KmGpsPrevious = KmGpsCurrent;                            
+                //        }
+
+
+                //        //Kontrola da ne prebacil taksimetarot preku 8000000
+                //        if (KmTaximeterCurrent < KmTaximeterPrevious)
+                //        {
+                //            KmTaximeterCurrent = KmTaximeterCurrent + (8000000 - KmTaximeterPrevious);
+
+                //            KmTaximeterPrevious = 0;
+                //        }
+
+                //        KmGpsKumulativno += KmGpsCurrent - KmGpsPrevious;
+                //        KmTaximeterKumulativno += (KmTaximeterCurrent - KmTaximeterPrevious) / 4300;
+
+
+                //        //log.Info("Tekovni KM GPS: " + KmGpsCurrent);
+                //        //log.Info("Prethodni KM GPS: " + KmGpsPrevious);
+                //        //log.Info("Kumulativni KM GPS: " + KmGpsKumulativno);
+
+                //        tmpLocations.KmTaxiMeter = KmTaximeterKumulativno;
+                //        tmpLocations.KmGps = KmGpsKumulativno;
+
+                //        KmGpsPrevious = KmGpsCurrent;
+                //        KmTaximeterPrevious = KmTaximeterCurrent;
+                //    }
+
+                //}
+
+
+            }
+            catch (Exception e)
+            {
+                log.Error("Error vo getLocationsByVehicleAndPeriod", e);
+            }
+
+            return retVal;
+            //return new TList<Locations>();
+        }
+
+        #endregion
+
+
+        #region Users
+        public TList<Users> getAllUsers(int startPage, int pageSize, out int maxPages)
+        {
+            maxPages = -1;
+            try
+            {
+                return DataRepository.UsersProvider.GetPaged(startPage, pageSize, out maxPages);
+            }
+            catch (Exception e)
+            {
+                log.Error("Error", e);
+                return null;
+            }
+        }
+
+        public TList<Users> getDataByUserNamePassword(string username, string password)
+        {
+            try
+            {
+                return DataRepository.UsersProvider.getByUserNamePassword(username, password);
+            }
+            catch (Exception e)
+            {
+                log.Error("Error", e);
+                return null;
+            }
+        }
+
+        #endregion
+
+        #region CanceledPhoneCalls
+        public TList<CanceledPhoneCalls> getAllCanceledPhoneCalls(int startPage, int pageSize, out int maxPages)
+        {
+            maxPages = -1;
+            try
+            {
+                return DataRepository.CanceledPhoneCallsProvider.GetPaged(startPage, pageSize, out maxPages);
+            }
+            catch (Exception e)
+            {
+                log.Error("Error", e);
+                return null;
+            }
+        }
+
+        public long insertCanceledPhoneCall(CanceledPhoneCalls newCanceledPhoneCall)
+        {
+            try
+            {
+                if (DataRepository.CanceledPhoneCallsProvider.Insert(newCanceledPhoneCall))
+                    return 0;
+                else
+                    return -1;
+            }
+            catch (Exception e)
+            {
+                log.Error("Error", e);
+                return -1;
+            }
+        }
+        #endregion
+
+        #region Penatlties
+        public TList<Penalties> getAllPenalties(int startPage, int pageSize, out int maxPages)
+        {
+            maxPages = -1;
+            try
+            {
+                return DataRepository.PenaltiesProvider.GetPaged(startPage, pageSize, out maxPages);
+            }
+            catch (Exception e)
+            {
+                log.Error("Error", e);
+                return null;
+            }
+        }
+
+        public long insertPenalties(Penalties newPenatly)
+        {
+            try
+            {
+                if (DataRepository.PenaltiesProvider.Insert(newPenatly))
+                    return newPenatly.IDPenalty;
+                else
+                    return -1;
+            }
+            catch (Exception e)
+            {
+                log.Error("Error", e);
+                return -1;
+            }
+        }
+        #endregion
+
+        #region Driver
+        public Driver getDataByLastAssignedDriver(long ID_Vehicle)
+        {
+            try
+            {
+                return null;
+            }
+            catch (Exception e)
+            {
+                log.Error("Error", e);
+                return null;
+            }
+        }
+
+        public Driver getDataLastDriverShift(long ID_Vehicle)
+        {
+            Driver retVal = null;
+
+
+            try
+            {
+                TList<ShiftInOut> tShiftInOut = DataRepository.ShiftInOutProvider.GetByIDVehicleAndDateTimeNull(ID_Vehicle);
+                if (tShiftInOut != null && tShiftInOut.Count > 0)
+                {
+                    ShiftInOut tShift = tShiftInOut[tShiftInOut.Count - 1];
+                    retVal = DataRepository.DriverProvider.GetByIDDriver(tShift.IDDriver);
+                }
+
+            }
+            catch (Exception e)
+            {
+                log.Error("Error", e);
+            }
+
+
+            return retVal;
+        }
+
+        #endregion
+
+        #region Orders
+        public TList<Orders> getAllOrders(int startPage, int pageSize, out int maxPages)
+        {
+            maxPages = -1;
+            try
+            {
+                return DataRepository.OrdersProvider.GetPaged(startPage, pageSize, out maxPages);
+            }
+            catch (Exception e)
+            {
+                log.Error("Error", e);
+                return null;
+            }
+        }
+
+        public long insertOrders(Orders newOrder)
+        {
+            try
+            {
+                if (DataRepository.OrdersProvider.Insert(newOrder))
+                    return newOrder.IDOrder;
+                else
+                    return -1;
+            }
+            catch (Exception e)
+            {
+                log.Error("Error", e);
+                return -1;
+            }
+        }
+        #endregion
+
+        #region PhoneNumbersBlackList
+        public TList<PhoneNumbersBlackList> getAllPhoneNumbersBlackList(int startPage, int pageSize, out int maxPages)
+        {
+            maxPages = -1;
+            try
+            {
+                return DataRepository.PhoneNumbersBlackListProvider.GetPaged(startPage, pageSize, out maxPages);
+            }
+            catch (Exception e)
+            {
+                log.Error("Error", e);
+                return null;
+            }
+        }
+
+        public TList<PhoneNumbersBlackList> getDataByPhoneNumber(string phoneNumber)
+        {
+            try
+            {
+                return DataRepository.PhoneNumbersBlackListProvider.getByPhoneNumber(phoneNumber);
+            }
+            catch (Exception e)
+            {
+                log.Error("Error", e);
+                return null;
+            }
+        }
+
+        public long insertPhoneNumbersBlackList(PhoneNumbersBlackList newPhoneBlack)
+        {
+            try
+            {
+                if (DataRepository.PhoneNumbersBlackListProvider.Insert(newPhoneBlack))
+                    return newPhoneBlack.IDBlackList;
+                else
+                    return -1;
+            }
+            catch (Exception e)
+            {
+                log.Error("Error", e);
+                return -1;
+            }
+        }
+        #endregion
+
+        #region UserInOut
+        public TList<UserInOut> getAllUserInOut(int startPage, int pageSize, out int maxPages)
+        {
+            maxPages = -1;
+            try
+            {
+                return DataRepository.UserInOutProvider.GetPaged(startPage, pageSize, out maxPages);
+            }
+            catch (Exception e)
+            {
+                log.Error("getAllUserInOut Error", e);
+                return null;
+            }
+        }
+
+        public long UpdateQueryLogOutUser(DateTime dateOut, long ID_User)
+        {
+            try
+            {
+                DataRepository.UserInOutProvider.UpdateQueryLogOutUser(dateOut, ID_User);
+                return 0;
+            }
+            catch (Exception e)
+            {
+                log.Error("UpdateQueryLogOutUser Error", e);
+                return -1;
+            }
+        }
+
+        public long insertUserInOut(UserInOut newUserInOut)
+        {
+            try
+            {
+                if (DataRepository.UserInOutProvider.Insert(newUserInOut))
+                    return newUserInOut.IDUserLogInOut;
+                else
+                    return -1;
+            }
+            catch (Exception e)
+            {
+                log.Error("insertUserInOut Error", e);
+                return -1;
+            }
+        }
+
+
+
+        public long updateUserInOut(UserInOut pUserInOut)
+        {
+            try
+            {
+                if (DataRepository.UserInOutProvider.Update(pUserInOut))
+                    return pUserInOut.IDUserLogInOut;
+                else
+                    return -1;
+            }
+            catch (Exception e)
+            {
+                log.Error("updateUserInOut Error", e);
+                return -1;
+            }
+        }
+
+
+        public UserInOut getUserInOutForCurrentExtension(Users pUser, long pExtension)
+        {
+            UserInOut retVal = null;
+            TList<UserInOut> retValList = null;
+
+
+            try
+            {
+                // ZORAN: trena storna za ovaa rabota, no moze i vaka (se povikuva samo pri logiranje na user!
+
+                retValList = DataRepository.UserInOutProvider.GetByIDUser(pUser.IDUser);
+
+                if (retValList != null && retValList.Count > 0)
+                {
+                    for (int i = 0; i < retValList.Count; i++)
+                        if (retValList[i].DateTimeOut == null)
+                            if (retVal == null)
+                                retVal = retValList[i];
+                            else
+                                if (retVal.DateTimeIn.CompareTo(retValList[i].DateTimeIn) < 0)
+                                    retVal = retValList[i];
+                }
+            }
+            catch (Exception e)
+            {
+                log.Error("getUserInOutForCurrentExtension Error", e);
+                return null;
+            }
+
+            return retVal;
+        }
+    
+
+
+        #endregion
+
+        #region PhoneNumbers
+        public TList<PhoneNumbers> getAllPhoneNumbers(int startPage, int pageSize, out int maxPages)
+        {
+            maxPages = -1;
+            try
+            {
+                return DataRepository.PhoneNumbersProvider.GetPaged(startPage, pageSize, out maxPages);
+            }
+            catch (Exception e)
+            {
+                log.Error("Error", e);
+                return null;
+            }
+        }
+
+        public TList<PhoneNumbers> getDataByObjectName(string address)
+        {
+            try
+            {
+                return null;
+            }
+            catch (Exception e)
+            {
+                log.Error("Error", e);
+                return null;
+            }
+        }
+        #endregion
+
+
+
+        #region PhoneCalls
+
+
+        public long updatePhoneCalls(PhoneCalls pPhoneCalls)
+        {
+            long retVal = -1;
+
+            try
+            {
+                if (DataRepository.PhoneCallsProvider.Update(pPhoneCalls))
+                    retVal = 1;
+
+                findGisAddressModelForIDStreetHouseNumber
+
+            }
+            catch (Exception e)
+            {
+                log.Error("updatePhoneCalls Error", e);
+                return -1;
+            }
+
+            return retVal;
+        }
+
+
+
+        #endregion
+
+
+        #region GisObjecs
+        public TList<GisObjects> getAllGisObjects(int startPage, int pageSize, out int maxPages)
+        {
+            maxPages = -1;
+            try
+            {
+                return DataRepository.GisObjectsProvider.GetPaged(startPage, pageSize, out maxPages);
+            }
+            catch (Exception e)
+            {
+                log.Error("Error", e);
+                return null;
+            }
+        }
+
+        public GisObjects getGisObjectForIdObject(long ID_Objects)
+        {
+            try
+            {
+                return DataRepository.GisObjectsProvider.GetByIDObject(ID_Objects);
+            }
+            catch (Exception e)
+            {
+                log.Error("Error", e);
+                return null;
+            }
+        }
+
+        public TList<GisObjects> getAllGisObjectsByName(string name)
+        {
+            try
+            {
+                return DataRepository.GisObjectsProvider.getByObjectName(name);
+            }
+            catch (Exception e)
+            {
+                log.Error("Error", e);
+                return null;
+            }
+        }
+
+        public TList<ObjectDescription> getObjectDescriptionsByGisObject(long IDObject)
+        {
+            TList<ObjectDescription> retVal = null;
+            try
+            {
+                retVal = DataRepository.ObjectDescriptionProvider.GetByIDObject(IDObject);
+            }
+            catch (Exception e)
+            {
+                log.Error("Error", e);
+            }
+            return retVal;
+        }
+
+        public long saveObjectDescriptions(ObjectDescription objectDescription)
+        {
+            try
+            {
+                if (objectDescription.IDObjectDescription <= 0)
+                {
+                    if (DataRepository.ObjectDescriptionProvider.Insert(objectDescription))
+                        return objectDescription.IDObjectDescription;
+                    else
+                        return -1;
+                }
+                else
+                {
+                    if (DataRepository.ObjectDescriptionProvider.Update(objectDescription))
+                        return objectDescription.IDObjectDescription;
+                    else
+                        return -1;
+                }
+            }
+            catch (Exception e)
+            {
+                log.Error("Error", e);
+                return -1;
+            }
+
+        }
+
+        public long deleteObjectDescriptions(ObjectDescription objectDescription)
+        {
+            try
+            {
+                if (DataRepository.ObjectDescriptionProvider.Delete(objectDescription))
+                    return 0;
+                else
+                    return -1;
+            }
+            catch (Exception e)
+            {
+                log.Error("Error", e);
+                return -1;
+            }
+        }
+
+        #endregion
+
+        #region GisStreets
+
+        public TList<GisStreets> getAllGisStreets(int startPage, int pageSize, out int maxPages)
+        {
+            maxPages = -1;
+            try
+            {
+                return DataRepository.GisStreetsProvider.GetPaged(startPage, pageSize, out maxPages);
+            }
+            catch (Exception e)
+            {
+                log.Error("Error", e);
+                return null;
+            }
+        }
+
+        public GisStreets GetGisStreetForIdStreet(string IDStreet)
+        {
+            GisStreets retVal = null;
+
+            try
+            {
+                return DataRepository.GisStreetsProvider.GetByIDStreet(IDStreet);
+            }
+            catch (Exception e)
+            {
+                log.Error("Error", e);
+                return retVal;
+            }
+        }
+
+        public TList<GisStreets> getGisStreetsByName(string name)
+        {
+            try
+            {
+                //return null;
+                TList<GisStreets> retVal = null;
+
+                //retVal = DataRepository.GisStreetsProvider.Find("StreetName = '" + name + "'");
+                retVal = DataRepository.GisStreetsProvider.GetByName(name);
+                return retVal;
+            }
+            catch (Exception e)
+            {
+                log.Error("Error", e);
+                return null;
+            }
+        }
+
+        #endregion
+
+        #region GisRegions
+
+
+
+        public GisRegions getGisRegionForIdRegion(int IdRegion)
+        {
+            GisRegions retVal = null;
+
+            try
+            {
+                return DataRepository.GisRegionsProvider.GetByIDRegion(IdRegion);
+            }
+            catch (Exception e)
+            {
+                log.Error("Error", e);
+                return retVal;
+            }
+        }
+
+        public TList<GisRegions> getAllGisRegions(int startPage, int pageSize, out int maxPages)
+        {
+            TList<GisRegions> retVal = null;
+            maxPages = -1;
+            try
+            {
+                return DataRepository.GisRegionsProvider.GetPaged(startPage, pageSize, out maxPages);
+            }
+            catch (Exception e)
+            {
+                log.Error("Error", e);
+                return retVal;
+            }
+        }
+
+        #endregion
+
+        #region GisPhoneNumbers
+        public TList<GisPhoneNumbers> getAllGisPhoneNumbers(int startPage, int pageSize, out int maxPages)
+        {
+            maxPages = -1;
+            try
+            {
+                return DataRepository.GisPhoneNumbersProvider.GetPaged(startPage, pageSize, out maxPages);
+            }
+            catch (Exception e)
+            {
+                log.Error("Error", e);
+                return null;
+            }
+        }
+
+        public GisPhoneNumbers getGisPhoneNumbersByNumber(string phoneNumber)
+        {
+            GisPhoneNumbers retVal = null;
+
+            try
+            {
+                retVal = DataRepository.GisPhoneNumbersProvider.GetByPhoneNumber(phoneNumber);
+
+                if (retVal != null)
+                {
+                    Type[] tl = new Type[2];
+                    tl[0] = typeof(GisStreets);
+                    tl[1] = typeof(GisObjects);
+
+                    DataRepository.GisPhoneNumbersProvider.DeepLoad(retVal, true, DeepLoadType.IncludeChildren, tl);
+                }
+            }
+            catch (Exception e)
+            {
+                log.Error("Error", e);
+                retVal = null;
+            }
+
+            return retVal;
+        }
+
+
+        public long deleteGisPhoneNumbersForPhoneNumber(GisPhoneNumbers gisPhoneNumber)
+        {
+            long retVal = -1;
+
+            try
+            {
+                if (DataRepository.GisPhoneNumbersProvider.Delete(gisPhoneNumber))
+                {
+                    retVal = 0;
+                }
+
+            }
+            catch (Exception e)
+            {
+                log.Error("Error", e);
+            }
+
+            return retVal;
+
+        }
+
+        public long insertGisPhoneNumbers(GisPhoneNumbers newPhoneNumber)
+        {
+            long retVal = -1;
+
+            try
+            {
+                if (DataRepository.GisPhoneNumbersProvider.Insert(newPhoneNumber))
+                {
+                    retVal = 0;
+                }
+            }
+            catch (Exception e)
+            {
+                log.Error("Error", e);
+            }
+
+            return retVal;
+
+        }
+
+        public TList<GisPhoneNumbers> getGisPhoneNumbersByIDObject(long IDObject)
+        {
+            TList<GisPhoneNumbers> retVal = null;
+            try
+            {
+                retVal = DataRepository.GisPhoneNumbersProvider.GetByIDObject(IDObject);
+            }
+            catch (Exception e)
+            {
+                log.Error("Error", e);
+            }
+            return retVal;
+        }
+
+        public TList<PhoneNumberDescription> getPhoneNumberDescriptionsByGisPhoneNumber(string phoneNumber)
+        {
+            TList<PhoneNumberDescription> retVal = null;
+            try
+            {
+                retVal = DataRepository.PhoneNumberDescriptionProvider.GetByPhoneNumber(phoneNumber);
+            }
+            catch (Exception e)
+            {
+                log.Error("Error", e);
+            }
+            return retVal;
+        }
+
+        public long savePhoneNumberDescriptions(PhoneNumberDescription phoneNumberDescription)
+        {
+            try
+            {
+                if (phoneNumberDescription.IDPhoneNumberDescription <= 0)
+                {
+                    if (DataRepository.PhoneNumberDescriptionProvider.Insert(phoneNumberDescription))
+                        return phoneNumberDescription.IDPhoneNumberDescription;
+                    else
+                        return -1;
+                }
+                else
+                {
+                    if (DataRepository.PhoneNumberDescriptionProvider.Update(phoneNumberDescription))
+                        return phoneNumberDescription.IDPhoneNumberDescription;
+                    else
+                        return -1;
+                }
+            }
+            catch (Exception e)
+            {
+                log.Error("Error", e);
+                return -1;
+            }
+
+        }
+
+        public long deletePhoneNumberDescriptions(PhoneNumberDescription phoneNumberDescription)
+        {
+            try
+            {
+                if (DataRepository.PhoneNumberDescriptionProvider.Delete(phoneNumberDescription))
+                    return 0;
+                else
+                    return -1;
+            }
+            catch (Exception e)
+            {
+                log.Error("Error", e);
+                return -1;
+            }
+        }
+
+        #endregion
+
+        #region GisSearchRegion
+        public TList<GisSearchRegions> getAllGisSearchRegions(int startPage, int pageSize, out int maxPages)
+        {
+            maxPages = -1;
+            try
+            {
+                return DataRepository.GisSearchRegionsProvider.GetPaged(startPage, pageSize, out maxPages);
+            }
+            catch (Exception e)
+            {
+                log.Error("Error", e);
+                return null;
+            }
+        }
+
+        public TList<GisSearchRegions> getGisSearchRegionsByIdRegion(long ID_Region, int typeAlternative)
+        {
+
+            //maxPages = -1;
+            try
+            {
+                return DataRepository.GisSearchRegionsProvider.GetByIDREGION(ID_Region);
+            }
+            catch (Exception e)
+            {
+                log.Error("Error", e);
+                return null;
+            }
+        }
+        #endregion
+
+        #region GisAddressModel
+
+        public TList<GisAddressModel> getAllGisAddressModel(int startPage, int pageSize, out int maxPages)
+        {
+            maxPages = -1;
+            try
+            {
+                return DataRepository.GisAddressModelProvider.GetPaged(startPage, pageSize, out maxPages);
+            }
+            catch (Exception e)
+            {
+                log.Error("Error", e);
+                return null;
+            }
+        }
+
+        public TList<GisAddressModel> getGisAddressModelForIDStreet(string ID_Street)
+        {
+            try
+            {
+                return DataRepository.GisAddressModelProvider.GetByIDStreet(ID_Street);
+            }
+            catch (Exception e)
+            {
+                log.Error("Error", e);
+                return null;
+            }
+        }
+
+        public TList<GisAddressModel> getGisAddressModelForIDStreetHouseNumber(string ID_Street, int houseNumber)
+        {
+            try
+            {
+                //return null;
+                TList<GisAddressModel> retVal = null;
+                retVal = DataRepository.GisAddressModelProvider.GetIDStreetHouseNumber(ID_Street, houseNumber);
+                return retVal;
+            }
+            catch (Exception e)
+            {
+                log.Error("Error", e);
+                return null;
+            }
+        }
+
+        public TList<AddressModelDescription> getAddressModelDescriptionsForIDStreetHouseNumber(string ID_Street, int houseNumber)
+        {
+            TList<AddressModelDescription> retVal = null;
+            try
+            {
+                retVal = DataRepository.AddressModelDescriptionProvider.GetIDStreetHouseNumber(ID_Street, houseNumber);
+            }
+            catch (Exception e)
+            {
+                log.Error("Error", e);
+            }
+            return retVal;
+        }
+
+        public TList<AddressModelDescription> getAddressModelDescriptionsByIDStreet(string ID_Street)
+        {
+            TList<AddressModelDescription> retVal = null;
+            try
+            {
+                retVal = DataRepository.AddressModelDescriptionProvider.GetByIDStreet(ID_Street);
+            }
+            catch (Exception e)
+            {
+                log.Error("Error", e);
+            }
+            return retVal;
+        }
+
+
+        public long saveAddressModelDescriptions(AddressModelDescription addressModelDescription)
+        {
+            try
+            {
+                if (addressModelDescription.IDAddressModelDescription <= 0)
+                {
+                    if (DataRepository.AddressModelDescriptionProvider.Insert(addressModelDescription))
+                        return addressModelDescription.IDAddressModelDescription;
+                    else
+                        return -1;
+                }
+                else
+                {
+                    if (DataRepository.AddressModelDescriptionProvider.Update(addressModelDescription))
+                        return addressModelDescription.IDAddressModelDescription;
+                    else
+                        return -1;
+                }
+            }
+            catch (Exception e)
+            {
+                log.Error("Error", e);
+                return -1;
+            }
+
+        }
+
+        public long deleteAddressModelDescriptions(AddressModelDescription addressModelDescription)
+        {
+            try
+            {
+                if (DataRepository.AddressModelDescriptionProvider.Delete(addressModelDescription))
+                    return 0;
+                else
+                    return -1;
+            }
+            catch (Exception e)
+            {
+                log.Error("Error", e);
+                return -1;
+            }
+        }
+
+
+        #endregion
+
+        #region PhoneNumbersSurovi
+        /*
+        public long savePhoneNumbersSurovi(PhoneNumbersSurovi phoneNumbersSurovi)
+        {
+            try
+            {
+                if (DataRepository.PhoneNumbersSuroviProvider.Insert(phoneNumbersSurovi))
+                    return phoneNumbersSurovi.IDPhoneNumbersSurovi;
+                else
+                    return -1;
+            }
+            catch (Exception e)
+            {
+                log.Error("Error", e);
+                return -1;
+            }
+        }
+
+        public long deletePhoneNumbersSurovi(PhoneNumbersSurovi phoneNumbersSurovi)
+        {
+            try
+            {
+                if (DataRepository.PhoneNumbersSuroviProvider.Delete(phoneNumbersSurovi))
+                    return 0;
+                else
+                    return -1;
+            }
+            catch (Exception e)
+            {
+                log.Error("Error", e);
+                return -1;
+            }
+        }
+
+        public long updatePhoneNumbersSurovi(PhoneNumbersSurovi phoneNumbersSurovi)
+        {
+            try
+            {
+                if (DataRepository.PhoneNumbersSuroviProvider.Update(phoneNumbersSurovi))
+                    return 0;
+                else
+                    return -1;
+            }
+            catch (Exception e)
+            {
+                log.Error("Error", e);
+                return -1;
+            }
+        }
+
+        public TList<PhoneNumbersSurovi> getAllPhoneNumbersSurovi(int pageStart, int pageLength, out int maxPages)
+        {
+            maxPages = -1;
+            try
+            {
+                return DataRepository.PhoneNumbersSuroviProvider.GetPaged(pageStart, pageLength, out maxPages);
+            }
+            catch (Exception e)
+            {
+                log.Error("Error", e);
+                return null;
+            }
+        }
+
+        public TList<PhoneNumbersSurovi> getPhoneNumbersSuroviByPhoneNumber(string phoneNumber)
+        {
+            try
+            {
+                return DataRepository.PhoneNumbersSuroviProvider.GetByTelefon(phoneNumber);
+            }
+            catch (Exception e)
+            {
+                log.Error("Error", e);
+                return null;
+            }
+        }
+
+        public TList<PhoneNumbersSurovi> getPhoneNumbersSuroviByAddress(string address)
+        {
+            try
+            {
+                return DataRepository.PhoneNumbersSuroviProvider.GetByAdresa(address);
+            }
+            catch (Exception e)
+            {
+                log.Error("Error", e);
+                return null;
+            }
+        }
+         */
+        #endregion
+
+        #region  ClientPhoneNumbers
+        public Clients searchVipClients(ClientPhoneNumbers clientPhoneNumber)
+        {
+            try
+            {
+                ClientPhoneNumbersParameterBuilder filtBuild = new ClientPhoneNumbersParameterBuilder();
+                //SqlFilterBuilder<ClientPhoneNumbersColumn> filtBuild = new SqlFilterBuilder<ClientPhoneNumbersColumn>(true);
+                filtBuild.AppendEquals(ClientPhoneNumbersColumn.PhoneNumber, clientPhoneNumber.PhoneNumber);
+
+
+
+
+                SqlFilterParameter param = new SqlFilterParameter(ClientPhoneNumbersColumn.PhoneNumber, clientPhoneNumber.PhoneNumber, 0);
+                
+                SqlFilterParameterCollection paramCol = new SqlFilterParameterCollection();
+                paramCol.Add(param);
+
+
+
+                TList<ClientPhoneNumbers> phoneNumbers =
+                    DataRepository.ClientPhoneNumbersProvider.Find(filtBuild.GetParameters());
+                if (phoneNumbers.Count > 0)
+                    return DataRepository.ClientsProvider.GetByIDClient(phoneNumbers[0].IDClient);
+                else
+                    return null;
+            }
+            catch (Exception e)
+            {
+                log.Error("Error", e);
+                return null;
+            }
+        }
+        #endregion
+
+        #region VehicleSymbol
+
+        public VehicleSymbol getVehicleSymbolByIdVehicle(long IDVehicle)
+        {
+            VehicleSymbol retVal = null;
+            try
+            {
+                retVal = DataRepository.VehicleSymbolProvider.GetByIDVehicle(IDVehicle);
+            }
+            catch (Exception e)
+            {
+                log.Error("Error", e);
+            }
+            return retVal;
+        }
+
+        public long deleteVehicleSymbol(VehicleSymbol delVehicleSymbol)
+        {
+            long retVal = -1;
+
+            try
+            {
+                if (DataRepository.VehicleSymbolProvider.Delete(delVehicleSymbol))
+                {
+                    retVal = 0;
+                }
+
+            }
+            catch (Exception e)
+            {
+                log.Error("Error", e);
+            }
+
+            return retVal;
+
+        }
+
+        public long insertVehicleSymbol(VehicleSymbol newVehicleSymbol)
+        {
+            long retVal = -1;
+
+            try
+            {
+                if (DataRepository.VehicleSymbolProvider.Insert(newVehicleSymbol))
+                {
+                    retVal = 0;
+                }
+            }
+            catch (Exception e)
+            {
+                log.Error("Error", e);
+            }
+
+            return retVal;
+
+        }
+
+        public long updateVehicleSymbol(VehicleSymbol updVehicleSymbol)
+        {
+            long retVal = -1;
+
+            try
+            {
+                if (DataRepository.VehicleSymbolProvider.Update(updVehicleSymbol))
+                {
+                    retVal = 0;
+                }
+            }
+            catch (Exception e)
+            {
+                log.Error("Error", e);
+            }
+
+            return retVal;
+
+        }
+
+        #endregion
+
+        #region Reservation
+
+        public TList<Reservations> getReservationsForContactPhone(string phoneNumber)
+        {
+            return new TList<Reservations>();
+        }
+
+        public TList<Reservations> getReservationsForPeriod(DateTime dateFrom, DateTime dateTo)
+        {
+            return new TList<Reservations>();
+        }
+
+        public int deleteReservationList(TList<Reservations> objReservations)
+        {
+            return 0;
+        }
+
+        public int deleteReservationContactPhonePeriod(string phoneNumber, DateTime dateFrom, DateTime dateTo)
+        {
+            return 0;
+        }
+
+        #endregion
+
+        #region FiskalReceipt
+
+        public TList<FiskalReceipt> getFiskalReceiptForVehicle(long iDVehicle, DateTime dateFrom, DateTime dateTo)
+        {
+            return new TList<FiskalReceipt>();
+        }
+
+        public TList<FiskalReceipt> getFiskalReceiptForPeriod(DateTime dateFrom, DateTime dateTo)
+        {
+            return new TList<FiskalReceipt>();
+        }
+
+        public TList<FiskalReceipt> getFiskalReceiptForDriver(long iDDriver, DateTime dateFrom, DateTime dateTo)
+        {
+            return new TList<FiskalReceipt>();
+        }
+
+        public TList<FiskalReceipt> getFiskalReceiptForRfIdCard(string rfIdCard, DateTime dateFrom, DateTime dateTo)
+        {
+            return new TList<FiskalReceipt>();
+        }
+
+        public long saveFiskalReceipt(FiskalReceipt objFiskalReceipt)
+        {
+            return 0;
+        }
+
+        public long deleteFiskalReceipt(FiskalReceipt objFiskalReceipt)
+        {
+            return 0;
+        }
+
+        #endregion
+
+        #region LogInfo
+
+        public long saveLogInfo(string logInfoText)
+        {
+            long retVal = -1;
+
+            try
+            {
+                retVal = saveLogInfo(SourceApplicationList.AVL_Dispecher, logInfoText);
+            }
+            catch (Exception ex)
+            {
+                log.Error("Greska vo InsertLogInfo" + ex.Message);
+            }
+
+            return retVal;
+        }
+
+        public static long saveLogInfo(SourceApplicationList sourceApplication, string logInfoText)
+        {
+            long retVal = -1;
+
+            try
+            {
+                LogInfo item = new LogInfo();
+
+                item.IDSourceApplication = (long)sourceApplication;
+                item.LogInfoText = logInfoText;
+                item.SystemTime = DateTime.Now;
+
+                DataRepository.LogInfoProvider.Insert(item);
+                retVal = item.IDLogInfo;
+            }
+            catch (Exception ex)
+            {
+                log.Error("Greska vo InsertLogInfo" + ex.Message);
+            }
+
+            return retVal;
+        }
+
+        #endregion
+
+        #region SearchVechicles Ror reaon
+
+        public TList<Vehicle> searchAllVechiclesByIDReaon(long ID_Region, int typeAlternative)
+        {
+
+            TList<Vehicle> retVal = VehiclesContainer.Instance.searchAllVechiclesByIDReaon(ID_Region, typeAlternative);
+            
+            return retVal;
+        }
+
+        public bool IsVehicleEligibleForCall(Vehicle pVehicle, PhoneCalls phoneCall)
+        {
+            bool retVal = false;
+
+            retVal = VehiclesContainer.Instance.IsVehicleEligableForCall(pVehicle.IDVehicle);
+
+            return retVal;
+        }
+
+        public TList<Vehicle> GetAllAvailableVehiclesForPhoneCall(PhoneCalls phoneCall)
+        {
+            return null;
+        }
+
+        public TList<Vehicle> GetAllAvailableVehiclesForLocation(decimal? latitude, decimal? longitude,long id_Region)
+        {
+            return null;
+        }
+
+
+        #endregion
+
+        #region RfIDCards
+
+
+        public RegisteredPassengers getRegisteredPassingerForCard(string description)
+        {
+            try
+            {
+                RfIdCardsParameterBuilder pbuilder = new RfIdCardsParameterBuilder();
+                pbuilder.AppendEquals(RfIdCardsColumn.Description, description);
+
+                TList<RfIdCards> cards = DataRepository.RfIdCardsProvider.Find(pbuilder.GetParameters());
+                if ((cards == null) || (cards.Count == 0))
+                    return null;
+
+                TList<RegisteredPassengers> pass = DataRepository.RegisteredPassengersProvider.GetByIDRfIdCard(cards[0].IDRfIdCard);
+
+                if ((pass == null) || (pass.Count != 1))
+                {
+                    return null;
+                }
+                else
+                {
+                    Type[] tl = new Type[2];
+                    tl[0] = typeof(Clients);
+                    tl[1] = typeof(Company);
+
+                    DataRepository.RegisteredPassengersProvider.DeepLoad(pass, true, DeepLoadType.IncludeChildren, tl);
+                    return pass[0];
+                }
+
+                
+            }
+            catch (Exception e)
+            {
+                log.Error("Error", e);
+                return null;
+            }
+        }
+
+        public Driver getDriverForCard(string description)
+        {
+            try
+            {
+                RfIdCardsParameterBuilder pbuilder = new RfIdCardsParameterBuilder();
+                pbuilder.AppendEquals(RfIdCardsColumn.Description, description);
+
+                TList<RfIdCards> cards = DataRepository.RfIdCardsProvider.Find(pbuilder.GetParameters());
+                if ((cards == null) || (cards.Count == 0))
+                    return null;
+
+                TList<Driver> drivers = DataRepository.DriverProvider.GetByIDRfIdCard(cards[0].IDRfIdCard);
+
+                if ((drivers == null) || (drivers.Count != 1))
+                {
+                    return null;
+                }
+                else
+                {
+                    Type[] tl = new Type[1];
+                    tl[0] = typeof(Company);
+
+                    DataRepository.DriverProvider.DeepLoad(drivers, true, DeepLoadType.IncludeChildren, tl);
+                    return drivers[0];
+                }
+
+
+            }
+            catch (Exception e)
+            {
+                log.Error("Error", e);
+                return null;
+            }
+        }
+
+        #endregion
+
+        #endregion
+
+
+    }
+}

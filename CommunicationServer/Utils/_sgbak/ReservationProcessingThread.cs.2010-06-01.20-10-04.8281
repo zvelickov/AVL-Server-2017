@@ -1,0 +1,91 @@
+using System;
+using System.Collections.Generic;
+using System.Text;
+using System.Threading;
+
+using GlobSaldo.AVL.Entities;
+using GlobSaldo.AVL.Data;
+using JP.Data.Utils;
+
+using log4net;
+using System.Reflection;
+
+namespace Taxi.Communication.Server.Utils
+{
+    public class ReservationProcessingThread
+    {
+        private bool m_work;
+        private int m_sleepTime;
+        private int m_numberOfRetries;
+
+        private ILog log;
+        private ReservationProcessing reservationHeandler;
+
+        ICallbacksReservationProcessing _callBack;
+
+        public void setCallBack(ICallbacksReservationProcessing callBack)
+        {
+            _callBack = callBack;
+        }
+
+        public ReservationProcessingThread(int sleepTime, int numberOfRetries)
+        {
+            m_work = true;
+            m_numberOfRetries = numberOfRetries;
+            m_sleepTime = sleepTime;
+            log = LogManager.GetLogger("MyService");
+            log.Info("Starting Configuration Send Thread with Sleep time=" + m_sleepTime.ToString());
+
+        }
+
+        public void stop()
+        {
+            this.m_work = false;
+        }
+
+        private TList<Reservations> getPendingReservations()
+        {
+            TList<Reservations> retVal = null;
+
+            try
+            {
+                return DataRepository.ReservationsProvider.GetPending(m_numberOfRetries);
+            }
+            catch (Exception e)
+            {
+                log.Error("Comm Error", e);
+            }
+
+            return retVal;
+        }
+
+        public void start()
+        {
+            reservationHeandler = _callBack.CallBackReservationProcessing;
+
+            while (m_work)
+            {
+                try
+                {
+                    try
+                    {
+                        reservationHeandler(1, this.getPendingReservations());
+                    }
+                    catch (Exception e)
+                    {
+                        log.Error("Exception in Reservation processing", e);
+                    }
+
+                    
+                    Thread.Sleep(m_sleepTime);
+                }
+                catch (Exception e)
+                {
+                    log.Fatal("Error in Reservation Processing thread thread", e);
+                    m_work = false;
+                }
+            }
+            log.Info("Communication thread EXCITING");
+        }
+    }
+}

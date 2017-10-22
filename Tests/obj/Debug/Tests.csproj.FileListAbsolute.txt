@@ -1,0 +1,27 @@
+D:\PROJECTS\NaseTaksi\Tekoven razvoj\AVL-Server\Tests\bin\Debug\Tests.exe.config
+D:\PROJECTS\NaseTaksi\Tekoven razvoj\AVL-Server\Tests\bin\Debug\Tests.exe
+D:\PROJECTS\NaseTaksi\Tekoven razvoj\AVL-Server\Tests\bin\Debug\Tests.pdb
+D:\PROJECTS\NaseTaksi\Tekoven razvoj\AVL-Server\Tests\bin\Debug\GlobSaldo.AVL.Data.dll
+D:\PROJECTS\NaseTaksi\Tekoven razvoj\AVL-Server\Tests\bin\Debug\GlobSaldo.AVL.Data.SqlClient.dll
+D:\PROJECTS\NaseTaksi\Tekoven razvoj\AVL-Server\Tests\bin\Debug\GlobSaldo.AVL.Entities.dll
+D:\PROJECTS\NaseTaksi\Tekoven razvoj\AVL-Server\Tests\bin\Debug\JP.Data.Utils.dll
+D:\PROJECTS\NaseTaksi\Tekoven razvoj\AVL-Server\Tests\bin\Debug\Microsoft.Practices.EnterpriseLibrary.Data.dll
+D:\PROJECTS\NaseTaksi\Tekoven razvoj\AVL-Server\Tests\bin\Debug\Microsoft.Practices.EnterpriseLibrary.Caching.Cryptography.dll
+D:\PROJECTS\NaseTaksi\Tekoven razvoj\AVL-Server\Tests\bin\Debug\Microsoft.Practices.EnterpriseLibrary.Security.Cryptography.dll
+D:\PROJECTS\NaseTaksi\Tekoven razvoj\AVL-Server\Tests\bin\Debug\Microsoft.Practices.ObjectBuilder2.dll
+D:\PROJECTS\NaseTaksi\Tekoven razvoj\AVL-Server\Tests\bin\Debug\Microsoft.Practices.EnterpriseLibrary.Common.dll
+D:\PROJECTS\NaseTaksi\Tekoven razvoj\AVL-Server\Tests\bin\Debug\Microsoft.Practices.EnterpriseLibrary.Caching.dll
+D:\PROJECTS\NaseTaksi\Tekoven razvoj\AVL-Server\Tests\bin\Debug\GlobSaldo.AVL.Entities.pdb
+D:\PROJECTS\NaseTaksi\Tekoven razvoj\AVL-Server\Tests\bin\Debug\GlobSaldo.AVL.Entities.xml
+D:\PROJECTS\NaseTaksi\Tekoven razvoj\AVL-Server\Tests\bin\Debug\GlobSaldo.AVL.Data.pdb
+D:\PROJECTS\NaseTaksi\Tekoven razvoj\AVL-Server\Tests\bin\Debug\GlobSaldo.AVL.Data.xml
+D:\PROJECTS\NaseTaksi\Tekoven razvoj\AVL-Server\Tests\bin\Debug\GlobSaldo.AVL.Data.SqlClient.pdb
+D:\PROJECTS\NaseTaksi\Tekoven razvoj\AVL-Server\Tests\bin\Debug\GlobSaldo.AVL.Data.SqlClient.xml
+D:\PROJECTS\NaseTaksi\Tekoven razvoj\AVL-Server\Tests\bin\Debug\JP.Data.Utils.pdb
+D:\PROJECTS\NaseTaksi\Tekoven razvoj\AVL-Server\Tests\obj\Debug\ResolveAssemblyReference.cache
+D:\PROJECTS\NaseTaksi\Tekoven razvoj\AVL-Server\Tests\obj\Debug\Tests.exe
+D:\PROJECTS\NaseTaksi\Tekoven razvoj\AVL-Server\Tests\obj\Debug\Tests.pdb
+D:\PROJECTS\NaseTaksi\Tekoven razvoj\AVL-Server - 2017\Tests\obj\Debug\Tests.csprojResolveAssemblyReference.cache
+D:\PROJECTS\NaseTaksi\Tekoven razvoj\AVL-Server - 2017\Tests\obj\Debug\Tests.csproj.CoreCompileInputs.cache
+D:\PROJECTS\NaseTaksi\Tekoven razvoj\AVL-Server - 2017\Tests\obj\Debug\Tests.exe
+D:\PROJECTS\NaseTaksi\Tekoven razvoj\AVL-Server - 2017\Tests\obj\Debug\Tests.pdb

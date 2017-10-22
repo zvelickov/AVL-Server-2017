@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<configuration>
+
+	<configSections>
+		<section name="log4net" type="log4net.Config.Log4NetConfigurationSectionHandler,log4net" />
+		<section name="netTiersServiceAVL"  type="GlobSaldo.AVL.Data.Bases.NetTiersServiceSection, GlobSaldo.AVL.Data"
+				 allowDefinition="MachineToApplication"  restartOnExternalChanges="true" />
+
+		<section name="netTiersServiceGISDB"  type="GlobSaldo.GISDB.Data.Bases.NetTiersServiceSection, GlobSaldo.GISDB.Data"
+				 allowDefinition="MachineToApplication"  restartOnExternalChanges="true" />
+
+
+		<section name="commportListener" type="System.Configuration, System, Culture=neutral, 
+				PublicKeyToken=b77a5c561934e089, Custom=null"	/>
+		<section name="gpsListener" type="System.Configuration, System, Culture=neutral, 
+				PublicKeyToken=b77a5c561934e089, Custom=null"	/>
+		<section name="ThreadsConfiguration" type="Taxi.Communication.Server.Utils.ThreadsConfigurationHandler, CommunicationServer"/>
+	</configSections >
+
+
+	<ThreadsConfiguration>
+		<Threads>
+			<thread ThreadName="ConfigurationSendThread" SleepTime="10000" Enabled="true"/>
+			<thread ThreadName="UpdateMapLocations" SleepTime="10000" Enabled="true"/>
+		</Threads>
+	</ThreadsConfiguration>
+
+	<appSettings>
+		<!-- use appSetting to configure base address provided by host -->
+		<add key="baseAddressCore" value="http://TAXISERVER:8889/taxi" />
+		<add key="baseAdminAddressCore" value="http://TAXISERVER:8889/admin" />
+		<add key="baseTaxiAdminAddressCore" value="http://TAXISERVER:8889/taxiadmin" />
+		<add key="baseWebConnectCore" value="http://TAXISERVER:8810/web_connect" />
+
+		<add key="StartWebConnect" value="true"/>
+
+
+		<add key ="patekaZaTab" value ="C:\GLOBSALDO\Podatoci\"/>
+
+		<add key="startPhoneListener" value="false" />
+		<add key="startReservationProcessing" value="false" />
+
+		<add key="commPortId" value="COM1" />
+		<add key="commPortBaud" value="9600" />
+		<add key="commListenerType" value="NaseTaxi" />
+
+		<add key="socektPort" value="1001" />
+		<add key="sockets" value="4" />
+
+		<add key ="DebugMode" value ="false"/>
+
+		<add key="ShiftInOutSensor" value="6" />
+		<add key="ShiftInOutSensorStateIn" value="0" />
+		
+	</appSettings>
+
+
+	<connectionStrings>
+		<remove name="LocalSqlServer" />
+		<add name="netTiersConnectionString" connectionString="Server=GLOBSALDO;Database=GLOBSALDO_TEST;User ID=taxi;Password=taxi00;" />
+		<!-- NAUMCE: Za lokalno testiranje so baza na Laptop -->
+		<!--add name="netTiersConnectionString" connectionString="Data Source=ATLAS;Initial Catalog=TAXI;User ID=taxi;Password=taxi00;" /-->
+		<!-- -->
+		<add name="netTiersConnectionStringGISDB" connectionString="Server=GLOBSALDO\GS_GIS_08;Database=TaxiGIS;User ID=taxigis;Password=taxigis00;" />
+	</connectionStrings>
+
+	<netTiersServiceAVL defaultProvider="SqlNetTiersProvider">
+		<providers>
+
+			<add
+		  name="SqlNetTiersProvider"
+		  type="GlobSaldo.AVL.Data.SqlClient.SqlNetTiersProvider, GlobSaldo.AVL.Data.SqlClient"
+		  connectionStringName="netTiersConnectionString"
+		  providerInvariantName="System.Data.SqlClient"
+		  entityFactoryType="GlobSaldo.AVL.Entities.EntityFactory"
+		  useEntityFactory="true"
+		  enableEntityTracking="false"
+		  enableMethodAuthorization="false"
+		  useStoredProcedure="true"
+  />
+
+		</providers>
+	</netTiersServiceAVL>
+
+	<netTiersServiceGISDB defaultProvider="SqlNetTiersProvider">
+		<providers>
+
+			<add
+		  name="SqlNetTiersProvider"
+		  type="GlobSaldo.GISDB.Data.SqlClient.SqlNetTiersProvider, GlobSaldo.GISDB.Data.SqlClient"
+		  connectionStringName="netTiersConnectionStringGISDB"
+		  providerInvariantName="System.Data.SqlClient"
+		  entityFactoryType="GlobSaldo.GISDB.Entities.EntityFactory"
+		  useEntityFactory="true"
+		  enableEntityTracking="false"
+		  enableMethodAuthorization="false"
+		  useStoredProcedure="true"
+  />
+
+		</providers>
+	</netTiersServiceGISDB>
+
+	<!-- This section contains the log4net configuration settings -->
+	<log4net debug="true">
+
+		<!-- Define some output appenders -->
+
+		<appender name="rollingFile" type="log4net.Appender.RollingFileAppender,log4net" >
+
+			<param name="File" value="c:\logs\development_taxi_comunication_log-2.txt" />
+			<param name="AppendToFile" value="true" />
+			<param name="RollingStyle" value="Date" />
+			<param name="DatePattern" value="yyyy.MM.dd" />
+			<param name="StaticLogFileName" value="true" />
+
+			<layout type="log4net.Layout.PatternLayout,log4net">
+				<param name="ConversionPattern" value="%d [%t] %-5p %c [%x] &lt;%X{auth}&gt; - %m%n" />
+			</layout>
+		</appender>
+		<appender name="timeFile" type="log4net.Appender.RollingFileAppender,log4net" >
+
+			<param name="File" value=".\development_exec_time_log.txt" />
+			<param name="AppendToFile" value="true" />
+			<param name="RollingStyle" value="Date" />
+			<param name="DatePattern" value="yyyy.MM.dd" />
+			<param name="StaticLogFileName" value="true" />
+
+			<layout type="log4net.Layout.PatternLayout,log4net">
+				<param name="ConversionPattern" value="%d [%t] %-5p %c [%x] &lt;%X{auth}&gt; - %m%n" />
+			</layout>
+		</appender>
+		<!-- Setup the root category, add the appenders and set the default priority -->
+		<root>
+			<priority value="ALL" />
+			<!--<appender-ref ref="rollingFile" /> -->
+		</root>
+		<logger name="MyService">
+			<!-- <appender-ref ref="B" /> -->
+			<level value="ALL" />
+			<appender-ref ref="rollingFile" />
+		</logger>
+
+		<logger name ="TimeLog" >
+			<level value="ALL" />
+			<appender-ref ref="timeFile" />
+		</logger>
+	</log4net>
+
+
+	<system.serviceModel>
+		<bindings>
+			<wsDualHttpBinding>
+				<binding sendTimeout ="00:00:10" receiveTimeout="00:00:10" name="myBinding">
+					<security mode="None" />
+				</binding>
+			</wsDualHttpBinding>
+			<basicHttpBinding>
+				<binding sendTimeout ="00:00:10" receiveTimeout="00:10:10" name="confgBasicHttpBinding">
+					<security mode="None" />
+				</binding>
+			</basicHttpBinding>
+		</bindings>
+		<services>
+			<service name="Taxi.Communication.Server.ServiceCallBack" behaviorConfiguration="MyServiceTypeBehaviors">
+				<endpoint
+					address="mycontract"
+					binding="wsDualHttpBinding"
+					bindingConfiguration ="myBinding"
+					contract="Taxi.Communication.Server.IServiceCallBack" />
+			</service>
+			<service name="Taxi.Communication.Server.AdministrationService" behaviorConfiguration="MyServiceTypeBehaviors">
+				<endpoint
+					address="myadmin"
+					binding="basicHttpBinding"
+					bindingConfiguration ="confgBasicHttpBinding"
+					contract="Taxi.Communication.Server.IAdministrationService" />
+			</service>
+			<service name="Taxi.Communication.Server.TaxiAdministrationService" behaviorConfiguration="MyServiceTypeBehaviors">
+				<endpoint
+					address="taxi_admin"
+					binding="basicHttpBinding"
+					bindingConfiguration ="confgBasicHttpBinding"
+					contract="Taxi.Communication.Server.IAdministration" />
+			</service>
+
+			<service name="Taxi.Communication.Server.WebConnectService" behaviorConfiguration="MyServiceTypeBehaviors">
+				<endpoint
+							address="web_connect"
+							binding="basicHttpBinding"
+							bindingConfiguration ="confgBasicHttpBinding"
+							contract="Taxi.Communication.Server.IWebConnectService" />
+			</service>
+
+		</services>
+		<behaviors>
+			<serviceBehaviors>
+				<behavior name="MyServiceTypeBehaviors" >
+					<serviceMetadata httpGetEnabled="true" />
+					<serviceDebug includeExceptionDetailInFaults="True" />
+
+					<dataContractSerializer maxItemsInObjectGraph="2147483647" />
+
+
+
+
+				</behavior>
+			</serviceBehaviors>
+		</behaviors>
+
+	</system.serviceModel>
+	<system.web>
+		<httpRuntime maxRequestLength="4000"
+		   useFullyQualifiedRedirectUrl="true"
+		   executionTimeout="45"
+       />
+	</system.web>
+
+	<!--<system.diagnostics>
+		<trace autoflush="true" />
+		<sources>
+			<source name="System.ServiceModel" 
+                    switchValue="Information, ActivityTracing"
+                    propagateActivity="true">
+				<listeners>
+					<add name="sdt" 
+						type="System.Diagnostics.XmlWriterTraceListener" 
+						initializeData= "SdrConfigExample.e2e" />
+				</listeners>
+			</source>
+		</sources>
+	</system.diagnostics>-->
+
+
+</configuration>

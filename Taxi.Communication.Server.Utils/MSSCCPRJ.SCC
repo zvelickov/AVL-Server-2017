@@ -1,0 +1,5 @@
+SCC = This is a source code control file
+
+[Taxi.Communication.Server.Utils.csproj]
+SCC_Aux_Path = http://15.10.10.125/VaultService|mavrovo:3
+SCC_Project_Name = $/Pre_Installed_Versions/Nase_Taxi/Taxi/Taxi.Communication.Server.Utils

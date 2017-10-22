@@ -1,0 +1,3 @@
+2017-08-22 14:34:06,742 [1] INFO  TimeLog [(null)] <(null)> - STARTING
+2017-08-22 14:38:51,325 [1] INFO  TimeLog [(null)] <(null)> - STARTING
+2017-08-22 14:41:24,355 [1] INFO  TimeLog [(null)] <(null)> - STARTING

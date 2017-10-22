@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<configuration>
+	<configSections>
+		<section name="log4net" type="log4net.Config.Log4NetConfigurationSectionHandler,log4net" />
+		<!--
+		<sectionGroup name="MainSettings" >
+			<section name="commportListenr" type="System.Configuration.NameValueSectionHandler, System, Culture=neutral, 
+				PublicKeyToken=b77a5c561934e089, Custom=null"	/>
+			<section name="gpsListenr" type="System.Configuration.NameValueSectionHandler, System, Culture=neutral, 
+				PublicKeyToken=b77a5c561934e089, Custom=null"	/>
+		</sectionGroup>
+		-->
+	</configSections >
+
+
+	<!-- This section contains the log4net configuration settings -->
+	<log4net debug="true">
+
+		<!-- Define some output appenders -->
+
+		<appender name="rollingFile" type="log4net.Appender.RollingFileAppender,log4net" >
+
+			<param name="File" value="c:\logs\taxi_comunication_log.txt" />
+			<param name="AppendToFile" value="true" />
+			<param name="RollingStyle" value="Date" />
+			<param name="DatePattern" value="yyyy.MM.dd" />
+			<param name="StaticLogFileName" value="true" />
+
+			<layout type="log4net.Layout.PatternLayout,log4net">
+				<param name="ConversionPattern" value="%d [%t] %-5p %c [%x] &lt;%X{auth}&gt; - %m%n" />
+			</layout>
+		</appender>
+
+		<!-- Setup the root category, add the appenders and set the default priority -->
+
+		<root>
+			<priority value="ALL" />
+			<appender-ref ref="rollingFile" />
+		</root>
+
+		<logger name="MyService">
+			<!-- <appender-ref ref="B" /> -->
+			<level value="ALL" />
+			<appender-ref ref="RollingLogFileAppender" />
+		</logger>
+
+	</log4net>
+	<!--
+	<MainSettings>
+		<commportListenr>
+			<add key="port" value="4" />
+			<add key="baud" value="19200" />
+		</commportListenr>
+		<gpsListenr>
+			<add key="port" value="8888" />
+			<add key="sockets" value="4" />
+		</gpsListenr>
+	</MainSettings>
+	-->
+	
+	<system.serviceModel>
+		<services>
+			<service name="Taxi.Communication.Server.MyContract" behaviorConfiguration="MyServiceTypeBehaviors">
+				<endpoint
+					address="mycontract"
+					binding="wsDualHttpBinding"
+					contract="Taxi.Communication.Server.IMyContract" />
+			</service>
+		</services>
+		<behaviors>
+			<serviceBehaviors>
+				<behavior name="MyServiceTypeBehaviors" >
+					<serviceMetadata httpGetEnabled="true" />
+					<serviceDebug includeExceptionDetailInFaults="True" />
+				</behavior>
+			</serviceBehaviors>
+		</behaviors>
+
+	</system.serviceModel>
+	<system.web>
+		<httpRuntime maxRequestLength="4000"
+		   useFullyQualifiedRedirectUrl="true"
+		   executionTimeout="45"
+       />
+	</system.web>
+</configuration>

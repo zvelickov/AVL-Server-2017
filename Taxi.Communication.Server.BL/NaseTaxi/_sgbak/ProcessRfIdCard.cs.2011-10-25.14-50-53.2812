@@ -1,0 +1,246 @@
+using System;
+using System.Collections.Generic;
+using System.Text;
+using Taxi.Communication.Server.Utils.Parsers;
+using GlobSaldo.AVL.Entities;
+using GlobSaldo.AVL.Data;
+using log4net;
+using JP.Data.Utils;
+using Taxi.Communication.Server.Utils.Containers;
+
+namespace Taxi.Communication.Server.BL.NaseTaxi
+{
+    public class ProcessRfIdCard : IBL
+    {
+        #region IBL Members
+
+        public ParserResponseContainer processBL(ParserResponseContainer message, long IDVehicle)
+        {
+            if (message.tLocation == null)
+                return message;
+
+
+            if (message.tLocation.RfIdCard == null)
+                return message;
+
+            if (message.tLocation.RfIdCard == "0000000000")
+                return message;
+
+            Vehicle veh = VehiclesContainer.Instance.getSingleVehicle(IDVehicle);
+
+            TList<RfIdCards> cards = DataRepository.RfIdCardsProvider.GetBySerialNumber(message.tLocation.RfIdCard);
+            
+            if ((cards == null) || (cards.Count == 0))
+            {
+                clsMessageCreator tMessageCreator = new clsMessageCreator();
+                message.addToNewMsgToUnit(tMessageCreator.CreatePopUpMessageForLCD(VehiclesContainer.Instance.getSingleVehicle(IDVehicle), "Nevalidna karticka"));
+                return message;
+            }
+
+            TList<Driver> drivers = DataRepository.DriverProvider.GetByIDRfIdCard(cards[0].IDRfIdCard);
+
+            if ((drivers == null) || (drivers.Count == 0))
+            {
+                return processLoyalty(message, cards[0], veh);
+            }
+            else
+            {
+                return message;
+                //return processDriver(message, cards[0], veh);
+            }
+        }
+
+        private ParserResponseContainer processLoyalty(ParserResponseContainer message, RfIdCards card, Vehicle veh)
+        {
+            try
+            {
+                //TList<RfIdCards> card = DataRepository.RfIdCardsProvider.GetBySerialNumberRfIdCard(message.tLocation.RfIdCard);
+
+                if (card == null)
+                    return message;
+
+
+
+                clsMessageCreator tMessageCreator = new clsMessageCreator();
+
+                
+
+                if (veh.CurrentRfIdCard == null)
+                {
+                    TList<RegisteredPassengers> selPass = DataRepository.RegisteredPassengersProvider.GetByIDRfIdCard(card.IDRfIdCard);
+                    if ((selPass == null) || (selPass.Count == 0))
+                    {
+                        return message;
+                    }
+
+
+
+                    long succ = VehiclesContainer.Instance.setRfIdCardPassinger(veh.IDVehicle, card);
+
+                    StringBuilder strBuild = new StringBuilder();
+
+
+                    if (selPass[0].IDClient != null)
+                    {
+                            strBuild.Append("Promo KM+\r\n");
+                    }
+                    
+                    else
+                    {
+                         Clients tmpClient = DataRepository.ClientsProvider.GetByIDClient((long)selPass[0].IDClient);
+
+                         if(tmpClient != null)
+                            strBuild.Append(tmpClient.Name.Trim());
+                    }
+
+                    strBuild.Append(selPass[0].LastName);
+                    strBuild.Append(" ");
+                    strBuild.Append(selPass[0].Name);
+                    strBuild.Append("\r\n");
+                        strBuild.Append(selPass[0].CurrentNumberOfReceipts);
+                        strBuild.Append("/");
+                        int hours = (int)selPass[0].CurrentDuration / 3600;
+                        decimal rem = selPass[0].CurrentDuration % 3600;
+                        int min = (int)rem / 60;
+                        int sec = (int)rem % 60;
+                        strBuild.Append(hours);
+                        strBuild.Append(":");
+                        strBuild.Append(min);
+                        strBuild.Append(":");
+                        strBuild.Append(sec);
+
+                        strBuild.Append("/");
+                        if (selPass[0].CurrentAmount >= 40)
+                        {
+                            strBuild.Append((int)(selPass[0].CurrentAmount - 40) / 25);
+                        }
+                        else
+                        {
+                            strBuild.Append("0");
+                        }
+                        strBuild.Append("\r\n");
+
+                        if ((selPass[0].Invoice != null) && (selPass[0].Invoice == true))
+                        {
+                            strBuild.Append("Faktura");
+                        }
+                        else
+                        {
+                            strBuild.Append("Gotovina");
+                        }
+
+                        if (selPass[0].IsDeleted)
+                        {
+                            strBuild = new StringBuilder();
+                            strBuild.Append("Nevalidna karticka!");
+                        }
+
+                        if (selPass[0].TemporaryDiscarded == true)
+                        {
+                            strBuild = new StringBuilder();
+                            strBuild.Append("Izgubena karticka!");
+                        }
+
+                    
+
+
+                    if (strBuild.Length > 80)
+                    {
+                        strBuild.Remove(80, strBuild.Length - 80);
+                    }
+
+                    if (succ == 0)
+                    {
+                        message.addToNewMsgToUnit(tMessageCreator.CreatePopUpMessageForLCD(veh, strBuild.ToString()));
+                    }
+
+                    if (succ == 1)
+                    {
+                        message.addToNewMsgToUnit(tMessageCreator.CreatePopUpMessageForLCD(veh, strBuild.ToString()));
+                    }
+
+                    if (succ == -1)
+                    {
+                        message.addToNewMsgToUnit(tMessageCreator.CreatePopUpMessageForLCD(veh, "Client-ot ne e prifaten!"));
+                    }
+                }
+
+
+
+            
+            catch (Exception e)
+            {
+                log4net.LogManager.GetLogger(BLFactory.LOG_NAME).Error("Loyalty", e);
+            }
+
+            return message;
+        }
+
+
+        public static byte[] CheckForCheckInDriverShift(SensorData pSensorData, Vehicle m_myVehicle)
+        {
+            byte[] retVal = null;
+            byte[] retValForName = null;
+
+
+            clsRfIdCardProcessor RfIdCardProcessor = new clsRfIdCardProcessor();
+            clsMessageCreator MessageCreator = new clsMessageCreator();
+
+            string m_retVal = RfIdCardProcessor.ProcessCheckInDriver(pSensorData.RfIdCard, m_myVehicle);
+
+            if (m_retVal != "")
+            {
+                //Prakam zeleno svetlo da se odjavi
+                retVal = MessageCreator.CreateGreenLight(m_myVehicle);
+
+                retValForName = MessageCreator.CreatePopUpMessageForLCD(m_myVehicle, m_retVal);
+
+                byte[] tmpRetVal = new byte[retVal.GetLength(0) + retValForName.GetLength(0)];
+
+                retVal.CopyTo(tmpRetVal, 0);
+                retValForName.CopyTo(tmpRetVal, retVal.GetLength(0));
+
+                retVal = tmpRetVal;
+            }
+
+
+            return retVal;
+        }
+
+        private ParserResponseContainer processDriver(ParserResponseContainer message, RfIdCards card, Vehicle veh)
+        {
+            return message;
+
+            byte[] retVal = null;
+            byte[] retValForName = null;
+
+
+
+            clsRfIdCardProcessor RfIdCardProcessor = new clsRfIdCardProcessor();
+            clsMessageCreator MessageCreator = new clsMessageCreator();
+
+            string m_retVal = RfIdCardProcessor.ProcessCheckInDriver(message.tLocation.RfIdCard, veh);
+
+            if (m_retVal != "")
+            {
+                //Prakam zeleno svetlo da se odjavi
+                retVal = MessageCreator.CreateGreenLight(veh);
+
+                retValForName = MessageCreator.CreatePopUpMessageForLCD(veh, m_retVal);
+
+                byte[] tmpRetVal = new byte[retVal.GetLength(0) + retValForName.GetLength(0)];
+
+                retVal.CopyTo(tmpRetVal, 0);
+                retValForName.CopyTo(tmpRetVal, retVal.GetLength(0));
+
+                retVal = tmpRetVal;
+                message.addToNewMsgToUnit(retVal);
+            }
+
+
+            return message;
+        }
+
+        #endregion
+    }
+}
